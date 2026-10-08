@@ -1,0 +1,88 @@
+{
+ "t": 1.6206896551724137,
+ "site": "demo-slope",
+ "usable": true,
+ "reason": "OK",
+ "runtime": {
+  "cv2_file": "C:\\Hackathons\\OpenCV AI Competition 2026, powered by AWS\\telltale\\.venv\\Lib\\site-packages\\cv2\\__init__.py",
+  "opencv_version": "5.0.0",
+  "build_hash": "f71df2f163323276",
+  "cool": false,
+  "machine": "AMD64",
+  "python": "3.12.7",
+  "threads": 22,
+  "instance_type": null,
+  "ami_id": null,
+  "instance_id": null
+ },
+ "timing": {
+  "stack_s": 0.02570709999417886,
+  "stabilize_s": 0.5353691999916919,
+  "dic_s": 0.13108820002526045,
+  "total_s": 0.7980832000030205
+ },
+ "overlay": "epochs/1.62069/overlay.png",
+ "stack": {
+  "status": "OK",
+  "n_frames": 5,
+  "max_shift": 0.7015102505683899,
+  "contrast": 0.09077140688896179
+ },
+ "stabilize": {
+  "verdict": "OK",
+  "n_matches": 1624,
+  "n_inliers": 1602,
+  "rms": 0.5735387802124023,
+  "translation": [
+   0.03417205810546875,
+   0.9541225433349609
+  ],
+  "rotation_deg": 0.0,
+  "scale": 1.0,
+  "residual": [
+   -0.0032294769771397114,
+   0.012822026386857033
+  ],
+  "scatter": 0.012985423450810551,
+  "n_refine": 136,
+  "n_verify": 60,
+  "mount_moved": false,
+  "refine_model": "translation",
+  "refine_rms": 0.014349994249641895,
+  "refine_inlier_frac": 1.0,
+  "coarse_residual": [
+   -0.014634087681770325,
+   0.05808304250240326
+  ]
+ },
+ "field": {
+  "n_subsets": 256,
+  "n_valid": 256,
+  "coverage": 1.0,
+  "status_counts": {
+   "OK": 256,
+   "LOW_TEXTURE": 0,
+   "LOW_CORR": 0,
+   "LOW_MARGIN": 0,
+   "OUT_OF_BOUND": 0,
+   "EDGE_PEAK": 0
+  },
+  "crosscheck_px": 0.6598207354545593,
+  "review": false
+ },
+ "zones": {
+  "slope": {
+   "zone": "slope",
+   "u": -2.2862135665491223e-05,
+   "v": 0.015512103214859962,
+   "sigma_u": 0.01073243748396635,
+   "sigma_v": 0.010126126930117607,
+   "n_valid": 108,
+   "n_total": 108,
+   "magnitude": 0.015512120062251838,
+   "sigma": 0.014755462071792229,
+   "mm": 0.012409696049801472,
+   "sigma_mm": 0.011804369657433783
+  }
+ }
+}

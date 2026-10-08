@@ -1,0 +1,42 @@
+{
+ "t": 0.0,
+ "site": "demo-slope",
+ "usable": true,
+ "reason": "REFERENCE",
+ "runtime": {
+  "cv2_file": "C:\\Hackathons\\OpenCV AI Competition 2026, powered by AWS\\telltale\\.venv\\Lib\\site-packages\\cv2\\__init__.py",
+  "opencv_version": "5.0.0",
+  "build_hash": "f71df2f163323276",
+  "cool": false,
+  "machine": "AMD64",
+  "python": "3.12.7",
+  "threads": 22,
+  "instance_type": null,
+  "ami_id": null,
+  "instance_id": null
+ },
+ "timing": {
+  "stack_s": 0.08415270003024489,
+  "total_s": 0.2289320999989286
+ },
+ "overlay": "epochs/0/overlay.png",
+ "stack": {
+  "status": "OK",
+  "n_frames": 5,
+  "max_shift": 0.7251185774803162,
+  "contrast": 0.08887449651956558
+ },
+ "zones": {
+  "slope": {
+   "zone": "slope",
+   "u": 0.0,
+   "v": 0.0,
+   "sigma_u": 0.0,
+   "sigma_v": 0.0,
+   "n_valid": 0,
+   "n_total": 0,
+   "magnitude": 0.0,
+   "sigma": 0.0
+  }
+ }
+}

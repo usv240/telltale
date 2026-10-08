@@ -1,0 +1,268 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  TellTale: camera-based slope creep measurement and failure-time forecasting.
+  One bucket (ingest, private state, public dashboard), one SQS epoch queue with DLQ,
+  one Graviton worker running the OpenCV 5 pipeline, CloudFront in front of the dashboard.
+
+Parameters:
+  WorkerAmiId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/canonical/ubuntu/server/24.04/stable/current/arm64/hvm/ebs-gp3/ami-id
+    Description: >
+      arm64 AMI for the worker. Default is stock Ubuntu 24.04 (the E6 baseline). For the
+      COOL path, subscribe to "Cloud Optimized OpenCV for AWS Graviton" on AWS Marketplace
+      and pass the COOL AMI id through CoolAmiId instead.
+  CoolAmiId:
+    Type: String
+    Default: ""
+    Description: Optional COOL Marketplace AMI id (arm64). When set, overrides WorkerAmiId.
+  InstanceType:
+    Type: String
+    Default: c8g.large
+    AllowedValues: [c8g.large, c8g.xlarge, c8g.2xlarge, c7g.large, c7g.xlarge, m8g.large, t4g.medium]
+  BucketName:
+    Type: String
+    Default: ""
+    Description: Leave blank to use telltale-<account-id>.
+
+Conditions:
+  UseCool: !Not [!Equals [!Ref CoolAmiId, ""]]
+  DefaultBucketName: !Equals [!Ref BucketName, ""]
+
+Resources:
+  # ---------------------------------------------------------------- queueing
+  EpochDLQ:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub ${AWS::StackName}-epochs-dlq
+      MessageRetentionPeriod: 1209600
+
+  EpochQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub ${AWS::StackName}-epochs
+      VisibilityTimeout: 600
+      ReceiveMessageWaitTimeSeconds: 20
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt EpochDLQ.Arn
+        maxReceiveCount: 3
+
+  EpochQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues: [!Ref EpochQueue]
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal: { Service: s3.amazonaws.com }
+            Action: sqs:SendMessage
+            Resource: !GetAtt EpochQueue.Arn
+            Condition:
+              StringEquals: { aws:SourceAccount: !Ref AWS::AccountId }
+
+  # ---------------------------------------------------------------- storage
+  DataBucket:
+    Type: AWS::S3::Bucket
+    DependsOn: EpochQueuePolicy
+    Properties:
+      BucketName: !If [DefaultBucketName, !Sub "telltale-${AWS::AccountId}", !Ref BucketName]
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault: { SSEAlgorithm: AES256 }
+      VersioningConfiguration: { Status: Suspended }
+      LifecycleConfiguration:
+        Rules:
+          - Id: expire-raw-bursts
+            Status: Enabled
+            Prefix: ingest/
+            ExpirationInDays: 30
+      NotificationConfiguration:
+        QueueConfigurations:
+          - Event: s3:ObjectCreated:*
+            Queue: !GetAtt EpochQueue.Arn
+            Filter:
+              S3Key:
+                Rules:
+                  - { Name: prefix, Value: ingest/ }
+                  - { Name: suffix, Value: manifest.json }
+
+  DataBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref DataBucket
+      PolicyDocument:
+        Statement:
+          - Sid: CloudFrontReadPublicPrefix
+            Effect: Allow
+            Principal: { Service: cloudfront.amazonaws.com }
+            Action: s3:GetObject
+            Resource: !Sub ${DataBucket.Arn}/public/*
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub arn:aws:cloudfront::${AWS::AccountId}:distribution/${Distribution}
+
+  # ---------------------------------------------------------------- dashboard
+  OriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub ${AWS::StackName}-oac
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  Distribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Comment: TellTale dashboard
+        DefaultRootObject: index.html
+        HttpVersion: http2
+        PriceClass: PriceClass_100
+        Origins:
+          - Id: s3public
+            DomainName: !GetAtt DataBucket.RegionalDomainName
+            OriginPath: /public
+            OriginAccessControlId: !GetAtt OriginAccessControl.Id
+            S3OriginConfig: { OriginAccessIdentity: "" }
+        DefaultCacheBehavior:
+          TargetOriginId: s3public
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods: [GET, HEAD]
+          CachedMethods: [GET, HEAD]
+          Compress: true
+          # CachingDisabled: series and forecast JSON must reflect the latest epoch immediately.
+          CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
+
+  # ---------------------------------------------------------------- worker
+  WorkerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal: { Service: ec2.amazonaws.com }
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+      Policies:
+        - PolicyName: telltale-worker
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action: [s3:GetObject, s3:PutObject, s3:DeleteObject]
+                Resource: !Sub arn:aws:s3:::telltale-${AWS::AccountId}/*
+              - Effect: Allow
+                Action: [s3:ListBucket]
+                Resource: !Sub arn:aws:s3:::telltale-${AWS::AccountId}
+              - Effect: Allow
+                Action: [sqs:ReceiveMessage, sqs:DeleteMessage, sqs:ChangeMessageVisibility, sqs:GetQueueAttributes]
+                Resource: !GetAtt EpochQueue.Arn
+              - Effect: Allow
+                Action: [cloudwatch:PutMetricData]
+                Resource: "*"
+                Condition:
+                  StringEquals: { cloudwatch:namespace: TellTale }
+              - Effect: Allow
+                Action: [logs:CreateLogGroup, logs:CreateLogStream, logs:PutLogEvents, logs:DescribeLogStreams]
+                Resource: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/telltale/*
+
+  WorkerInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles: [!Ref WorkerRole]
+
+  WorkerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: TellTale worker, no inbound (access via SSM Session Manager)
+      SecurityGroupEgress:
+        - IpProtocol: "-1"
+          CidrIp: 0.0.0.0/0
+
+  WorkerLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /telltale/worker
+      RetentionInDays: 30
+
+  Worker:
+    Type: AWS::EC2::Instance
+    DependsOn: DataBucket
+    Properties:
+      ImageId: !If [UseCool, !Ref CoolAmiId, !Ref WorkerAmiId]
+      InstanceType: !Ref InstanceType
+      IamInstanceProfile: !Ref WorkerInstanceProfile
+      SecurityGroupIds: [!Ref WorkerSecurityGroup]
+      BlockDeviceMappings:
+        - DeviceName: /dev/sda1
+          Ebs: { VolumeSize: 20, VolumeType: gp3, DeleteOnTermination: true }
+      Tags:
+        - { Key: Name, Value: !Sub "${AWS::StackName}-worker" }
+        - { Key: Project, Value: telltale }
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash -xe
+          export TELLTALE_BUCKET=telltale-${AWS::AccountId}
+          export TELLTALE_QUEUE_URL=${EpochQueue}
+          export TELLTALE_REGION=${AWS::Region}
+          export TELLTALE_STACK=${AWS::StackName}
+          mkdir -p /opt/telltale && cd /opt/telltale
+          apt-get update -y
+          apt-get install -y python3-venv python3-pip unzip curl
+          if ! command -v aws >/dev/null; then apt-get install -y awscli || snap install aws-cli --classic; fi
+          # The release tarball is uploaded by deploy.sh right after the stack is created;
+          # wait for it instead of failing the first boot.
+          for i in $(seq 1 60); do
+            if aws s3 cp s3://$TELLTALE_BUCKET/release/pipeline.tar.gz /opt/telltale/pipeline.tar.gz; then break; fi
+            echo "release not yet available, retry $i"; sleep 15
+          done
+          tar xzf pipeline.tar.gz
+          bash infra/worker/bootstrap.sh
+
+  # ---------------------------------------------------------------- liveness alarms
+  QueueAgeAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: Epochs waiting more than 15 minutes; worker is down or overloaded
+      Namespace: AWS/SQS
+      MetricName: ApproximateAgeOfOldestMessage
+      Dimensions: [{ Name: QueueName, Value: !GetAtt EpochQueue.QueueName }]
+      Statistic: Maximum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 900
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+
+  DLQAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: An epoch failed three times and landed in the dead-letter queue
+      Namespace: AWS/SQS
+      MetricName: ApproximateNumberOfMessagesVisible
+      Dimensions: [{ Name: QueueName, Value: !GetAtt EpochDLQ.QueueName }]
+      Statistic: Maximum
+      Period: 60
+      EvaluationPeriods: 1
+      Threshold: 0
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+
+Outputs:
+  Bucket:
+    Value: !Ref DataBucket
+  QueueUrl:
+    Value: !Ref EpochQueue
+  DashboardUrl:
+    Value: !Sub https://${Distribution.DomainName}/
+  WorkerInstanceId:
+    Value: !Ref Worker
+  WorkerAmi:
+    Value: !If [UseCool, !Ref CoolAmiId, !Ref WorkerAmiId]

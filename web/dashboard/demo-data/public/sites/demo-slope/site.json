@@ -1,0 +1,71 @@
+{
+ "name": "demo-slope",
+ "mm_per_px": 0.8,
+ "stable_polys": [
+  [
+   [
+    0,
+    0
+   ],
+   [
+    136,
+    0
+   ],
+   [
+    136,
+    319
+   ],
+   [
+    0,
+    319
+   ]
+  ]
+ ],
+ "target_zones": {
+  "slope": [
+   [
+    144,
+    96
+   ],
+   [
+    319,
+    96
+   ],
+   [
+    319,
+    319
+   ],
+   [
+    144,
+    319
+   ]
+  ]
+ },
+ "grid": {
+  "template": 41,
+  "stride": 16,
+  "search": 16,
+  "min_corr": 0.5,
+  "min_margin": 0.01,
+  "min_texture": 0.0001,
+  "max_disp": 15.0,
+  "refine_iters": 1
+ },
+ "forecast": {
+  "sma_window": 3,
+  "lma_window": 7,
+  "ooa_k": 3,
+  "noise_floor": 0.05,
+  "min_points_fit": 4,
+  "bootstrap": 500,
+  "min_r2": 0.5,
+  "critical_horizon": 5.0,
+  "alpha_grid": [
+   1.5,
+   2.2,
+   0.05
+  ]
+ },
+ "burst_size": 7,
+ "notes": "Synthetic collapse: Voight alpha=2 creep, true failure at t=50; 0.8 mm per pixel; left strip stable, right block moves."
+}

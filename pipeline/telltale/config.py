@@ -62,11 +62,18 @@ class SiteConfig:
         Path(path).write_text(json.dumps(asdict(self), indent=2), encoding="utf-8")
 
     @classmethod
-    def from_json(cls, path: str | Path) -> "SiteConfig":
-        raw = json.loads(Path(path).read_text(encoding="utf-8"))
+    def from_json_dict(cls, raw: dict) -> "SiteConfig":
+        raw = dict(raw)
         raw["grid"] = GridConfig(**raw.get("grid", {}))
-        raw["forecast"] = ForecastConfig(**raw.get("forecast", {}))
+        fc = dict(raw.get("forecast", {}))
+        if "alpha_grid" in fc:
+            fc["alpha_grid"] = tuple(fc["alpha_grid"])
+        raw["forecast"] = ForecastConfig(**fc)
         return cls(**raw)
+
+    @classmethod
+    def from_json(cls, path: str | Path) -> "SiteConfig":
+        return cls.from_json_dict(json.loads(Path(path).read_text(encoding="utf-8")))
 
 
 def polygon_mask(shape: tuple, polys: list) -> np.ndarray:

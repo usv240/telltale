@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TellTale dashboard</title>
+<meta name="description" content="Is this slope okay right now? Camera-based slope creep measurement and failure-time forecast.">
+<link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <span class="mark" aria-hidden="true"></span>
+    <span class="name">TellTale</span>
+    <span class="sub">slope instrument</span>
+  </div>
+  <div class="controls">
+    <label class="sel">Site
+      <select id="site" aria-label="Site"></select>
+    </label>
+    <span id="state-chip" class="chip chip-quiet" aria-live="polite">loading</span>
+    <span id="cool-badge" class="badge" hidden title="OpenCV was imported from /opt/cool on this worker">COOL on Graviton</span>
+    <button id="theme" class="btn" type="button" aria-label="Toggle colour theme">Theme</button>
+  </div>
+</header>
+
+<main>
+  <section class="panel status" aria-labelledby="h-status">
+    <h2 id="h-status">Status</h2>
+    <p id="status-line" class="lead">Loading the latest epoch.</p>
+    <div class="status-grid">
+      <figure>
+        <img id="overlay" alt="Latest displacement overlay: colour shows how far each patch of ground moved since the reference epoch, arrows show direction" src="">
+        <figcaption id="overlay-cap">Displacement overlay of the latest usable epoch.</figcaption>
+      </figure>
+      <dl class="facts">
+        <div><dt>Zone displacement</dt><dd id="f-disp">–</dd></div>
+        <div><dt>Velocity (short average)</dt><dd id="f-vel">–</dd></div>
+        <div><dt>Onset of acceleration</dt><dd id="f-ooa">–</dd></div>
+        <div><dt>Forecast failure window</dt><dd id="f-window">–</dd></div>
+        <div><dt>Fit quality (R²)</dt><dd id="f-r2">–</dd></div>
+        <div><dt>Epochs (unusable)</dt><dd id="f-epochs">–</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="h-series">
+    <h2 id="h-series">Displacement series</h2>
+    <p class="hint">Median displacement of valid subsets in the zone, with ±1σ (robust) band. Nothing is interpolated across unusable epochs.</p>
+    <svg id="chart-disp" class="chart" viewBox="0 0 640 260" role="img" aria-label="Displacement versus time"></svg>
+  </section>
+
+  <section class="panel" aria-labelledby="h-iv">
+    <h2 id="h-iv">Inverse velocity</h2>
+    <p class="hint">After the onset of acceleration, 1 / velocity falls toward zero. The line's time-axis intercept is the forecast failure time; the shaded band is the bootstrap and ensemble window.</p>
+    <svg id="chart-iv" class="chart" viewBox="0 0 640 260" role="img" aria-label="Inverse velocity versus time with forecast intercept"></svg>
+    <p id="iv-empty" class="empty" hidden>No acceleration detected yet. This chart fills in once the short-average velocity stays above the long-average velocity for three epochs.</p>
+  </section>
+
+  <section class="panel" aria-labelledby="h-health">
+    <h2 id="h-health">Instrument health</h2>
+    <dl class="facts cols">
+      <div><dt>Valid subset coverage</dt><dd id="h-cov">–</dd></div>
+      <div><dt>Stabilisation inliers</dt><dd id="h-inl">–</dd></div>
+      <div><dt>Camera model (last epoch)</dt><dd id="h-model">–</dd></div>
+      <div><dt>Epoch processing time</dt><dd id="h-time">–</dd></div>
+      <div><dt>OpenCV build</dt><dd id="h-cv"><code>–</code></dd></div>
+      <div><dt>Worker</dt><dd id="h-inst">–</dd></div>
+    </dl>
+    <h3>Epoch log</h3>
+    <div class="tablewrap">
+      <table id="epochs">
+        <thead><tr><th>t</th><th>usable</th><th>reason</th><th>|d| px</th><th>σ px</th><th>coverage</th><th>stabilise</th><th>seconds</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>TellTale · Team Ground Truth · OpenCV AI Competition 2026, powered by AWS. Classical OpenCV 5 vision and the inverse-velocity method (Fukuzono 1985; Carlà et al. 2017). Scope: creep-type failures. Cameras look at ground, never at people.</p>
+</footer>
+<script src="dashboard.js"></script>
+</body>
+</html>

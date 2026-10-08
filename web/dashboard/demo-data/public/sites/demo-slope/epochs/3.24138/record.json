@@ -1,0 +1,88 @@
+{
+ "t": 3.2413793103448274,
+ "site": "demo-slope",
+ "usable": true,
+ "reason": "OK",
+ "runtime": {
+  "cv2_file": "C:\\Hackathons\\OpenCV AI Competition 2026, powered by AWS\\telltale\\.venv\\Lib\\site-packages\\cv2\\__init__.py",
+  "opencv_version": "5.0.0",
+  "build_hash": "f71df2f163323276",
+  "cool": false,
+  "machine": "AMD64",
+  "python": "3.12.7",
+  "threads": 22,
+  "instance_type": null,
+  "ami_id": null,
+  "instance_id": null
+ },
+ "timing": {
+  "stack_s": 0.02765579998958856,
+  "stabilize_s": 0.16686029999982566,
+  "dic_s": 0.12655360001372173,
+  "total_s": 0.3547390999738127
+ },
+ "overlay": "epochs/3.24138/overlay.png",
+ "stack": {
+  "status": "OK",
+  "n_frames": 5,
+  "max_shift": 0.42371702194213867,
+  "contrast": 0.09377454966306686
+ },
+ "stabilize": {
+  "verdict": "OK",
+  "n_matches": 1370,
+  "n_inliers": 1348,
+  "rms": 0.8101466298103333,
+  "translation": [
+   0.8149032592773438,
+   1.4544334411621094
+  ],
+  "rotation_deg": 0.0,
+  "scale": 1.0,
+  "residual": [
+   -3.5301643947605044e-05,
+   0.013245446607470512
+  ],
+  "scatter": 0.01382938911857864,
+  "n_refine": 136,
+  "n_verify": 60,
+  "mount_moved": true,
+  "refine_model": "translation",
+  "refine_rms": 0.019127411767840385,
+  "refine_inlier_frac": 1.0,
+  "coarse_residual": [
+   0.03698854148387909,
+   -0.031997960060834885
+  ]
+ },
+ "field": {
+  "n_subsets": 256,
+  "n_valid": 256,
+  "coverage": 1.0,
+  "status_counts": {
+   "OK": 256,
+   "LOW_TEXTURE": 0,
+   "LOW_CORR": 0,
+   "LOW_MARGIN": 0,
+   "OUT_OF_BOUND": 0,
+   "EDGE_PEAK": 0
+  },
+  "crosscheck_px": 0.6997029781341553,
+  "review": false
+ },
+ "zones": {
+  "slope": {
+   "zone": "slope",
+   "u": 0.11618109792470932,
+   "v": 0.017379669472575188,
+   "sigma_u": 0.012938312254846096,
+   "sigma_v": 0.010143119841814041,
+   "n_valid": 108,
+   "n_total": 108,
+   "magnitude": 0.11747382868523039,
+   "sigma": 0.01644027992855664,
+   "mm": 0.09397906294818431,
+   "sigma_mm": 0.013152223942845313
+  }
+ }
+}

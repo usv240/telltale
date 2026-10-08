@@ -1,0 +1,9 @@
+[
+ {
+  "site": "demo-slope",
+  "state": "CRITICAL",
+  "last_t": 47.0,
+  "n_epochs": 30,
+  "cool": false
+ }
+]

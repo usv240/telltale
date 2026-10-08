@@ -1,0 +1,88 @@
+{
+ "t": 8.103448275862068,
+ "site": "demo-slope",
+ "usable": true,
+ "reason": "OK",
+ "runtime": {
+  "cv2_file": "C:\\Hackathons\\OpenCV AI Competition 2026, powered by AWS\\telltale\\.venv\\Lib\\site-packages\\cv2\\__init__.py",
+  "opencv_version": "5.0.0",
+  "build_hash": "f71df2f163323276",
+  "cool": false,
+  "machine": "AMD64",
+  "python": "3.12.7",
+  "threads": 22,
+  "instance_type": null,
+  "ami_id": null,
+  "instance_id": null
+ },
+ "timing": {
+  "stack_s": 0.02640199998859316,
+  "stabilize_s": 0.14947140001459047,
+  "dic_s": 0.15580000000772998,
+  "total_s": 0.3620758000179194
+ },
+ "overlay": "epochs/8.10345/overlay.png",
+ "stack": {
+  "status": "OK",
+  "n_frames": 5,
+  "max_shift": 0.5301583409309387,
+  "contrast": 0.09645244479179382
+ },
+ "stabilize": {
+  "verdict": "OK",
+  "n_matches": 1559,
+  "n_inliers": 1536,
+  "rms": 0.5386480689048767,
+  "translation": [
+   0.1801433563232422,
+   -0.2418975830078125
+  ],
+  "rotation_deg": 0.0,
+  "scale": 1.0,
+  "residual": [
+   0.006158086471259594,
+   -0.013046110980212688
+  ],
+  "scatter": 0.014495149668751043,
+  "n_refine": 136,
+  "n_verify": 60,
+  "mount_moved": false,
+  "refine_model": "translation",
+  "refine_rms": 0.03806231543421745,
+  "refine_inlier_frac": 1.0,
+  "coarse_residual": [
+   -0.07903699576854706,
+   0.11510191857814789
+  ]
+ },
+ "field": {
+  "n_subsets": 256,
+  "n_valid": 256,
+  "coverage": 1.0,
+  "status_counts": {
+   "OK": 256,
+   "LOW_TEXTURE": 0,
+   "LOW_CORR": 0,
+   "LOW_MARGIN": 0,
+   "OUT_OF_BOUND": 0,
+   "EDGE_PEAK": 0
+  },
+  "crosscheck_px": 0.5489450097084045,
+  "review": false
+ },
+ "zones": {
+  "slope": {
+   "zone": "slope",
+   "u": 0.37396135926246643,
+   "v": 0.11187916994094849,
+   "sigma_u": 0.015275257639586926,
+   "sigma_v": 0.014868132770061493,
+   "n_valid": 108,
+   "n_total": 108,
+   "magnitude": 0.39033837485969414,
+   "sigma": 0.021316539776050313,
+   "mm": 0.31227069988775535,
+   "sigma_mm": 0.017053231820840252
+  }
+ }
+}

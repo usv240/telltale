@@ -1,0 +1,88 @@
+{
+ "t": 14.586206896551722,
+ "site": "demo-slope",
+ "usable": true,
+ "reason": "OK",
+ "runtime": {
+  "cv2_file": "C:\\Hackathons\\OpenCV AI Competition 2026, powered by AWS\\telltale\\.venv\\Lib\\site-packages\\cv2\\__init__.py",
+  "opencv_version": "5.0.0",
+  "build_hash": "f71df2f163323276",
+  "cool": false,
+  "machine": "AMD64",
+  "python": "3.12.7",
+  "threads": 22,
+  "instance_type": null,
+  "ami_id": null,
+  "instance_id": null
+ },
+ "timing": {
+  "stack_s": 0.01972470001783222,
+  "stabilize_s": 0.13893219997407869,
+  "dic_s": 0.13516009994782507,
+  "total_s": 0.31941319996258244
+ },
+ "overlay": "epochs/14.5862/overlay.png",
+ "stack": {
+  "status": "OK",
+  "n_frames": 5,
+  "max_shift": 0.6302821040153503,
+  "contrast": 0.08739560842514038
+ },
+ "stabilize": {
+  "verdict": "OK",
+  "n_matches": 1376,
+  "n_inliers": 1352,
+  "rms": 0.8215264081954956,
+  "translation": [
+   -0.8783493041992188,
+   0.42325592041015625
+  ],
+  "rotation_deg": 0.0,
+  "scale": 1.0,
+  "residual": [
+   -0.00012007955956505612,
+   0.01313960924744606
+  ],
+  "scatter": 0.012272201800866727,
+  "n_refine": 136,
+  "n_verify": 60,
+  "mount_moved": false,
+  "refine_model": "translation",
+  "refine_rms": 0.060503993183374405,
+  "refine_inlier_frac": 1.0,
+  "coarse_residual": [
+   -0.06842589378356934,
+   -0.0593586340546608
+  ]
+ },
+ "field": {
+  "n_subsets": 256,
+  "n_valid": 256,
+  "coverage": 1.0,
+  "status_counts": {
+   "OK": 256,
+   "LOW_TEXTURE": 0,
+   "LOW_CORR": 0,
+   "LOW_MARGIN": 0,
+   "OUT_OF_BOUND": 0,
+   "EDGE_PEAK": 0
+  },
+  "crosscheck_px": 0.7580703496932983,
+  "review": false
+ },
+ "zones": {
+  "slope": {
+   "zone": "slope",
+   "u": 0.6258581280708313,
+   "v": 0.2560872733592987,
+   "sigma_u": 0.013221366330981255,
+   "sigma_v": 0.015593013726174831,
+   "n_valid": 108,
+   "n_total": 108,
+   "magnitude": 0.6762241403920192,
+   "sigma": 0.020443742434365617,
+   "mm": 0.5409793123136154,
+   "sigma_mm": 0.016354993947492496
+  }
+ }
+}

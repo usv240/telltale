@@ -1,0 +1,88 @@
+{
+ "t": 45.37931034482759,
+ "site": "demo-slope",
+ "usable": true,
+ "reason": "OK",
+ "runtime": {
+  "cv2_file": "C:\\Hackathons\\OpenCV AI Competition 2026, powered by AWS\\telltale\\.venv\\Lib\\site-packages\\cv2\\__init__.py",
+  "opencv_version": "5.0.0",
+  "build_hash": "f71df2f163323276",
+  "cool": false,
+  "machine": "AMD64",
+  "python": "3.12.7",
+  "threads": 22,
+  "instance_type": null,
+  "ami_id": null,
+  "instance_id": null
+ },
+ "timing": {
+  "stack_s": 0.04545439995126799,
+  "stabilize_s": 0.241722300008405,
+  "dic_s": 0.39411910000490025,
+  "total_s": 0.7527996000135317
+ },
+ "overlay": "epochs/45.3793/overlay.png",
+ "stack": {
+  "status": "OK",
+  "n_frames": 5,
+  "max_shift": 0.5219771862030029,
+  "contrast": 0.08327268809080124
+ },
+ "stabilize": {
+  "verdict": "OK",
+  "n_matches": 1466,
+  "n_inliers": 1439,
+  "rms": 0.6123259663581848,
+  "translation": [
+   0.22091102600097656,
+   1.1463394165039062
+  ],
+  "rotation_deg": 0.0,
+  "scale": 1.0,
+  "residual": [
+   -0.0013122307136654854,
+   0.013981092721223831
+  ],
+  "scatter": 0.013289364678001504,
+  "n_refine": 136,
+  "n_verify": 60,
+  "mount_moved": true,
+  "refine_model": "translation",
+  "refine_rms": 0.019368138164281845,
+  "refine_inlier_frac": 1.0,
+  "coarse_residual": [
+   -0.0850292220711708,
+   0.01343131996691227
+  ]
+ },
+ "field": {
+  "n_subsets": 256,
+  "n_valid": 256,
+  "coverage": 1.0,
+  "status_counts": {
+   "OK": 256,
+   "LOW_TEXTURE": 0,
+   "LOW_CORR": 0,
+   "LOW_MARGIN": 0,
+   "OUT_OF_BOUND": 0,
+   "EDGE_PEAK": 0
+  },
+  "crosscheck_px": 0.7045360803604126,
+  "review": false
+ },
+ "zones": {
+  "slope": {
+   "zone": "slope",
+   "u": 4.246258735656738,
+   "v": 2.1322717666625977,
+   "sigma_u": 0.01586168073117733,
+   "sigma_v": 0.012167643755674362,
+   "n_valid": 108,
+   "n_total": 108,
+   "magnitude": 4.751557232849836,
+   "sigma": 0.019991109778669205,
+   "mm": 3.8012457862798694,
+   "sigma_mm": 0.015992887822935366
+  }
+ }
+}
