@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "telltale"
+version = "0.1.0"
+description = "Camera-based slope deformation measurement and failure-time forecasting (OpenCV 5)."
+requires-python = ">=3.11"
+dependencies = [
+    "opencv-python==5.0.0.93",
+    "numpy==2.5.2",
+]
+
+[project.optional-dependencies]
+test = ["pytest==9.1.1"]
+
+[project.scripts]
+telltale = "telltale.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["telltale*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

@@ -1,0 +1,80 @@
+"""Site, grid, and forecast configuration.
+
+A Site is one camera pointed at one scene. Polygons are lists of (x, y) pixel
+coordinates in reference-image space. STABLE polygons mark regions assumed
+motionless (bedrock, buildings off the landslide); TARGET zones mark regions
+whose motion matters.
+"""
+
+from __future__ import annotations
+
+import json
+from dataclasses import dataclass, field, asdict
+from pathlib import Path
+from typing import Optional
+
+import numpy as np
+
+
+@dataclass
+class GridConfig:
+    template: int = 41          # subset (template) side, odd, pixels
+    stride: int = 24            # grid spacing, pixels
+    search: int = 16            # search radius around zero displacement, pixels
+    min_corr: float = 0.5       # minimum ZNCC peak to accept a match
+    min_margin: float = 0.01    # peak minus second peak (outside 3 px), corr units
+    min_texture: float = 1e-4   # minimum mean corner response (image scaled 0..1)
+    max_disp: Optional[float] = None  # sanity bound on |displacement|, default search - 1
+    refine_iters: int = 1       # sub-pixel re-sampling passes after the first peak estimate
+
+    def __post_init__(self) -> None:
+        if self.template % 2 == 0:
+            raise ValueError("template size must be odd")
+        if self.max_disp is None:
+            self.max_disp = float(self.search - 1)
+
+
+@dataclass
+class ForecastConfig:
+    sma_window: int = 3         # short moving average, epochs (Carla et al. 2017)
+    lma_window: int = 7         # long moving average, epochs
+    ooa_k: int = 3              # consecutive epochs of SMA > LMA to declare OOA
+    noise_floor: float = 0.05   # displacement units below which motion is noise
+    min_points_fit: int = 4     # minimum accelerating points for an IVM fit
+    bootstrap: int = 500        # bootstrap draws for the failure-time window
+    min_r2: float = 0.5         # fit quality floor to report a forecast
+    critical_horizon: float = 5.0   # forecast horizon (time units) for CRITICAL
+    alpha_grid: tuple = (1.5, 2.2, 0.05)  # Voight alpha search: lo, hi, step
+
+
+@dataclass
+class SiteConfig:
+    name: str = "site"
+    mm_per_px: float = 1.0
+    stable_polys: list = field(default_factory=list)   # list of [(x, y), ...]
+    target_zones: dict = field(default_factory=dict)   # name -> [(x, y), ...]
+    grid: GridConfig = field(default_factory=GridConfig)
+    forecast: ForecastConfig = field(default_factory=ForecastConfig)
+    burst_size: int = 7
+    notes: str = ""
+
+    def to_json(self, path: str | Path) -> None:
+        Path(path).write_text(json.dumps(asdict(self), indent=2), encoding="utf-8")
+
+    @classmethod
+    def from_json(cls, path: str | Path) -> "SiteConfig":
+        raw = json.loads(Path(path).read_text(encoding="utf-8"))
+        raw["grid"] = GridConfig(**raw.get("grid", {}))
+        raw["forecast"] = ForecastConfig(**raw.get("forecast", {}))
+        return cls(**raw)
+
+
+def polygon_mask(shape: tuple, polys: list) -> np.ndarray:
+    """Rasterize polygons into a uint8 mask (255 inside)."""
+    import cv2
+
+    mask = np.zeros(shape[:2], dtype=np.uint8)
+    for poly in polys:
+        pts = np.asarray(poly, dtype=np.int32).reshape(-1, 1, 2)
+        cv2.fillPoly(mask, [pts], 255)
+    return mask
