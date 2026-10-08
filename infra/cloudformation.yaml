@@ -181,10 +181,7 @@ Resources:
   WorkerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: TellTale worker, no inbound (access via SSM Session Manager)
-      SecurityGroupEgress:
-        - IpProtocol: "-1"
-          CidrIp: 0.0.0.0/0
+      GroupDescription: TellTale worker, no inbound (access via SSM Session Manager); default egress
 
   WorkerLogGroup:
     Type: AWS::Logs::LogGroup
