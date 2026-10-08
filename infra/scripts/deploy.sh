@@ -25,7 +25,7 @@ echo "== packaging release"
 rm -f /tmp/pipeline.tar.gz
 tar czf /tmp/pipeline.tar.gz \
   --exclude='__pycache__' --exclude='.pytest_cache' --exclude='*.egg-info' \
-  pipeline infra/worker
+  pipeline infra/worker evaluation/e6_cool_benchmark.py
 
 echo "== ensuring bucket exists for the release artifact (stack creates it on first deploy)"
 if ! aws s3api head-bucket --bucket "$BUCKET" 2>/dev/null; then
