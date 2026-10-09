@@ -66,13 +66,21 @@ class SiteConfig:
 
     @classmethod
     def from_json_dict(cls, raw: dict) -> "SiteConfig":
-        raw = dict(raw)
-        raw["grid"] = GridConfig(**raw.get("grid", {}))
-        fc = dict(raw.get("forecast", {}))
+        """Build from a dict, ignoring keys this version does not know (forward compatible:
+        a newer camera client must never stall an older worker)."""
+        raw = _known(cls, dict(raw))
+        raw["grid"] = GridConfig(**_known(GridConfig, raw.get("grid", {})))
+        fc = _known(ForecastConfig, dict(raw.get("forecast", {})))
         if "alpha_grid" in fc:
             fc["alpha_grid"] = tuple(fc["alpha_grid"])
         raw["forecast"] = ForecastConfig(**fc)
         return cls(**raw)
+
+
+def _known(dc, d: dict) -> dict:
+    import dataclasses
+    names = {f.name for f in dataclasses.fields(dc)}
+    return {k: v for k, v in d.items() if k in names}
 
     @classmethod
     def from_json(cls, path: str | Path) -> "SiteConfig":
