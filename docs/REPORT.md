@@ -1,0 +1,200 @@
+# TellTale: technical report (draft, October 8, 2026)
+
+Team Ground Truth: Ujwal Suresh Vanjare, Arpita Madhukar Kalburgi.
+OpenCV AI Competition 2026, powered by AWS. Featured paths: Best Use of COOL (pending
+subscription); Agentic Vision (designed, not yet claimed).
+
+Live endpoint: https://d30le2uwgaimao.cloudfront.net/
+Repository: https://github.com/usv240/telltale
+
+> Status markers: **measured** means the number comes from a script in `evaluation/` or from
+> the deployed system; **pending** means the method exists but the run has not happened.
+> Every pending item is listed in section 9.
+
+## 1. Problem
+
+Fatal landslides kill more than 4,000 people in a typical year, concentrated where nobody can
+afford monitoring. Creep-type slope failures give days to weeks of warning: the surface moves
+millimetres per day and accelerates. The inverse-velocity method turns that acceleration into a
+failure-time forecast, and mines have relied on it with 100k to 500k USD radar for decades
+(Bingham Canyon 2013: evacuated the morning of a 165-million-tonne collapse, no casualties).
+Communities without instruments do not get the warning (Wayanad 2024, about 400 deaths).
+
+TellTale makes a 30 to 50 USD camera do the radar's job for creep-type failures: measure
+sub-pixel surface displacement, reject everything that merely looks like motion, forecast the
+failure window with uncertainty, and put a person in the loop before any alert.
+
+## 2. Users
+
+District disaster-management offices and hill-town municipalities; small mines and quarries
+that cannot justify radar; construction sites with deep excavations and retaining walls; road
+and rail authorities in mountain corridors. Operators mark stable regions and target zones once;
+duty officers read one sentence on the dashboard; experts drill into the series and fit.
+
+## 3. Architecture
+
+See `docs/architecture.svg`. Field camera, burst upload to S3 (frames first, manifest last), S3
+event to SQS with a dead-letter queue, one Graviton EC2 worker running the OpenCV 5 pipeline,
+artifacts published to a `public/` prefix served by CloudFront, CloudWatch metrics and two
+liveness alarms (queue age, DLQ). One CloudFormation template; one deploy script; one code path
+for laptop and cloud (`infra/worker/worker.py` has a local and an S3 storage backend).
+
+## 4. OpenCV 5 implementation
+
+All vision is classical `core` and `imgproc`; there is no neural network in the system.
+
+| Stage | Method | OpenCV 5 calls |
+|---|---|---|
+| A Stack | Register burst frames to frame 1 (phase correlation for the coarse shift, ZNCC on a large central template for sub-pixel precision), median-stack. Contrast below 2 percent is BLIND; inter-frame shift above 3 px is UNSTABLE. | `phaseCorrelate`, `createHanningWindow`, `matchTemplate`, `warpAffine` |
+| B Stabilize | ORB in operator-marked stable regions, Lowe ratio 0.75, homography with `USAC_MAGSAC`. The coarse warp is then correlated against the reference inside the stable regions with the same sub-pixel DIC as the measurement; those correspondences are mapped back to the current frame and the simplest camera model that explains them (translation, similarity, affine, homography) is selected by residual. A verification pass measures what is left: coherent residual above 0.3 px or scatter above 0.3 px is a CAMERA_EVENT and the epoch is rejected. | `ORB_create`, `BFMatcher`, `findHomography(USAC_MAGSAC)`, `estimateAffinePartial2D`, `estimateAffine2D`, `perspectiveTransform`, `warpPerspective` |
+| C Measure | Regular grid of 41 px subsets at 24 px stride (3,000 to 3,500 per 1080p frame). Texture pre-screen on the mean minimum eigenvalue of the structure tensor. ZNCC (`TM_CCOEFF_NORMED`) over a 16 px search radius; separable three-point Gaussian sub-pixel fit; one re-sampling pass (window shifted by the fractional estimate with Lanczos, re-matched) which halves the residual pixel-locking bias; per-subset codes OK, LOW_TEXTURE, LOW_CORR, LOW_MARGIN, OUT_OF_BOUND, EDGE_PEAK. A random 10 percent of valid subsets is cross-checked with phase correlation on 2x patches as a gross-error detector. Zone displacement is the median over valid subsets; uncertainty is 1.4826 x MAD. | `cornerMinEigenVal`, `boxFilter`, `matchTemplate`, `warpAffine`, `phaseCorrelate`, `fillPoly` |
+| D Mask | Temporal-variance mask for vegetation and water. | `GaussianBlur`, `morphologyEx`, `findContours` |
+| E Forecast | numpy. Velocity from the series; short (3) and long (7) trailing averages; onset of acceleration when the short average exceeds the long one for three epochs with positive acceleration and displacement above the noise floor; weighted linear fit of 1/v against the window-centred time (Fukuzono alpha = 2); residual bootstrap (500 draws) for a 10 to 90 percent window; Theil-Sen and Voight (alpha free in 1.5 to 2.2) fits form the ensemble; the reported window is the union of bootstrap and ensemble spread. Alarm ladder QUIET, MOVING, ACCELERATING, CRITICAL (horizon below threshold with R squared above 0.5). | |
+
+Why these choices. ZNCC is invariant to affine illumination change, which is why sunlight does
+not read as motion (E5 lighting scenario: 0.024 px false displacement). The paraboloid peak fit
+we started with showed 0.056 px bias at a 0.25 px shift; the Gaussian fit cut it to about
+0.02 px and the re-sampling pass to about 0.01 px (E1). An 8-parameter homography fitted on a
+narrow stable strip extrapolated badly across the slope (0.3 px errors in the jittered
+end-to-end test); model selection on the total camera motion fixed that (0.007 px).
+
+## 5. AWS deployment
+
+Stack `telltale`, us-east-1, created from `infra/cloudformation.yaml` on October 8, 2026.
+Worker: c8g.large (Graviton4, 2 vCPU), stock Ubuntu 24.04 arm64 AMI, pinned
+`opencv-python-headless==5.0.0.93`, `numpy==2.5.2`, `boto3==1.40.0`, installed by
+`infra/worker/bootstrap.sh` from a release tarball in the bucket, run as a systemd service.
+No inbound ports; operator access through SSM Session Manager. Bucket blocks public access;
+CloudFront reads `public/*` through an origin access control. Raw bursts expire after 30 days.
+Worker IAM: this bucket, this queue, the `TellTale` metrics namespace, SSM core.
+
+**Measured**: the demo site (30 epochs of 5-frame bursts, 320 px) went through the real ingest
+path; the worker processed each epoch in 0.35 to 0.48 s and the dashboard shows the result with
+the runtime proof fields (instance type, architecture, AMI id, cv2 path, build hash).
+
+Cost: c8g.large on-demand is 0.07976 USD per hour (pricing API, October 8, 2026). From E6,
+1,438 epochs per hour at 1080p gives 0.055 USD per 1,000 epochs, or about 18,000 nights of
+daily monitoring per dollar of compute. A pilot site at six epochs per day costs about
+0.01 USD per month of compute if the worker is only running while processing; S3, SQS,
+CloudFront and CloudWatch are in free-tier territory at pilot scale.
+
+## 6. Evaluation
+
+### E1 sub-pixel accuracy (measured)
+
+`python -m telltale e1`. 256 px synthetic speckle, exact shifts of 0.125 to 2.0 px via 8x
+supersampling, Gaussian noise 0 to 2 percent, illumination gain 1.0 and 0.85, 3 trials per
+cell, 294 subsets per cell.
+
+| Condition | Bias (px) | Sigma (px) | MAE (px) | p95 abs (px) |
+|---|---|---|---|---|
+| noise 0, gain 1.0, all shifts | -0.0010 to 0.0021 | 0.0078 to 0.0101 | 0.0062 to 0.0088 | 0.015 to 0.018 |
+| noise 1 %, gain 0.85 | -0.0012 to 0.0006 | 0.0094 to 0.0109 | 0.0078 to 0.0092 | 0.018 to 0.020 |
+| noise 2 %, gain 0.85 | -0.0018 to 0.0018 | 0.0111 to 0.0129 | 0.0092 to 0.0104 | 0.022 to 0.025 |
+
+Gate G1 (MAE at 0.25 px below 0.05 px): pass, 0.0084 px. At a typical phone-camera scale of
+1 to 2 mm per pixel at 100 m, this is 0.01 to 0.02 mm of measurement noise per subset; the
+practical floor in the field will be set by atmosphere and texture, not by the estimator.
+
+### E3 synthetic collapse, end to end (measured)
+
+Voight creep (alpha = 2, true failure at t = 50) rendered as frames, with 1 px random camera
+jitter per epoch, run through stack, stabilize, DIC and forecast. 36 epochs to t = 47.
+
+| Quantity | Value |
+|---|---|
+| Measurement MAE against rendered truth | 0.007 px (max 0.014 px) |
+| Onset of acceleration declared | t = 4.9 |
+| Final forecast | 50.33, window [49.92, 52.36], R squared 0.992, state CRITICAL |
+| Same scene through the cloud path (5-frame bursts, 320 px) | 50.26, window [48.9, 61.9], R squared 0.98 |
+
+### E5 confounders, thresholds-only arm (measured)
+
+`python evaluation/e5_confounders.py`. 30 epochs each, 5-frame bursts with sub-pixel jitter and
+1.5 percent noise, through the full pipeline.
+
+| Scenario | Usable epochs | Rejected (reason) | False alarms | Max false displacement | Outcome |
+|---|---|---|---|---|---|
+| quiet | 30/30 | none | 0 | 0.026 px | QUIET |
+| quiet + camera bump (3 px, 0.4 deg, 0.2 % zoom) | 30/30 | none | 0 | 0.020 px | QUIET; bump fully removed |
+| quiet + lighting step to 70 % | 30/30 | none | 0 | 0.024 px | QUIET |
+| quiet + fog for 5 epochs | 25/30 | BLIND: 5 | 0 | 0.024 px | QUIET; blindness reported |
+| quiet + non-rigid lens distortion | 12/30 | CAMERA_EVENT: 18 | 2 (MOVING) | 0.632 px | partial failure, see section 8 |
+| creep + camera bump at epoch 20 | 30/30 | none | 0 | | CRITICAL, 50.29, window [48.8, 70.9] contains truth |
+
+### E6 COOL benchmark (baseline measured, COOL pending)
+
+`evaluation/e6_cool_benchmark.py`, 1080p synthetic workload, 7-frame burst, 3,234 subsets,
+10 warm repetitions.
+
+| Cell | cv2 path | Threads | Epoch p50 | Stack | Stabilize | DIC | Epochs/hour | USD per 1,000 epochs |
+|---|---|---|---|---|---|---|---|---|
+| stock OpenCV 5 wheel, c8g.large | /opt/telltale/venv/... | 2 | 2.504 s | 0.470 | 1.012 | 1.023 | 1,438 | 0.055 |
+| COOL, c8g.large | /opt/cool/... | 2 | pending | | | | | |
+| stock wheel, c7i.large (x86) | | 2 | pending | | | | | |
+| laptop (reference only) | | 22 | 8.539 s | 1.332 | 3.096 | 2.660 | 422 | |
+
+Op-level microbenchmark on c8g.large (p50, ms): 1,000 x matchTemplate 41-in-81: 152.5;
+warpPerspective Lanczos 1080p: 24.1; cornerMinEigenVal: 10.3; GaussianBlur sigma 3: 4.3;
+ORB 4,000 features: 64.0; median stack of 7: 72.4. The DIC stage is dominated by
+`matchTemplate` and the stabilizer by Lanczos warps and ORB, which are the operation classes
+COOL advertises as accelerated.
+
+### Pending
+
+E2 physical metrology (micrometer stage at 20 to 100 m), E3 tabletop physical collapses
+(rig design and capture script are ready), E4 real landslide imagery (USGS Mukilteo
+time-lapse), E6 COOL and x86 cells.
+
+## 7. User experience
+
+One static page, no framework, light and dark themes, keyboard-reachable controls. The first
+sentence answers "is this slope okay", then the overlay image, then the series and the
+inverse-velocity chart with the forecast intercept and window, then the instrument health
+panel (coverage, stabilization inliers and model, epoch time, OpenCV build and worker identity)
+and the full epoch log with unusable epochs in red and their reasons. The same page runs
+offline from bundled demo data.
+
+## 8. Limitations and failure cases
+
+- **Creep-type failures only.** Brittle and liquefaction collapses can fail with little
+  surface precursor (Brumadinho 2019). TellTale will not warn of those and says so.
+- **Non-rigid camera distortion is only partly caught.** In E5, 18 of 30 distorted epochs were
+  rejected as CAMERA_EVENT, but 12 passed the 0.3 px residual and scatter gates with up to
+  0.63 px of false displacement and two epochs reached MOVING (not ACCELERATING). A thermal lens
+  drift that is smooth across the frame is the realistic version of this. Mitigations we have
+  not yet built: tighter scatter gate at the cost of coverage, and the supervising agent's
+  re-measurement against alternate references.
+- **Night, fog, heavy rain.** Contrast collapse is reported as BLIND and the epoch is skipped;
+  the forecast carries the gap as widened uncertainty. Rain often triggers failure, so this is
+  a real coverage gap, not a corner case.
+- **Vegetation and seasonal decorrelation.** The variance mask exists but has not been
+  exercised on real imagery (E4 pending). Coverage will be lower on vegetated slopes.
+- **Scale.** All measured results so far are synthetic. The estimator's floor (0.01 px) is
+  not the field floor; atmosphere, texture and lens stability will dominate.
+- **Single camera, single reference.** Reference rotation across seasons is designed but not
+  implemented; long series will drift as the scene changes.
+
+## 9. Responsible use
+
+Cameras point at ground and structures; there is no person detection or face processing in the
+code. The system never sends a public alert on its own: CRITICAL is a request for human
+approval. Unusable epochs are always recorded with a reason; the monitor's own liveness is
+alarmed (queue age, dead-letter queue) so that a silent monitor cannot pass for a quiet slope.
+Raw imagery expires after 30 days; derived series are small and auditable. The report states
+every limitation above on the dashboard footer and in the README.
+
+## 10. Reproducibility
+
+Pinned dependencies (`pipeline/requirements.txt`, `infra/worker/requirements.txt`), fixed seeds
+in every generator, 21 unit and end-to-end tests, one-command deploy, a bundled offline demo,
+and result JSON files in `evaluation/results/` produced by the scripts named in this report.
+
+## References
+
+Fukuzono T. (1985) A new method for predicting the failure time of a slope. Carlà T., Intrieri
+E. et al. (2017) Guidelines on the use of the inverse velocity method, Landslides 14:517. Froude
+M.J., Petley D.N. (2018) Global fatal landslide occurrence 2004 to 2016, NHESS 18:2161.
+Geosciences 13:371 (2023) DIC performance for landslide monitoring. Remote Sensing 13:893 (2021)
+Low-cost slope monitoring from time-lapse imagery. Zhu, Zhang, Puzrin (2023) Brumadinho delayed
+failure, Commun. Earth Environ. 4. Full bibliography in `RESEARCH.md`.
