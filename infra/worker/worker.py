@@ -565,6 +565,29 @@ def handle_manifest(store: S3Store, key: str, cw=None) -> dict | None:
     return record
 
 
+class CloudWatchLogHandler(logging.Handler):
+    """Ships worker log lines to CloudWatch Logs (/telltale/worker) so the operator never has
+    to open a shell on the instance to see what the monitor is doing."""
+
+    def __init__(self, group: str, stream: str, region: str | None):
+        super().__init__()
+        import boto3
+        self.logs = boto3.client("logs", region_name=region)
+        self.group, self.stream = group, stream
+        try:
+            self.logs.create_log_stream(logGroupName=group, logStreamName=stream)
+        except Exception:
+            pass
+
+    def emit(self, record: logging.LogRecord) -> None:
+        try:
+            self.logs.put_log_events(logGroupName=self.group, logStreamName=self.stream,
+                                     logEvents=[{"timestamp": int(record.created * 1000),
+                                                 "message": self.format(record)}])
+        except Exception:
+            pass  # logging must never break processing
+
+
 def main() -> int:
     import boto3
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s",
@@ -572,6 +595,12 @@ def main() -> int:
     bucket = os.environ["TELLTALE_BUCKET"]
     queue = os.environ["TELLTALE_QUEUE_URL"]
     region = os.environ.get("TELLTALE_REGION")
+    try:
+        h = CloudWatchLogHandler("/telltale/worker", runtime_info().get("instance_id") or "local", region)
+        h.setFormatter(logging.Formatter("%(levelname)s %(name)s %(message)s"))
+        logging.getLogger().addHandler(h)
+    except Exception as e:
+        log.warning("CloudWatch Logs unavailable: %s", e)
     store = S3Store(bucket, region)
     sqs = boto3.client("sqs", region_name=region)
     cw = boto3.client("cloudwatch", region_name=region)

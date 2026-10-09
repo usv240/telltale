@@ -79,10 +79,23 @@ path; the worker processed each epoch in 0.35 to 0.48 s and the dashboard shows 
 the runtime proof fields (instance type, architecture, AMI id, cv2 path, build hash).
 
 Cost: c8g.large on-demand is 0.07976 USD per hour (pricing API, October 8, 2026). From E6,
-1,438 epochs per hour at 1080p gives 0.055 USD per 1,000 epochs, or about 18,000 nights of
-daily monitoring per dollar of compute. A pilot site at six epochs per day costs about
-0.01 USD per month of compute if the worker is only running while processing; S3, SQS,
-CloudFront and CloudWatch are in free-tier territory at pilot scale.
+2,094 epochs per hour at 1080p gives 0.038 USD per 1,000 epochs, or about 26,000 nights of
+daily monitoring per dollar of compute. The instance, not the epochs, dominates a small
+deployment, so the table gives both views:
+
+| Fleet | Epochs per day | Compute per site per month (processing time only) | One always-on c8g.large shared by the fleet, per site per month |
+|---|---|---|---|
+| 1 site | 1 | 0.001 USD | 58.2 USD |
+| 1 site | 6 | 0.007 USD | 58.2 USD |
+| 10 sites | 6 | 0.007 USD | 5.8 USD |
+| 50 sites | 6 | 0.007 USD | 1.2 USD |
+| 50 sites | 24 | 0.027 USD | 1.2 USD |
+
+One c8g.large processes about 50,000 epochs a day, so a district fleet of 50 sites at
+24 epochs a day uses under 3 percent of it. S3 (a few MB per site per day, raw bursts expiring
+after 30 days), SQS, CloudFront, Lambda and CloudWatch stay in free-tier territory at this
+scale. Each agent investigation on Bedrock (Claude Sonnet 4.5, about 25k input and 1.3k output
+tokens) costs a few cents and happens only on events, not on every epoch.
 
 ## 6. Evaluation
 

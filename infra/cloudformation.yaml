@@ -191,7 +191,7 @@ Resources:
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault: { SSEAlgorithm: AES256 }
-      VersioningConfiguration: { Status: Suspended }
+      VersioningConfiguration: { Status: Enabled }   # series/forecast history is auditable and recoverable
       LifecycleConfiguration:
         Rules:
           - Id: expire-raw-bursts
