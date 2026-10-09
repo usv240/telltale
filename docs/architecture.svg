@@ -73,9 +73,9 @@
   <text x="610" y="420" class="t h" font-size="13">Publish</text>
   <text x="610" y="438" class="s">series.json, forecast.json, overlay.png, record.json with runtime proof</text>
   <rect x="600" y="466" width="320" height="56" class="box"/>
-  <text x="610" y="486" class="t h" font-size="13">Supervising agent (designed, optional)</text>
-  <text x="610" y="504" class="s">on anomaly: re-measure vs alternate reference, check stable residuals,</text>
-  <text x="610" y="518" class="s">raise cadence, then request human approval with evidence</text>
+  <text x="610" y="486" class="t h" font-size="13">Supervising agent (Claude on Amazon Bedrock)</text>
+  <text x="610" y="504" class="s">on event: re-measure vs alternate references, re-check camera model, coherence,</text>
+  <text x="610" y="518" class="s">then raise cadence and page a person, or close as false alarm; see agent_workflow.svg</text>
 
   <!-- people -->
   <rect x="980" y="110" width="160" height="70" class="box human"/>

@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 620" width="1180" height="620" font-family="system-ui, Segoe UI, Roboto, sans-serif" font-size="13">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#5b6470"/>
+    </marker>
+  </defs>
+  <style>
+    .box{fill:#ffffff;stroke:#5b6470;stroke-width:1.2;rx:8}
+    .cv{fill:#fff3ea;stroke:#c2541b;stroke-width:1.6}
+    .llm{fill:#eef4fb;stroke:#2563a8;stroke-width:1.6}
+    .act{fill:#f1f5ec;stroke:#4e7d2c;stroke-width:1.6}
+    .human{fill:#fdf1f0;stroke:#b42318;stroke-width:1.6}
+    .t{fill:#1d2126} .s{fill:#5b6470;font-size:11px} .h{font-weight:700;font-size:14px}
+    .lane{fill:none;stroke:#d9d6cf;stroke-dasharray:4 4}
+    .arrow{fill:none;stroke:#5b6470;stroke-width:1.4;marker-end:url(#a)}
+    .loop{fill:none;stroke:#2563a8;stroke-width:1.6;stroke-dasharray:6 3;marker-end:url(#a)}
+  </style>
+  <rect width="1180" height="620" fill="#f6f5f2"/>
+  <text x="20" y="28" class="h t">TellTale supervising agent: perception, decision, action</text>
+  <text x="20" y="46" class="s">Orange = OpenCV 5 perception tools (each call re-runs vision on stored epoch images). Blue = decision (Claude on Amazon Bedrock, bounded to 10 tool calls). Green = actions. Red = human control.</text>
+
+  <rect x="20" y="62" width="260" height="540" class="lane"/><text x="30" y="80" class="s">TRIGGER (worker)</text>
+  <rect x="300" y="62" width="300" height="540" class="lane"/><text x="310" y="80" class="s">PERCEPTION TOOLS</text>
+  <rect x="620" y="62" width="260" height="540" class="lane"/><text x="630" y="80" class="s">DECISION</text>
+  <rect x="900" y="62" width="260" height="540" class="lane"/><text x="910" y="80" class="s">ACTION</text>
+
+  <rect x="40" y="100" width="220" height="80" class="box"/>
+  <text x="50" y="120" class="t h" font-size="13">Epoch processed</text>
+  <text x="50" y="138" class="s">stack, stabilize, DIC, forecast</text>
+  <text x="50" y="154" class="s">state and verdict recorded</text>
+  <text x="50" y="170" class="s">stacked + stabilized images kept</text>
+  <rect x="40" y="210" width="220" height="92" class="box"/>
+  <text x="50" y="230" class="t h" font-size="13">Event?</text>
+  <text x="50" y="248" class="s">E_ANOMALY  state rose to ACCELERATING / CRITICAL</text>
+  <text x="50" y="264" class="s">E_CAMERA   stabilizer said CAMERA_EVENT</text>
+  <text x="50" y="280" class="s">E_QUALITY  REVIEW flag or coverage &lt; 40 %</text>
+  <text x="50" y="296" class="s">(one event per run of identical failures)</text>
+  <rect x="40" y="330" width="220" height="56" class="box"/>
+  <text x="50" y="350" class="t h" font-size="13">No event</text>
+  <text x="50" y="368" class="s">nothing to investigate; next epoch</text>
+
+  <rect x="320" y="100" width="260" height="56" class="box cv"/>
+  <text x="330" y="120" class="t h" font-size="13">get_site_status</text>
+  <text x="330" y="138" class="s">forecast per zone, last six epochs' quality</text>
+  <rect x="320" y="166" width="260" height="70" class="box cv"/>
+  <text x="330" y="186" class="t h" font-size="13">remeasure(t, reference)</text>
+  <text x="330" y="204" class="s">dense DIC again vs previous epoch, site reference,</text>
+  <text x="330" y="220" class="s">or any earlier epoch: is the motion reference-independent?</text>
+  <rect x="320" y="246" width="260" height="70" class="box cv"/>
+  <text x="330" y="266" class="t h" font-size="13">check_stabilization(t)</text>
+  <text x="330" y="284" class="s">ORB + MAGSAC + DIC-refined camera model re-run;</text>
+  <text x="330" y="300" class="s">stable-ground residual and scatter after the warp</text>
+  <rect x="320" y="326" width="260" height="56" class="box cv"/>
+  <text x="330" y="346" class="t h" font-size="13">inspect_quality(t)</text>
+  <text x="330" y="364" class="s">sharpness, contrast, subset status counts, cross-check</text>
+  <rect x="320" y="392" width="260" height="56" class="box cv"/>
+  <text x="330" y="412" class="t h" font-size="13">motion_coherence(t)</text>
+  <text x="330" y="430" class="s">share of subsets moving within 45 deg of the median</text>
+
+  <rect x="640" y="100" width="220" height="150" class="box llm"/>
+  <text x="650" y="120" class="t h" font-size="13">Claude (Bedrock) skeptic</text>
+  <text x="650" y="138" class="s">system prompt: real creep is</text>
+  <text x="650" y="154" class="s">reference-independent, coherent,</text>
+  <text x="650" y="170" class="s">and not coincident with camera,</text>
+  <text x="650" y="186" class="s">lighting, blur or coverage events</text>
+  <text x="650" y="208" class="s">each tool result picks the next call</text>
+  <text x="650" y="224" class="s">budget: 10 calls, then must close</text>
+  <text x="650" y="240" class="s">rule policy = control arm / fallback</text>
+  <rect x="640" y="280" width="220" height="110" class="box llm"/>
+  <text x="650" y="300" class="t h" font-size="13">Verdict</text>
+  <text x="650" y="318" class="s">CONFIRMED  real ground motion</text>
+  <text x="650" y="334" class="s">FALSE_ALARM  artefact, named measurement</text>
+  <text x="650" y="350" class="s">INCONCLUSIVE  could not rule out</text>
+  <text x="650" y="372" class="s">trace: public/sites/&lt;site&gt;/agent/&lt;t&gt;.json</text>
+
+  <rect x="920" y="100" width="220" height="64" class="box act"/>
+  <text x="930" y="120" class="t h" font-size="13">set_capture_cadence</text>
+  <text x="930" y="138" class="s">raise after confirmed acceleration;</text>
+  <text x="930" y="154" class="s">camera client polls control.json</text>
+  <rect x="920" y="184" width="220" height="80" class="box human"/>
+  <text x="930" y="204" class="t h" font-size="13">request_human_approval</text>
+  <text x="930" y="222" class="s">SNS to duty contact with evidence</text>
+  <text x="930" y="238" class="s">and signed approve / dismiss links;</text>
+  <text x="930" y="254" class="s">the agent can never alert the public</text>
+  <rect x="920" y="284" width="220" height="64" class="box act"/>
+  <text x="930" y="304" class="t h" font-size="13">close_event</text>
+  <text x="930" y="322" class="s">verdict and reason logged;</text>
+  <text x="930" y="338" class="s">dashboard agent panel updated</text>
+  <rect x="920" y="380" width="220" height="80" class="box human"/>
+  <text x="930" y="400" class="t h" font-size="13">Safety net (worker)</text>
+  <text x="930" y="418" class="s">CRITICAL with agent off, errored or</text>
+  <text x="930" y="434" class="s">INCONCLUSIVE still pages a person:</text>
+  <text x="930" y="450" class="s">a missed page is worse than an extra one</text>
+
+  <path d="M150,180 L150,210" class="arrow"/>
+  <path d="M260,256 L320,128" class="arrow"/>
+  <path d="M150,302 L150,330" class="arrow"/>
+  <path d="M580,128 L640,150" class="loop"/>
+  <path d="M640,200 L580,200" class="loop"/>
+  <path d="M640,215 L580,280" class="loop"/>
+  <path d="M640,230 L580,354" class="loop"/>
+  <path d="M640,240 L580,420" class="loop"/>
+  <path d="M750,250 L750,280" class="arrow"/>
+  <path d="M860,310 L920,132" class="arrow"/>
+  <path d="M860,320 L920,224" class="arrow"/>
+  <path d="M860,340 L920,316" class="arrow"/>
+  <path d="M860,360 L920,420" class="arrow"/>
+  <text x="30" y="600" class="s">Evidence for judges: trace JSON per event (every tool call, arguments, results, verdict), agentlog.json per site, E5 agent ablation (off / rules / Claude) in evaluation/results/e5_agent.json.</text>
+</svg>
