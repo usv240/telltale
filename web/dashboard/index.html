@@ -20,6 +20,7 @@
     </label>
     <span id="state-chip" class="chip chip-quiet" aria-live="polite">loading</span>
     <span id="cool-badge" class="badge" hidden title="OpenCV was imported from /opt/cool on this worker">COOL on Graviton</span>
+    <a class="btn" href="about.html">How it works</a>
     <button id="theme" class="btn" type="button" aria-label="Toggle colour theme">Theme</button>
   </div>
 </header>
@@ -28,6 +29,7 @@
   <section class="panel status" aria-labelledby="h-status">
     <h2 id="h-status">Status</h2>
     <p id="status-line" class="lead">Loading the latest epoch.</p>
+    <details class="help"><summary>How to read this</summary><p>One sentence answers "is this slope okay". The image is the latest usable epoch: colour is how far each patch of ground has moved since the reference epoch (blue none, red most), arrows show direction. The facts on the right are the zone's displacement with its robust uncertainty, the current velocity, when acceleration began, and the forecast window if there is one. If the last epoch was unusable, the reason is stated here.</p></details>
     <div class="status-grid">
       <figure>
         <img id="overlay" alt="Latest displacement overlay: colour shows how far each patch of ground moved since the reference epoch, arrows show direction" src="">
@@ -52,18 +54,21 @@
   <section class="panel" aria-labelledby="h-series">
     <h2 id="h-series">Displacement series</h2>
     <p class="hint">Median displacement of valid subsets in the zone, with ±1σ (robust) band. Nothing is interpolated across unusable epochs.</p>
+    <details class="help"><summary>How to read this</summary><p>Each dot is one epoch. A flat line is a quiet slope; a straight slope is steady creep; a curve bending upward is acceleration. The red vertical line marks the onset of acceleration. Gaps are unusable epochs (blind, blurred, camera event): they widen the uncertainty and are never filled in.</p></details>
     <svg id="chart-disp" class="chart" viewBox="0 0 640 260" role="img" aria-label="Displacement versus time"></svg>
   </section>
 
   <section class="panel" aria-labelledby="h-iv">
     <h2 id="h-iv">Inverse velocity</h2>
     <p class="hint">After the onset of acceleration, 1 / velocity falls toward zero. The line's time-axis intercept is the forecast failure time; the shaded band is the bootstrap and ensemble window.</p>
+    <details class="help"><summary>How to read this</summary><p>This is the physics. For creep-type failures, one divided by velocity falls along a straight line and reaches zero at failure (Fukuzono 1985). The dashed line is the fit from the onset of acceleration, the red marker is its time-axis intercept, and the shaded band is the forecast window from a bootstrap of the fit plus the disagreement between three fitting methods. The forecast is always a window, never a single time.</p></details>
     <svg id="chart-iv" class="chart" viewBox="0 0 640 260" role="img" aria-label="Inverse velocity versus time with forecast intercept"></svg>
     <p id="iv-empty" class="empty" hidden>No acceleration detected yet. This chart fills in once the short-average velocity stays above the long-average velocity for three epochs.</p>
   </section>
 
   <section class="panel" aria-labelledby="h-health">
     <h2 id="h-health">Instrument health</h2>
+    <details class="help"><summary>How to read this</summary><p>The honesty panel. Coverage is the share of patches that passed quality checks; stabilisation inliers and the chosen camera model show how well camera motion was explained; the OpenCV build and worker identity prove which code ran where. The epoch log lists every epoch, including the unusable ones and why.</p></details>
     <dl class="facts cols">
       <div><dt>Valid subset coverage</dt><dd id="h-cov">–</dd></div>
       <div><dt>Stabilisation inliers</dt><dd id="h-inl">–</dd></div>

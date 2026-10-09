@@ -126,6 +126,13 @@
     }
     try {
       const dec = await getJSON(`${base}/decisions.json`);
+      // A decision recorded after the worker's last run applies immediately.
+      const applicable = dec.decisions.filter(d => d.t >= ap.episode_start).sort((a, b) => a.at < b.at ? 1 : -1);
+      if (ap.status === "pending" && applicable.length) {
+        const d = applicable[0];
+        txt.textContent = `Episode decision: ${d.action === "approve" ? "approved" : "dismissed"} at ${d.at} (for epoch t = ${fmt(d.t, 2)}). ${d.action === "approve" ? "The public alert may be issued." : "No public alert for this episode; measurement continues."}`;
+        act.innerHTML = "";
+      }
       for (const d of [...dec.decisions].reverse().slice(0, 10)) {
         const li = document.createElement("li");
         li.textContent = `${d.at}: ${d.action} for epoch t = ${fmt(d.t, 2)}${d.source ? " from " + d.source : ""}`;

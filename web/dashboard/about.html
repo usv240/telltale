@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TellTale: how it works</title>
+<meta name="description" content="TellTale turns a fixed camera into a slope-stability instrument: sub-pixel displacement measurement and inverse-velocity failure forecasting with OpenCV 5 on AWS.">
+<link rel="stylesheet" href="dashboard.css">
+<style>
+  .story { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .card { border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; }
+  .card h3 { margin: 0 0 4px; font-size: 1rem; }
+  .card .when { color: var(--muted); font-size: 0.85rem; }
+  ol.steps li { margin-bottom: 8px; }
+  .ev td:first-child { text-align: left; }
+  .evidence { width: 100%; font-size: 0.9rem; }
+  .evidence th, .evidence td { text-align: left; }
+  figure.fig img { width: 100%; border-radius: 8px; border: 1px solid var(--line); }
+  details { margin: 8px 0; }
+  summary { cursor: pointer; font-weight: 600; }
+  .cta { display: inline-block; margin: 6px 8px 6px 0; padding: 8px 14px; border-radius: 8px; background: var(--accent); color: #fff; text-decoration: none; font-weight: 600; }
+  .cta.secondary { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="mark" aria-hidden="true"></span><span class="name">TellTale</span><span class="sub">how it works</span></div>
+  <div class="controls"><a class="btn" href="index.html">Open the live dashboard</a></div>
+</header>
+<main>
+  <section class="panel">
+    <h2>See the ground move before it fails</h2>
+    <p class="lead">TellTale turns any fixed camera into an instrument that measures slope creep too small to see, and when the creep accelerates, forecasts when the slope will fail.</p>
+    <p>It uses classical OpenCV 5 computer vision (no neural network anywhere), the inverse-velocity method that mines have used for decades, and a small AWS footprint. A person approves every public alert.</p>
+    <a class="cta" href="index.html">Live dashboard</a>
+    <a class="cta secondary" href="https://github.com/usv240/telltale">Code and report</a>
+  </section>
+
+  <section class="panel">
+    <h2>Why this matters</h2>
+    <div class="story">
+      <div class="card"><h3>Bingham Canyon, Utah</h3><div class="when">April 2013</div><p>Radar saw creep accelerate from 1 to 5 mm a day. The pit was evacuated that morning; 165 million tonnes came down that evening. No casualties.</p></div>
+      <div class="card"><h3>Brienz, Switzerland</h3><div class="when">June 2023</div><p>86 residents evacuated on monitoring data. The rockslide stopped metres short of the village school.</p></div>
+      <div class="card"><h3>Wayanad, India</h3><div class="when">July 2024</div><p>No deformation monitoring. About 400 people died.</p></div>
+    </div>
+    <p>The difference is an instrument that costs 100,000 to 500,000 USD per site. TellTale applies the same physics to a 30 to 50 USD camera, in daylight, for creep-type failures, and says clearly when it cannot see.</p>
+  </section>
+
+  <section class="panel">
+    <h2>What the system does, step by step</h2>
+    <ol class="steps">
+      <li><b>Capture.</b> A camera photographs the slope in bursts of seven frames, a few times a day.</li>
+      <li><b>Stack.</b> Frames in a burst are registered and median-stacked. Heat shimmer averages toward zero; real movement does not.</li>
+      <li><b>Stabilise.</b> The operator marks ground that cannot move (bedrock, buildings off the slide). Features there give the camera's own motion, which is removed. If the "stable" ground still looks like it moved, the epoch is rejected as a CAMERA_EVENT. This single rule removes the largest class of false alarms.</li>
+      <li><b>Measure.</b> Thousands of small patches are matched between the reference and the new image with normalised cross-correlation, refined to a hundredth of a pixel. Patches without texture or with ambiguous matches are excluded, never guessed.</li>
+      <li><b>Forecast.</b> Displacement becomes velocity. When the short-term velocity stays above the long-term velocity, acceleration has begun. One over velocity then falls toward zero along a line; where it crosses the time axis is the forecast failure time. A bootstrap and a three-method ensemble give the window.</li>
+      <li><b>Decide.</b> QUIET, MOVING, ACCELERATING, CRITICAL. CRITICAL sends a message to the duty contact with approve and dismiss links. Nothing reaches the public without that decision.</li>
+    </ol>
+  </section>
+
+  <section class="panel">
+    <h2>What the evidence says so far</h2>
+    <table class="evidence">
+      <thead><tr><th>Test</th><th>Result</th></tr></thead>
+      <tbody>
+        <tr><td>E1 synthetic sub-pixel accuracy</td><td>Mean absolute error 0.006 to 0.010 px across noise and lighting conditions; bias under 0.003 px</td></tr>
+        <tr><td>E3 simulated collapse, full cloud path</td><td>True failure at t = 50; forecast 50.3 with window 48.9 to 61.9 and R² 0.98</td></tr>
+        <tr><td>E4 real landslide, USGS Mukilteo bluff</td><td>Documented Dec 9 2015 movement measured at 4 to 7 times the quiet baseline with coherent downslope vectors; wet-lens period correctly rejected</td></tr>
+        <tr><td>E5 confounders</td><td>Camera bump, lighting step, fog: zero false alarms. Non-rigid lens distortion: partially caught, documented as a failure case</td></tr>
+        <tr><td>E6 cost</td><td>1,438 epochs per hour on one c8g.large; about 0.055 USD per 1,000 epochs</td></tr>
+      </tbody>
+    </table>
+    <figure class="fig"><img src="figures/e4_mukilteo_2015-12-09_movement.png" alt="Displacement overlay on the Mukilteo bluff on 9 December 2015: the landslide body on the left shows coherent downslope arrows" loading="lazy"><figcaption>USGS Mukilteo bluff, 9 December 2015, a documented movement day. Colour is daily displacement; arrows are direction. Public-domain imagery, USGS.</figcaption></figure>
+  </section>
+
+  <section class="panel">
+    <h2>What it cannot do</h2>
+    <ul>
+      <li>Brittle and liquefaction failures can fail without surface creep. TellTale will not warn of those.</li>
+      <li>Night, fog, heavy rain and a wet lens blind the camera. Such epochs are reported as BLIND or BLURRED and the forecast uncertainty widens. They are never shown as "no movement".</li>
+      <li>A camera standing on the moving ground produces CAMERA_EVENT verdicts on the days that matter. Mount it off the slide.</li>
+      <li>Vegetation decorrelates over seasons; coverage drops and the reference must be refreshed.</li>
+    </ul>
+  </section>
+
+  <section class="panel">
+    <h2>Questions people ask</h2>
+    <details><summary>Why not satellites?</summary><p>Satellite radar revisits every few days to weeks, loses coherence on vegetation, and cannot follow the final hours to days of acceleration. A camera on site measures every few hours for the cost of a phone.</p></details>
+    <details><summary>What camera do I need?</summary><p>Any fixed camera with a stable mount and a view of the slope: an old phone, a Raspberry Pi camera, or existing CCTV. Longer focal lengths give finer resolution; a lens hood and heater keep it dry.</p></details>
+    <details><summary>What do the time units mean?</summary><p>Whatever the site uses: hours for a construction excavation, days for a natural slope, minutes for the tabletop demonstration. The physics is the same.</p></details>
+    <details><summary>Who sees the alert?</summary><p>The duty contact configured for the site receives CRITICAL messages with approve and dismiss links. Every decision is logged with its time and source.</p></details>
+    <details><summary>Is anyone's privacy affected?</summary><p>Cameras look at ground and structures. There is no person detection or face processing anywhere in the code, and raw images expire after 30 days.</p></details>
+  </section>
+
+  <section class="panel">
+    <h2>Glossary</h2>
+    <dl class="facts cols">
+      <div><dt>Epoch</dt><dd>One burst of frames at one time.</dd></div>
+      <div><dt>Subset</dt><dd>A small image patch matched between epochs.</dd></div>
+      <div><dt>ZNCC</dt><dd>Zero-normalised cross-correlation, a match score immune to brightness changes.</dd></div>
+      <div><dt>Coverage</dt><dd>Share of subsets that passed quality checks.</dd></div>
+      <div><dt>Onset of acceleration</dt><dd>First epoch of sustained speed-up.</dd></div>
+      <div><dt>Inverse velocity</dt><dd>One divided by velocity; falls linearly to zero at failure for creep.</dd></div>
+      <div><dt>CAMERA_EVENT</dt><dd>The stable ground appeared to move; the camera, not the slope, is suspect.</dd></div>
+      <div><dt>BLIND / BLURRED</dt><dd>Too dark, foggy, or wet to measure; reported, not hidden.</dd></div>
+    </dl>
+  </section>
+</main>
+<footer><p>Team Ground Truth · OpenCV AI Competition 2026, powered by AWS. References: Fukuzono 1985; Carlà et al. 2017, Landslides 14:517; Froude and Petley 2018, NHESS 18:2161; USGS Mukilteo time-lapse (public domain).</p></footer>
+</body>
+</html>
