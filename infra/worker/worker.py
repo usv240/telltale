@@ -46,6 +46,7 @@ from telltale import (ForecastConfig, SiteConfig, compute_field, forecast, polyg
 from telltale.forecast import moving_average, smoothed_velocities
 from telltale.masking import variance_mask
 from telltale.overlay import render_overlay, render_status_map
+from telltale.scale import PlaneScale
 from telltale.stabilize import VERDICT_OK
 from telltale.stack import STATUS_BLIND, STATUS_BLURRED
 
@@ -297,9 +298,20 @@ def process_epoch(store, site_name: str, t: float, frames: list[np.ndarray],
                     prev_zones = r["zones"]
                     break
     zones = {}
+    plane = None
+    try:
+        plane = PlaneScale.from_dict(site.plane)
+    except Exception as e:
+        log.warning("plane scale invalid: %s", e)
     for name, poly in site.target_zones.items():
         zm = zone_displacement(fld, name, poly)
         zd = zm.to_dict()
+        if plane is not None and zm.n_valid >= 3:
+            m = polygon_mask(fld.shape, [poly])
+            sel = (m[fld.ys, fld.xs] > 0) & fld.valid
+            dmm = plane.displacement_mm(fld.xs[sel], fld.ys[sel], fld.u[sel], fld.v[sel])
+            zd["mm_plane"] = float(np.median(np.hypot(dmm[:, 0], dmm[:, 1])))
+            zd["mm_per_px_local"] = plane.mm_per_px_at(float(np.median(fld.xs[sel])), float(np.median(fld.ys[sel])))
         if chained:
             pz = prev_zones.get(name, {})
             zd["increment_u"], zd["increment_v"] = zd["u"], zd["v"]
@@ -309,8 +321,9 @@ def process_epoch(store, site_name: str, t: float, frames: list[np.ndarray],
                 zd["magnitude"] = float(np.hypot(zd["u"], zd["v"]))
                 # chained uncertainty grows as a random walk of per-step sigmas
                 zd["sigma"] = float(np.hypot(pz.get("sigma") or 0.0, zd["sigma"]))
-        zd["mm"] = (zd["magnitude"] or 0.0) * site.mm_per_px
-        zd["sigma_mm"] = (zd["sigma"] or 0.0) * site.mm_per_px
+        scale_here = zd.get("mm_per_px_local") or site.mm_per_px
+        zd["mm"] = zd.get("mm_plane") if zd.get("mm_plane") is not None else (zd["magnitude"] or 0.0) * scale_here
+        zd["sigma_mm"] = (zd["sigma"] or 0.0) * scale_here
         zones[name] = zd
     record["zones"] = zones
 

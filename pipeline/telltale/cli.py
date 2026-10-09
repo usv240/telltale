@@ -21,6 +21,7 @@ import numpy as np
 from .config import ForecastConfig, GridConfig, SiteConfig, polygon_mask
 from .dic import compute_field, zone_displacement
 from .forecast import forecast, rolling_forecast
+from .magnify import magnify
 from .overlay import render_overlay, render_status_map
 from .series import SeriesStore
 from .stabilize import VERDICT_OK, stabilize
@@ -195,6 +196,42 @@ def cmd_epoch(args) -> int:
     return 0
 
 
+def cmd_magnify(args) -> int:
+    """Render motion-magnified frames from a site's stored fields (local store or demo data)."""
+    site_dir = Path(args.site_dir)
+    ref_png = site_dir / "reference.png"
+    ref = to_gray32(cv2.imread(str(ref_png), cv2.IMREAD_GRAYSCALE))
+    epochs = sorted((site_dir / "epochs").iterdir(), key=lambda p: float(p.name))
+    out = Path(args.out)
+    out.mkdir(parents=True, exist_ok=True)
+    from .dic import DisplacementField
+    fields = [(ep, DisplacementField.load(ep / "field.npz")) for ep in epochs if (ep / "field.npz").exists()]
+    gain = args.gain
+    if gain <= 0 and fields:   # auto: the largest measured motion becomes target_px on screen
+        last = fields[-1][1]
+        mx = float(np.max(np.hypot(last.u[last.valid], last.v[last.valid]))) if last.n_valid else 1.0
+        gain = max(1.0, args.target_px / max(mx, 1e-3))
+        print(f"auto gain {gain:.1f} (largest motion {mx:.2f} px -> {args.target_px:g} px)")
+    frames = []
+    for ep, fld in fields:
+        img = magnify(ref, fld, gain=gain, smooth_sigma=args.smooth)
+        bgr = cv2.cvtColor(np.clip(img * 255, 0, 255).astype(np.uint8), cv2.COLOR_GRAY2BGR)
+        label = f"t={float(ep.name):g}  motion x{gain:.0f}"
+        cv2.putText(bgr, label, (8, 22), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 3, cv2.LINE_AA)
+        cv2.putText(bgr, label, (8, 22), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1, cv2.LINE_AA)
+        cv2.imwrite(str(out / f"magnified_{float(ep.name):08.3f}.png"), bgr)
+        frames.append(bgr)
+    if args.video and frames:
+        h, w = frames[0].shape[:2]
+        vw = cv2.VideoWriter(str(out / "magnified.mp4"), cv2.VideoWriter_fourcc(*"mp4v"), args.fps, (w, h))
+        for f in frames:
+            vw.write(f)
+        vw.release()
+        print(f"wrote {out / 'magnified.mp4'} ({len(frames)} frames at {args.fps} fps)")
+    print(f"wrote {len(frames)} magnified frames to {out}")
+    return 0
+
+
 def cmd_forecast(args) -> int:
     cfg = SiteConfig.from_json(args.site).forecast if args.site else ForecastConfig()
     store = SeriesStore(args.series)
@@ -247,6 +284,16 @@ def build_parser() -> argparse.ArgumentParser:
     ep.add_argument("--t", type=float, required=True, help="epoch time (hours or any unit)")
     ep.add_argument("--out", required=True)
     ep.set_defaults(fn=cmd_epoch)
+
+    mg = sub.add_parser("magnify", help="motion-magnified frames from stored displacement fields")
+    mg.add_argument("--site-dir", required=True, help="public/sites/<site> folder (local store or demo-data)")
+    mg.add_argument("--out", required=True)
+    mg.add_argument("--gain", type=float, default=0.0, help="0 = auto from --target-px")
+    mg.add_argument("--target-px", dest="target_px", type=float, default=25.0)
+    mg.add_argument("--smooth", type=float, default=8.0)
+    mg.add_argument("--fps", type=int, default=6)
+    mg.add_argument("--video", action="store_true")
+    mg.set_defaults(fn=cmd_magnify)
 
     fc = sub.add_parser("forecast", help="forecast from a stored series")
     fc.add_argument("--series", required=True)

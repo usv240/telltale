@@ -54,7 +54,9 @@ python evaluation/e2_metrology.py --captures evaluation/e2/captures   # your pho
 ```
 
 Deploy to AWS with `infra/scripts/deploy.sh` (see `infra/README.md`), then
-`python infra/scripts/seed_demo.py --s3 <bucket> --wait`.
+`python infra/scripts/seed_demo.py --s3 <bucket> --wait`. Judges: start with `docs/JUDGES.md`.
+Operators: `docs/DEPLOYMENT.md` and the setup page on the dashboard.
+Motion-magnified video of the demo creep: `python -m telltale magnify --site-dir ... --video`.
 
 ## Repository map
 
@@ -62,7 +64,8 @@ Deploy to AWS with `infra/scripts/deploy.sh` (see `infra/README.md`), then
 |---|---|---|
 | `pipeline/` | OpenCV 5 pipeline and physics, CLI, tests | `pipeline/README.md`, `pipeline/DESIGN.md` |
 | `infra/` | CloudFormation stack, Graviton worker, deploy and camera scripts | `infra/README.md`, `infra/DESIGN.md` |
-| `web/dashboard/` | Static dashboard (no framework) with bundled demo data | `web/DESIGN.md` |
+| `web/dashboard/` | Static dashboard, about page, site setup tool, bundled demo data | `web/DESIGN.md` |
+| `docs/` | Report, audit, judges' path, deployment guide, video shot list, outreach, diagrams, figures | `docs/JUDGES.md` first |
 | `evaluation/` | E1 to E6 harnesses and results | `evaluation/DESIGN.md` |
 | `demo-rig/` | Tabletop collapse rig: build, capture script, run log | `demo-rig/DESIGN.md` |
 | `agent/` | Supervising agent: OpenCV tools, Claude-on-Bedrock loop, rule policy | `agent/DESIGN.md`, `docs/agent_workflow.svg` |

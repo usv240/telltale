@@ -54,7 +54,9 @@ All vision is classical `core` and `imgproc`; there is no neural network in the 
 | A Stack | Register burst frames to frame 1 (phase correlation for the coarse shift, ZNCC on a large central template for sub-pixel precision), median-stack. Contrast below 2 percent is BLIND; inter-frame shift above 3 px is UNSTABLE. | `phaseCorrelate`, `createHanningWindow`, `matchTemplate`, `warpAffine` |
 | B Stabilize | ORB in operator-marked stable regions, Lowe ratio 0.75, homography with `USAC_MAGSAC`. The coarse warp is then correlated against the reference inside the stable regions with the same sub-pixel DIC as the measurement; those correspondences are mapped back to the current frame and the simplest camera model that explains them (translation, similarity, affine, homography) is selected by residual. A verification pass measures what is left: coherent residual above 0.3 px or scatter above 0.3 px is a CAMERA_EVENT and the epoch is rejected. | `ORB_create`, `BFMatcher`, `findHomography(USAC_MAGSAC)`, `estimateAffinePartial2D`, `estimateAffine2D`, `perspectiveTransform`, `warpPerspective` |
 | C Measure | Regular grid of 41 px subsets at 24 px stride (3,000 to 3,500 per 1080p frame). Texture pre-screen on the mean minimum eigenvalue of the structure tensor. ZNCC (`TM_CCOEFF_NORMED`) over a 16 px search radius; separable three-point Gaussian sub-pixel fit; one re-sampling pass (window shifted by the fractional estimate with Lanczos, re-matched) which halves the residual pixel-locking bias; per-subset codes OK, LOW_TEXTURE, LOW_CORR, LOW_MARGIN, OUT_OF_BOUND, EDGE_PEAK. A random 10 percent of valid subsets is cross-checked with phase correlation on 2x patches as a gross-error detector. Zone displacement is the median over valid subsets; uncertainty is 1.4826 x MAD. | `cornerMinEigenVal`, `boxFilter`, `matchTemplate`, `warpAffine`, `phaseCorrelate`, `fillPoly` |
-| D Mask | Temporal-variance mask for vegetation and water. | `GaussianBlur`, `morphologyEx`, `findContours` |
+| D Mask | Temporal-variance mask for vegetation and water, applied from a trailing window of epochs when `mask_window` is set. | `GaussianBlur`, `morphologyEx`, `findContours` |
+| Scale | Metric conversion across an oblique slope: a homography from image to the ground plane (least squares or RANSAC on surveyed point pairs) whose local Jacobian converts each subset's pixel displacement to millimetres; a scalar `mm_per_px` remains the simple default. | `getPerspectiveTransform`, `findHomography`, `perspectiveTransform` |
+| Magnify | Motion magnification for people: the reference is re-sampled by `gain` x the measured dense field (holes filled by normalised convolution), so 0.3 px of creep becomes visible motion. The measurement is the only input; nothing is synthesised. | `blur`, `resize`, `remap` |
 | E Forecast | numpy. Velocity from the series; short (3) and long (7) trailing averages; onset of acceleration when the short average exceeds the long one for three epochs with positive acceleration and displacement above the noise floor; weighted linear fit of 1/v against the window-centred time (Fukuzono alpha = 2); residual bootstrap (500 draws) for a 10 to 90 percent window; Theil-Sen and Voight (alpha free in 1.5 to 2.2) fits form the ensemble; the reported window is the union of bootstrap and ensemble spread. Alarm ladder QUIET, MOVING, ACCELERATING, CRITICAL (horizon below threshold with R squared above 0.5). | |
 
 Why these choices. ZNCC is invariant to affine illumination change, which is why sunlight does
@@ -192,7 +194,10 @@ a bounded perception-decision-action loop:
   alert. If it is inconclusive, errors, or is disabled, the worker's own CRITICAL page still
   fires: a missed page is treated as worse than an extra one.
 
-Observability and human control: the dashboard's agent panel lists every event with its verdict,
+Operations: a CloudWatch dashboard (`<stack>-ops`) created by the template shows epochs
+processed and usable, alarm level, seconds per epoch, coverage and stabilization inliers, queue
+depth and age, worker CPU, and the worker log stream; `infra/scripts/teardown.sh` removes
+everything including bucket versions. Observability and human control: the dashboard's agent panel lists every event with its verdict,
 policy, tool-call count and duration, and expands to the full trace; decisions by the human are
 logged with time and source in `decisions.json`. On the live demo site the agent confirmed the
 acceleration at t = 8.1 and again at the CRITICAL transition at t = 47, each with nine tool calls,
@@ -286,7 +291,10 @@ E6 COOL cell.
 ## 7. User experience
 
 One static page, no framework, light and dark themes, keyboard-reachable controls, a "How it
-works" page, and a "How to read this" disclosure on every panel. A replay slider rewinds the
+works" page, a "How to read this" disclosure on every panel, and a site-setup page
+(`setup.html`) where an operator loads one reference photo, draws the stable regions and target
+zones, sets the scale from two points of known separation, and exports `site.json` without
+editing JSON by hand. A replay slider rewinds the
 whole instrument to any earlier epoch (overlay, facts, charts and the forecast as it stood then)
 and a Play button animates the record; judges can watch the acceleration and the forecast
 window appear without waiting for a slope to fail. The first

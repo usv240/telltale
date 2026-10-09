@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TellTale site setup</title>
+<link rel="stylesheet" href="dashboard.css">
+<style>
+  .setup { display: grid; gap: 16px; grid-template-columns: 1fr; }
+  @media (min-width: 900px) { .setup { grid-template-columns: 2fr 1fr; } }
+  canvas { width: 100%; height: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); cursor: crosshair; touch-action: none; }
+  .tools { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+  .tools .btn.active { outline: 2px solid var(--accent); }
+  textarea { width: 100%; min-height: 220px; font: 12px/1.4 ui-monospace, Consolas, monospace; background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 8px; }
+  label.row { display: flex; gap: 8px; align-items: center; margin: 6px 0; font-size: 0.9rem; }
+  label.row input { font: inherit; padding: 4px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); width: 9em; }
+  ul.polys { list-style: none; padding: 0; margin: 6px 0; font-size: 0.85rem; }
+  ul.polys li { display: flex; justify-content: space-between; gap: 8px; padding: 4px 0; border-bottom: 1px solid var(--line); }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="mark" aria-hidden="true"></span><span class="name">TellTale</span><span class="sub">site setup</span></div>
+  <div class="controls"><a class="btn" href="about.html">How it works</a><a class="btn" href="index.html">Dashboard</a></div>
+</header>
+<main>
+  <section class="panel">
+    <h2>Configure a site from one reference photo</h2>
+    <p class="hint">1. Load a frame from the camera. 2. Draw STABLE polygons on ground that cannot move (bedrock, buildings, road off the slide). 3. Draw TARGET zones on the slope you care about. 4. Set the scale from two points of known separation or from an E2 figure. 5. Export site.json and send it with the first epoch. Click to add vertices, double-click to close a polygon, Escape to cancel.</p>
+    <div class="setup">
+      <div>
+        <div class="tools">
+          <label class="btn">Load image <input id="file" type="file" accept="image/*" hidden></label>
+          <button id="mode-stable" class="btn active" type="button">Draw STABLE</button>
+          <button id="mode-zone" class="btn" type="button">Draw TARGET zone</button>
+          <button id="mode-scale" class="btn" type="button">Scale: two points</button>
+          <button id="undo" class="btn" type="button">Undo vertex</button>
+          <button id="clear" class="btn" type="button">Clear all</button>
+        </div>
+        <canvas id="c" width="1280" height="720" aria-label="Reference image with polygons"></canvas>
+      </div>
+      <div>
+        <label class="row">Site name <input id="name" value="site-a"></label>
+        <label class="row">Known separation (mm) <input id="sep" type="number" value="1000"></label>
+        <label class="row">mm per px <input id="mmpp" type="number" step="0.001" value="1.0"></label>
+        <label class="row">Burst size <input id="burst" type="number" value="7"></label>
+        <label class="row">Reference mode <select id="refmode"><option value="fixed">fixed</option><option value="chained">chained</option></select></label>
+        <label class="row">Mask window (epochs, 0 = off) <input id="maskw" type="number" value="0"></label>
+        <h3>Polygons</h3>
+        <ul id="list" class="polys"></ul>
+        <h3>site.json</h3>
+        <textarea id="out" readonly aria-label="site.json"></textarea>
+        <div class="tools"><button id="download" class="btn" type="button">Download site.json</button><button id="copy" class="btn" type="button">Copy</button></div>
+      </div>
+    </div>
+  </section>
+</main>
+<footer><p>The scale from two points is only exact in the plane of those points; for a slope at an angle, use the E2 target figure at the slope's distance, or set per-zone scales later in site.json.</p></footer>
+<script>
+(function () {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+  const c = $("c"), ctx = c.getContext("2d");
+  let img = null, mode = "stable", current = [], polys = [], scalePts = [], zoneCount = 0;
+  const colors = { stable: "#2563a8", zone: "#c2541b" };
+
+  function setMode(m) {
+    mode = m; current = [];
+    for (const id of ["mode-stable", "mode-zone", "mode-scale"]) $(id).classList.toggle("active", id === "mode-" + m);
+    draw();
+  }
+  $("mode-stable").onclick = () => setMode("stable");
+  $("mode-zone").onclick = () => setMode("zone");
+  $("mode-scale").onclick = () => { setMode("scale"); scalePts = []; };
+  $("undo").onclick = () => { if (current.length) current.pop(); else if (polys.length) polys.pop(); draw(); };
+  $("clear").onclick = () => { current = []; polys = []; scalePts = []; zoneCount = 0; draw(); };
+  $("file").onchange = (ev) => {
+    const f = ev.target.files[0]; if (!f) return;
+    const im = new Image();
+    im.onload = () => { img = im; c.width = im.naturalWidth; c.height = im.naturalHeight; draw(); };
+    im.src = URL.createObjectURL(f);
+  };
+  function pos(ev) {
+    const r = c.getBoundingClientRect();
+    return [Math.round((ev.clientX - r.left) * c.width / r.width), Math.round((ev.clientY - r.top) * c.height / r.height)];
+  }
+  c.addEventListener("click", (ev) => {
+    const p = pos(ev);
+    if (mode === "scale") {
+      scalePts.push(p);
+      if (scalePts.length === 2) {
+        const d = Math.hypot(scalePts[1][0] - scalePts[0][0], scalePts[1][1] - scalePts[0][1]);
+        $("mmpp").value = (Number($("sep").value) / d).toFixed(4);
+      }
+      if (scalePts.length > 2) scalePts = [p];
+    } else current.push(p);
+    draw();
+  });
+  c.addEventListener("dblclick", (ev) => {
+    ev.preventDefault();
+    if (mode === "scale" || current.length < 3) return;
+    const name = mode === "stable" ? `stable_${polys.filter(p => p.kind === "stable").length + 1}` : `zone_${++zoneCount}`;
+    polys.push({ kind: mode, name, pts: current.slice() });
+    current = [];
+    draw();
+  });
+  window.addEventListener("keydown", (ev) => { if (ev.key === "Escape") { current = []; draw(); } });
+
+  function draw() {
+    ctx.clearRect(0, 0, c.width, c.height);
+    if (img) ctx.drawImage(img, 0, 0, c.width, c.height);
+    else { ctx.fillStyle = "#888"; ctx.font = "20px system-ui"; ctx.fillText("Load a reference frame to begin", 30, 50); }
+    const lw = Math.max(2, c.width / 640);
+    for (const p of polys) {
+      ctx.strokeStyle = colors[p.kind]; ctx.lineWidth = lw; ctx.fillStyle = colors[p.kind] + "33";
+      ctx.beginPath(); p.pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = colors[p.kind]; ctx.font = `${12 * lw}px system-ui`; ctx.fillText(p.name, p.pts[0][0] + 4, p.pts[0][1] - 6);
+    }
+    if (current.length) {
+      ctx.strokeStyle = colors[mode] || "#fff"; ctx.lineWidth = lw; ctx.setLineDash([6, 4]);
+      ctx.beginPath(); current.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke(); ctx.setLineDash([]);
+      for (const [x, y] of current) { ctx.beginPath(); ctx.arc(x, y, 2 * lw, 0, 7); ctx.fill(); }
+    }
+    if (scalePts.length) {
+      ctx.strokeStyle = "#4e7d2c"; ctx.lineWidth = lw; ctx.beginPath();
+      scalePts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke();
+      for (const [x, y] of scalePts) { ctx.beginPath(); ctx.arc(x, y, 3 * lw, 0, 7); ctx.fillStyle = "#4e7d2c"; ctx.fill(); }
+    }
+    const list = $("list"); list.innerHTML = "";
+    polys.forEach((p, i) => {
+      const li = document.createElement("li");
+      li.innerHTML = `<span>${p.kind.toUpperCase()} ${p.name} (${p.pts.length} pts)</span><button class="btn" type="button">remove</button>`;
+      li.querySelector("button").onclick = () => { polys.splice(i, 1); draw(); };
+      list.appendChild(li);
+    });
+    $("out").value = JSON.stringify(siteJSON(), null, 2);
+  }
+  function siteJSON() {
+    const zones = {};
+    polys.filter(p => p.kind === "zone").forEach(p => zones[p.name] = p.pts);
+    return {
+      name: $("name").value, mm_per_px: Number($("mmpp").value),
+      stable_polys: polys.filter(p => p.kind === "stable").map(p => p.pts),
+      target_zones: zones,
+      grid: { template: 41, stride: 24, search: 16, min_corr: 0.5, min_margin: 0.01, min_texture: 0.0001, refine_iters: 1, threads: 0 },
+      forecast: { sma_window: 3, lma_window: 7, ooa_k: 3, noise_floor: 0.05, min_points_fit: 4, bootstrap: 500, min_r2: 0.5, critical_horizon: 5.0, alpha_grid: [1.5, 2.2, 0.05] },
+      burst_size: Number($("burst").value), reference_mode: $("refmode").value, mask_window: Number($("maskw").value),
+      notes: `Configured with setup.html on ${new Date().toISOString().slice(0, 10)}; image ${c.width}x${c.height}`
+    };
+  }
+  for (const id of ["name", "sep", "mmpp", "burst", "refmode", "maskw"]) $(id).addEventListener("input", draw);
+  $("download").onclick = () => {
+    const blob = new Blob([JSON.stringify(siteJSON(), null, 2)], { type: "application/json" });
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "site.json"; a.click();
+  };
+  $("copy").onclick = () => navigator.clipboard.writeText($("out").value);
+  draw();
+})();
+</script>
+</body>
+</html>

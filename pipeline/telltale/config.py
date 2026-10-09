@@ -59,6 +59,7 @@ class SiteConfig:
     burst_size: int = 7
     reference_mode: str = "fixed"   # "fixed": compare to the reference epoch; "chained": to the previous usable epoch and integrate
     mask_window: int = 0            # epochs of trailing variance mask for vegetation/water; 0 = off
+    plane: Optional[dict] = None    # {"image_pts": [[x, y], ...], "world_pts_mm": [[X, Y], ...]} for metric scale across the slope
     notes: str = ""
 
     def to_json(self, path: str | Path) -> None:

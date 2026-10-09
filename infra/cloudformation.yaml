@@ -403,7 +403,31 @@ Resources:
       AlarmActions: [!Ref AlertTopic]
       OKActions: [!Ref AlertTopic]
 
+  OpsDashboard:
+    Type: AWS::CloudWatch::Dashboard
+    Properties:
+      DashboardName: !Sub ${AWS::StackName}-ops
+      DashboardBody: !Sub |
+        {"widgets": [
+          {"type": "metric", "x": 0, "y": 0, "width": 8, "height": 6, "properties": {"title": "Epochs processed / usable", "region": "${AWS::Region}", "stat": "Sum", "period": 300,
+            "metrics": [["TellTale", "EpochProcessed", "Site", "demo-slope"], [".", "EpochUsable", ".", "."]]}},
+          {"type": "metric", "x": 8, "y": 0, "width": 8, "height": 6, "properties": {"title": "Alarm level (0 quiet .. 3 critical)", "region": "${AWS::Region}", "stat": "Maximum", "period": 300,
+            "metrics": [["TellTale", "AlarmLevel", "Site", "demo-slope"]]}},
+          {"type": "metric", "x": 16, "y": 0, "width": 8, "height": 6, "properties": {"title": "Seconds per epoch", "region": "${AWS::Region}", "stat": "Average", "period": 300,
+            "metrics": [["TellTale", "EpochSeconds", "Site", "demo-slope"]]}},
+          {"type": "metric", "x": 0, "y": 6, "width": 8, "height": 6, "properties": {"title": "Coverage and stabilization inliers", "region": "${AWS::Region}", "stat": "Average", "period": 300,
+            "metrics": [["TellTale", "Coverage", "Site", "demo-slope"], [".", "StabilizeInliers", ".", ".", {"yAxis": "right"}]]}},
+          {"type": "metric", "x": 8, "y": 6, "width": 8, "height": 6, "properties": {"title": "Queue depth and age", "region": "${AWS::Region}", "stat": "Maximum", "period": 60,
+            "metrics": [["AWS/SQS", "ApproximateNumberOfMessagesVisible", "QueueName", "${EpochQueue.QueueName}"], [".", "ApproximateAgeOfOldestMessage", ".", ".", {"yAxis": "right"}]]}},
+          {"type": "metric", "x": 16, "y": 6, "width": 8, "height": 6, "properties": {"title": "Worker CPU", "region": "${AWS::Region}", "stat": "Average", "period": 60,
+            "metrics": [["AWS/EC2", "CPUUtilization", "InstanceId", "${Worker}"]]}},
+          {"type": "log", "x": 0, "y": 12, "width": 24, "height": 6, "properties": {"title": "Worker log", "region": "${AWS::Region}",
+            "query": "SOURCE '/telltale/worker' | fields @timestamp, @message | sort @timestamp desc | limit 50"}}
+        ]}
+
 Outputs:
+  OpsDashboardUrl:
+    Value: !Sub https://${AWS::Region}.console.aws.amazon.com/cloudwatch/home?region=${AWS::Region}#dashboards:name=${AWS::StackName}-ops
   AlertTopicArn:
     Value: !Ref AlertTopic
   ApprovalUrl:
