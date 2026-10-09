@@ -28,6 +28,16 @@ def test_stack_registers_and_reduces_noise():
     assert noise_stack < 0.6 * noise_single
 
 
+def test_blurred_flag():
+    import cv2
+    from telltale.stack import STATUS_BLURRED
+    tex = make_texture(160, 160, seed=9)
+    assert stack_burst([tex, tex]).status == STATUS_OK
+    wet = cv2.GaussianBlur(tex, (0, 0), 2.0)     # contrast stays above the BLIND floor
+    assert wet.std() > 0.02
+    assert stack_burst([wet, wet]).status == STATUS_BLURRED
+
+
 def test_blind_and_unstable_flags():
     flat = np.full((64, 64), 0.5, np.float32)
     assert stack_burst([flat, flat]).status == STATUS_BLIND

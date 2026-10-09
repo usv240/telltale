@@ -140,11 +140,58 @@ ORB 4,000 features: 64.0; median stack of 7: 72.4. The DIC stage is dominated by
 `matchTemplate` and the stabilizer by Lanczos warps and ORB, which are the operation classes
 COOL advertises as accelerated.
 
+### E4 real landslide imagery: USGS Mukilteo bluff (measured)
+
+`python evaluation/e4_mukilteo.py`. Public-domain USGS time-lapse of an active coastal-bluff
+landslide at Mukilteo, Washington (ScienceBase 5ef2388382ced62aaae3bbbe, DOI 10.5066/P99QOYL2):
+843 frames, three per day, August 20, 2015 to May 25, 2016, camera installed in the landslide
+crown looking down the body. USGS documented movement on Dec 8-9 2015, Jan 21-30 2016, Mar 9-14
+2016 and two night-time events on Mar 23 and Mar 26 2016.
+
+Method. Burned-in timestamps were read with a small template OCR (`mukilteo_stamps.py`,
+796 of 843 frames, the rest filled from neighbours where the frame count matched the capture
+slots). The scene decorrelates over months (vegetation, erosion, metres of movement), so the
+pipeline ran in chained mode: each noon frame stabilised against the previous noon frame using
+the top strip (solar panels and ground above the scarp) as the stable region, then dense DIC
+at half resolution (1024 x 678; 1 px here is 2 px in the original), with the timestamp strip
+masked out. Daily increments were taken per zone: `left_face` (the landslide body), `right_face`
+(bare slope on the right) and `lower_body`.
+
+| Quantity | left_face | right_face | lower_body |
+|---|---|---|---|
+| Usable daily pairs, Aug 20 to Feb 9 | 159 of 170 | | |
+| Median daily increment on quiet days (px) | 0.128 | 0.096 | 0.130 |
+| 90th percentile on quiet days (px) | 0.385 | 0.253 | 0.398 |
+| Dec 9 2015 (documented movement) | **0.924** | **0.818** | **0.485** |
+| Jan 21 and Jan 23 2016 (documented movement) | 0.440, **1.215** | 0.135, 0.096 | 0.164, 0.071 |
+| Jan 22, 28, 29, 30 2016 | CAMERA_EVENT | CAMERA_EVENT | CAMERA_EVENT |
+
+On December 9 the landslide body moved at seven times its quiet-day median, above the 90th
+percentile of every quiet day in all three zones, and the displacement field shows coherent
+downslope vectors across the body (figure `docs/figures/e4_mukilteo_2015-12-09_movement.png`;
+compare `..._2015-11-20_quiet.png`). The January period shows the body moving on Jan 21, 23,
+25 and 26 while the stabilizer rejected Jan 22 and 28 to 30 as CAMERA_EVENT: the camera is
+mounted in the landslide crown, so when the slide moves the camera's own ground moves, which is
+precisely the condition the verdict exists for.
+
+From February 10, 2016 every pair is unusable. The frames' Laplacian-variance sharpness drops
+from a median of 0.025 (usable) to 0.0017: the lens is wet or defocused for the rest of the
+record, and the camera view has shifted enough that the solar panels leave the frame. The
+March movement periods are therefore not measured. This failure is now detected by the
+pipeline itself as a BLURRED epoch (added to `stack_burst` as a result of this experiment)
+rather than surfacing as a stabilization failure.
+
+Honest reading of the statistics: the daily-increment series is noisy at the 0.1 to 0.4 px
+level (shadows, wet and dry soil, wind in vegetation), 15 of 151 quiet days in each zone also
+exceed the 90th percentile by construction, and no sub-pixel ground truth exists for this site.
+What the data support is that the documented movement days stand out from the quiet baseline
+by a factor of four to seven with coherent direction, and that the two failure modes seen
+(camera on moving ground, wet lens) are reported as such and never as ground motion.
+
 ### Pending
 
 E2 physical metrology (micrometer stage at 20 to 100 m), E3 tabletop physical collapses
-(rig design and capture script are ready), E4 real landslide imagery (USGS Mukilteo
-time-lapse), E6 COOL and x86 cells.
+(rig design and capture script are ready), E6 COOL and x86 cells.
 
 ## 7. User experience
 
@@ -168,10 +215,17 @@ offline from bundled demo data.
 - **Night, fog, heavy rain.** Contrast collapse is reported as BLIND and the epoch is skipped;
   the forecast carries the gap as widened uncertainty. Rain often triggers failure, so this is
   a real coverage gap, not a corner case.
-- **Vegetation and seasonal decorrelation.** The variance mask exists but has not been
-  exercised on real imagery (E4 pending). Coverage will be lower on vegetated slopes.
-- **Scale.** All measured results so far are synthetic. The estimator's floor (0.01 px) is
-  not the field floor; atmosphere, texture and lens stability will dominate.
+- **Vegetation and seasonal decorrelation.** On Mukilteo the scene decorrelated over months,
+  which forced chained (day-to-day) measurement; chained integration accumulates random-walk
+  error, so long-baseline displacement from this mode is less trustworthy than the daily
+  increments. Reference rotation with cross-reference chaining is the designed fix.
+- **Wet or defocused lens.** Mukilteo lost its last three and a half months to a wet lens. The
+  pipeline now reports BLURRED epochs; a lens hood, heater, or wiper is a field requirement.
+- **Camera on moving ground.** A camera mounted inside the landslide (as at Mukilteo) produces
+  CAMERA_EVENT verdicts on the days that matter most. The verdict is correct, but the lesson
+  for deployment is that the camera must stand on ground that is not part of the slide.
+- **Scale.** The estimator's floor (0.01 px on synthetic data) is not the field floor: on real
+  imagery the quiet-day daily scatter was 0.1 to 0.4 px at half resolution.
 - **Single camera, single reference.** Reference rotation across seasons is designed but not
   implemented; long series will drift as the scene changes.
 

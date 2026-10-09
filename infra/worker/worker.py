@@ -44,7 +44,7 @@ from telltale import (ForecastConfig, SiteConfig, compute_field, forecast, polyg
 from telltale.forecast import moving_average, smoothed_velocities
 from telltale.overlay import render_overlay, render_status_map
 from telltale.stabilize import VERDICT_OK
-from telltale.stack import STATUS_BLIND
+from telltale.stack import STATUS_BLIND, STATUS_BLURRED
 
 log = logging.getLogger("telltale.worker")
 
@@ -227,8 +227,8 @@ def process_epoch(store, site_name: str, t: float, frames: list[np.ndarray],
     record["timing"]["stack_s"] = time.perf_counter() - st_t
     record["stack"] = {"status": stack.status, "n_frames": stack.n_frames,
                        "max_shift": stack.max_shift, "contrast": stack.contrast}
-    if stack.status == STATUS_BLIND:
-        record["reason"] = "BLIND"
+    if stack.status in (STATUS_BLIND, STATUS_BLURRED):
+        record["reason"] = stack.status
         return _finish(store, site, site_name, record, None, t0)
 
     ref_raw = store.get(f"{priv}/reference.npy")

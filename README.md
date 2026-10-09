@@ -71,8 +71,8 @@ Deploy to AWS with `infra/scripts/deploy.sh` (see `infra/README.md`), then
 | E3 synthetic collapse through the full cloud path | done | forecast 50.26, window [48.9, 61.9], truth 50.0, R² 0.98 |
 | E3 tabletop physical collapses | pending | rig and capture script ready |
 | E2 physical metrology | pending | |
-| E4 real landslide imagery | pending | |
-| E5 agent ablation | pending | |
+| E4 real landslide imagery (USGS Mukilteo) | done | documented Dec 9 2015 movement measured at 4 to 7x the quiet baseline with coherent downslope vectors; wet-lens period from Feb 10 correctly rejected |
+| E5 confounders (thresholds only) | done | zero false alarms under camera bump, lighting step, fog; non-rigid lens distortion partially caught |
 | E6 COOL benchmark | running | stock OpenCV 5 on c8g.large measured; COOL AMI pending subscription |
 
 ## Scope and responsible use

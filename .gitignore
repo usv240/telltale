@@ -6,3 +6,4 @@ out/
 *.npz
 *.egg-info/
 .DS_Store
+evaluation/results/e4_overlays/

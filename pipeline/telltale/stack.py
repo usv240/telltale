@@ -22,6 +22,12 @@ import numpy as np
 STATUS_OK = "OK"
 STATUS_UNSTABLE = "UNSTABLE"
 STATUS_BLIND = "BLIND"
+STATUS_BLURRED = "BLURRED"
+
+
+def sharpness(img: np.ndarray) -> float:
+    """Variance of the Laplacian of a float32 [0, 1] image; low means defocus, wet lens, fog."""
+    return float(cv2.Laplacian(img, cv2.CV_32F).var())
 
 
 def to_gray32(img: np.ndarray) -> np.ndarray:
@@ -122,8 +128,14 @@ class StackResult:
 
 
 def stack_burst(frames: list[np.ndarray], max_shift: float = 3.0,
-                min_contrast: float = 0.02, downscale: int = 2) -> StackResult:
-    """Register frames 2..N to frame 1 and median-stack them."""
+                min_contrast: float = 0.02, downscale: int = 2,
+                min_sharpness: float = 0.004) -> StackResult:
+    """Register frames 2..N to frame 1 and median-stack them.
+
+    ``min_sharpness`` is the Laplacian-variance floor below which the epoch is BLURRED (wet or
+    defocused lens, dense fog). On the USGS Mukilteo bluff time-lapse, usable frames measured
+    about 0.025 and the wet-lens frames about 0.002 at half resolution.
+    """
     if len(frames) == 0:
         raise ValueError("stack_burst needs at least one frame")
     grays = [to_gray32(f) for f in frames]
@@ -131,6 +143,9 @@ def stack_burst(frames: list[np.ndarray], max_shift: float = 3.0,
     contrast = float(ref.std())
     if contrast < min_contrast:
         return StackResult(ref, STATUS_BLIND, np.zeros((len(grays), 2), np.float32),
+                           contrast, len(grays))
+    if sharpness(ref) < min_sharpness:
+        return StackResult(ref, STATUS_BLURRED, np.zeros((len(grays), 2), np.float32),
                            contrast, len(grays))
     aligned = [ref]
     shifts = [(0.0, 0.0)]
