@@ -103,7 +103,19 @@ class Toolbox:
                                    for z, v in (r.get("zones") or {}).items()}})
         zones = {z: {k: v.get(k) for k in ("state", "tf", "t_lo", "t_hi", "r2", "ooa_time", "horizon")}
                  for z, v in fc.get("zones", {}).items()}
+        # Baseline of recent daily motion per zone, so the agent can judge materiality: a
+        # confirmed step that is not well above this is logged, not paged.
+        usable = [r for r in self._series() if r.get("usable") and r.get("zones")][-21:]
+        baseline = {}
+        for z in self.cfg.target_zones:
+            mags = [r["zones"].get(z, {}).get("magnitude") for r in usable]
+            mags = [m for m in mags if m is not None]
+            if len(mags) >= 5:
+                inc = np.abs(np.diff(np.array(mags, dtype=float)))
+                baseline[z] = {"median_increment_px": float(np.median(inc)),
+                               "p90_increment_px": float(np.percentile(inc, 90)), "n": int(len(inc))}
         out = {"site": self.site, "state": fc.get("state"), "zones": zones, "recent_epochs": last,
+               "recent_increment_baseline": baseline,
                "mm_per_px": self.cfg.mm_per_px, "reference_mode": self.cfg.reference_mode,
                "note": ("chained site: each epoch is measured against the previous epoch; increment_px is "
                         "that day's motion and is what remeasure returns; cumulative_px is the running sum "

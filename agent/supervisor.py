@@ -45,8 +45,11 @@ Rules:
   residuals above 0.3 px, low sharpness, or a coverage drop.
 - Call tools with purpose; each result should change what you do next. You have a budget of
   eight tool calls. Do not repeat a call with the same arguments.
-- If the acceleration is real or cannot be ruled out, call request_human_approval with a
-  short evidence summary (numbers, not adjectives), and raise the capture cadence.
+- Confirming motion and paging a person are different decisions. Page (request_human_approval)
+  only when the state is ACCELERATING or CRITICAL, or a confirmed step exceeds five times the
+  recent median increment of that zone (recent_increment_baseline) and at least 0.5 px. A
+  confirmed but small step is closed as CONFIRMED without a page; it stays in the log. Raise
+  the capture cadence whenever motion is confirmed.
 - If it is an artefact, close it as FALSE_ALARM and say which measurement proves it.
 - On a chained site (reference_mode "chained"), every measurement is day-to-day: compare
   remeasure results with the recorded increment, never with the cumulative sum. A camera pose
@@ -180,10 +183,15 @@ class RulePolicy:
             consistent = any((b["zones"][z].get("magnitude") or 0) > 3 * max(b["zones"][z].get("sigma") or 0.02, 0.02)
                              and (coh["zones"].get(z, {}).get("coherence") or 0) > 0.7 for z in zones)
             if consistent:
-                tb.set_capture_cadence(24, "confirmed acceleration; tighten forecast")
-                tb.request_human_approval(t, f"remeasure vs reference {json.dumps({z: round(b['zones'][z]['magnitude'] or 0, 3) for z in zones})}, coherence {json.dumps({z: coh['zones'][z].get('coherence') for z in zones})}")
-                tb.close_event(t, "CONFIRMED", "consistent across references and coherent")
-                return "Rule policy: acceleration confirmed; human paged."
+                tb.set_capture_cadence(24, "confirmed motion; tighten forecast")
+                base = status.get("recent_increment_baseline", {})
+                material = status.get("state") in ("ACCELERATING", "CRITICAL") or any(
+                    (b["zones"][z].get("magnitude") or 0) >= max(0.5, 5 * (base.get(z, {}).get("median_increment_px") or 0.1))
+                    for z in zones)
+                if material:
+                    tb.request_human_approval(t, f"remeasure vs reference {json.dumps({z: round(b['zones'][z]['magnitude'] or 0, 3) for z in zones})}, coherence {json.dumps({z: coh['zones'][z].get('coherence') for z in zones})}")
+                tb.close_event(t, "CONFIRMED", "consistent across references and coherent" + ("" if material else "; below the paging threshold, logged only"))
+                return "Rule policy: motion confirmed; " + ("human paged." if material else "logged, no page.")
             tb.close_event(t, "INCONCLUSIVE", "motion not consistent or not coherent")
             return "Rule policy: inconclusive."
         tb.close_event(t, "INCONCLUSIVE", f"event {event} with no anomaly to confirm")

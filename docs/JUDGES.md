@@ -4,7 +4,10 @@ Everything below works without contacting us. Times are what it took us on a lap
 
 ## 1. See it working (2 minutes)
 
-Open https://d30le2uwgaimao.cloudfront.net/ . Press **Play** on the replay slider: the demo slope
+Open https://d30le2uwgaimao.cloudfront.net/ . Switch the site selector to `mukilteo-usgs`:
+that is the USGS coastal-bluff landslide record (public domain) processed by the unmodified
+worker, with the Claude agent's trace on December 9, 2015, a documented movement day. Then
+switch back to `demo-slope` and press **Play** on the replay slider: the demo slope
 creeps, accelerates, the forecast window appears and narrows, the state climbs to CRITICAL, and
 the supervising agent's investigations appear in the agent panel with every OpenCV tool call.
 The instrument-health panel shows which OpenCV build ran on which instance.

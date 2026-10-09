@@ -106,10 +106,13 @@
 
     // status sentence
     const mm = cfg.mm_per_px || 1;
+    const lz = lastUsable && lastUsable.zones ? lastUsable.zones[zoneName] : null;
     let line;
     if (!z) line = `No measurements yet for ${site}.`;
     else if (state === "QUIET") line = `No significant movement in zone ${zoneName} over ${recs.length} epochs.`;
-    else if (state === "MOVING") line = `Zone ${zoneName} is creeping steadily at ${fmt(lastV(z) * mm, 3)} mm per time unit; no acceleration detected.`;
+    else if (state === "MOVING") line = cfg.reference_mode === "chained"
+      ? `Zone ${zoneName} has moved a net ${fmt(Math.abs(lz ? lz.magnitude : 0), 2)} px since the reference epoch (day-to-day chain, uncertainty grows with the chain); no sustained acceleration detected.`
+      : `Zone ${zoneName} is creeping steadily at ${fmt(Math.abs(lastV(z) * mm), 3)} mm per time unit; no acceleration detected.`;
     else if (state === "ACCELERATING") line = z.tf !== null && z.tf !== undefined
       ? `Zone ${zoneName} is accelerating since t = ${fmt(z.ooa_time, 1)}. Forecast failure window t = ${fmt(z.t_lo, 1)} to ${fmt(z.t_hi, 1)} (fit R² ${fmt(z.r2, 2)}).`
       : `Zone ${zoneName} is accelerating since t = ${fmt(z.ooa_time, 1)}. Too few accelerating epochs for a forecast yet; the window appears once the inverse-velocity fit has enough points.`;
@@ -122,7 +125,6 @@
     $("overlay").src = lastUsable && lastUsable.overlay ? `${base}/${lastUsable.overlay}` : "";
     $("overlay-cap").textContent = lastUsable ? `Epoch t = ${fmt(lastUsable.t, 2)}; colour = displacement magnitude since the reference epoch, arrows = direction (scaled).` : "";
 
-    const lz = lastUsable && lastUsable.zones ? lastUsable.zones[zoneName] : null;
     $("f-disp").textContent = lz ? `${fmt(lz.magnitude, 3)} px ± ${fmt(lz.sigma, 3)}  (${fmt(lz.magnitude * mm, 2)} mm)` : "–";
     $("f-vel").textContent = z ? `${fmt(lastV(z), 4)} px per time unit` : "–";
     $("f-ooa").textContent = z && z.ooa_time !== null && z.ooa_time !== undefined ? `t = ${fmt(z.ooa_time, 2)}` : "not detected";

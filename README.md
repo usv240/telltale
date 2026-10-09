@@ -82,6 +82,7 @@ Motion-magnified video of the demo creep: `python -m telltale magnify --site-dir
 | E3 tabletop physical collapses | pending | rig and capture script ready |
 | E2 physical metrology | harness ready, photos pending | synthetic self-test at 20, 50, 100 m: slope 1.00, RMS 0.01 to 0.05 mm; printable target in `evaluation/e2/` |
 | E4 real landslide imagery (USGS Mukilteo) | done | documented Dec 9 2015 movement measured at 4 to 7x the quiet baseline with coherent downslope vectors; wet-lens period from Feb 10 correctly rejected |
+| E4c real landslide in the product | done | the whole USGS record through the unmodified worker with the Claude agent; December 9 2015 verdict CONFIRMED; live as site `mukilteo-usgs` on the dashboard |
 | E4b negative control on real data | done | 0 false acceleration alarms on 147 quiet days x 3 zones (was 371 before the onset gates); 2 of 2 observable movement periods flagged by the jump detector |
 | E1 public benchmark (SEM 2D DIC Challenge 1.0) | done | MAE 0.0047 px on Sample 1, best of TellTale, Farneback and pyramidal LK; within 0.01 px of the best on the noisier sets |
 | E1 named baselines | done | TellTale 0.004 px median vs Farneback 0.010, pyramidal LK 0.034, phase correlation 0.67 on the synthetic sweep |

@@ -188,6 +188,46 @@ jitter per epoch, run through stack, stabilize, DIC and forecast. 36 epochs to t
 | Final forecast | 50.33, window [49.92, 52.36], R squared 0.992, state CRITICAL |
 | Same scene through the cloud path (5-frame bursts, 320 px) | 50.26, window [48.9, 61.9], R squared 0.98 |
 
+### E4c the real landslide inside the product (measured)
+
+`python evaluation/e4_product_run.py`. The 278 noon frames of the USGS Mukilteo record were fed
+to the unmodified worker (`process_epoch`) as a chained-reference site with the Claude agent
+on Amazon Bedrock enabled, one frame per epoch as a field camera would feed it. The run used
+the worker's local storage backend on a laptop (the instrument-health panel says so: the
+OpenCV build path and host are recorded for this site too) and the artifacts were published to
+the live dashboard as site `mukilteo-usgs`: daily overlays, the replay slider, and every agent
+trace. Unusable epochs: BLURRED 105 (the wet-lens period, as designed),
+CAMERA_EVENT 13, LOW_INLIERS 1.
+
+The agent investigated 34 events (10 camera events, 24 single-day jumps) with 300 OpenCV
+tool calls in about 20 minutes. All 10 camera events were closed as false alarms. Of the 24
+jumps, 12 were confirmed as ground motion on identical increments against two references,
+direction coherence above 0.8 and clean stabilization; 10 were closed as artefacts; 2 were
+inconclusive. On December 9, 2015, the USGS-documented movement day, the verdict was
+CONFIRMED after 8 tool calls, with the agent noting that the camera mount had shifted, that
+stabilization had corrected it with a 0.02 px residual, and that re-measurement against both
+references matched the recorded 0.44 to 0.98 px increments. January 23, 2016 was closed as an
+artefact because the chain crosses a camera event on January 22 and re-measurement against the
+previous usable day fails stabilization: the right call on the evidence, and a stated limit of
+chaining across camera events.
+
+Two findings from this run changed the code. First, the chained reference must advance on every
+non-blind epoch, usable or not; the first pass stranded the chain on a stale image after the
+first camera event and lost the rest of the record to LOW_INLIERS. Second, the agent's
+re-measurement tool must stabilize before correlating on a chained site, as the worker does;
+without that it saw camera motion as inflated, reference-dependent displacement and correctly
+distrusted it, which turned December 9 into a false alarm. With both fixed, the agent's
+judgement on the documented day matched the record.
+
+Eleven confirmed jumps fall on days the USGS record does not list (late August to early
+January, 0.1 to 0.6 px). They are confirmed on the same evidence as December 9, so they are
+either small undocumented motions of an active slide or a residual limitation of day-to-day
+chaining; the record cannot settle it and we do not claim either. What the run did expose is
+that confirming motion and paging a person must be separate decisions: the first pass paged
+14 times. A materiality rule now applies in both policies (page only in ACCELERATING or
+CRITICAL, or for a confirmed step above five times the zone's recent median increment and at
+least 0.5 px); small confirmed steps are logged, not paged.
+
 ### E5 confounders, thresholds-only arm (measured)
 
 `python evaluation/e5_confounders.py`. 30 epochs each, 5-frame bursts with sub-pixel jitter and
