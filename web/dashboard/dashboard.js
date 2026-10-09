@@ -99,6 +99,38 @@
 
     drawDisp($("chart-disp"), z, mm);
     drawIV($("chart-iv"), z);
+    renderAgent(base);
+  }
+
+  async function renderAgent(base) {
+    const box = $("agent-events"), empty = $("agent-empty");
+    box.innerHTML = "";
+    let log;
+    try { log = await getJSON(`${base}/agentlog.json`); } catch (e) { empty.hidden = false; return; }
+    if (!log.events || !log.events.length) { empty.hidden = false; return; }
+    empty.hidden = true;
+    for (const e of [...log.events].reverse().slice(0, 8)) {
+      const d = document.createElement("details");
+      d.className = "agent-event";
+      const verdictCls = e.verdict === "CONFIRMED" ? "chip-critical" : e.verdict === "FALSE_ALARM" ? "chip-quiet" : "chip-accelerating";
+      d.innerHTML = `<summary><span class="chip ${verdictCls}">${e.verdict}</span> ${e.event} at t = ${fmt(e.t, 2)} · ${e.policy} policy · ${e.n_tool_calls} OpenCV tool calls · ${e.paged_human ? "human paged" : "no page"} · ${fmt(e.seconds, 1)} s</summary><p class="agent-summary">${(e.summary || "").replace(/</g, "&lt;")}</p><div class="trace">loading trace…</div>`;
+      box.appendChild(d);
+      d.addEventListener("toggle", async () => {
+        if (!d.open || d.dataset.loaded) return;
+        d.dataset.loaded = "1";
+        try {
+          const tr = await getJSON(`${base}/agent/${Number(e.t)}.json`);
+          const ol = document.createElement("ol");
+          for (const c of tr.calls) {
+            const li = document.createElement("li");
+            const res = JSON.stringify(c.result);
+            li.innerHTML = `<b>${c.tool}</b>(${Object.entries(c.args).map(([k, v]) => `${k}=${JSON.stringify(v)}`).join(", ")}) → <code>${res.length > 400 ? res.slice(0, 400) + "…" : res}</code>`;
+            ol.appendChild(li);
+          }
+          d.querySelector(".trace").replaceChildren(ol);
+        } catch (err) { d.querySelector(".trace").textContent = "trace unavailable"; }
+      });
+    }
   }
 
   async function renderApproval(ap, base) {

@@ -28,6 +28,11 @@ Parameters:
     Type: String
     Default: ""
     Description: Duty contact e-mail for CRITICAL alerts and system-health alarms (optional).
+  AgentMode:
+    Type: String
+    Default: llm
+    AllowedValues: [llm, rules, off]
+    Description: Supervising agent policy on the worker. llm = Claude on Amazon Bedrock; rules = deterministic; off = thresholds only.
   ApprovalSecret:
     Type: String
     NoEcho: true
@@ -288,6 +293,11 @@ Resources:
                 Action: [ssm:GetParameter]
                 Resource: !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AWS::StackName}/approval-secret
               - Effect: Allow
+                Action: [bedrock:InvokeModel, bedrock:InvokeModelWithResponseStream]
+                Resource:
+                  - !Sub arn:aws:bedrock:${AWS::Region}:${AWS::AccountId}:inference-profile/us.anthropic.*
+                  - arn:aws:bedrock:*::foundation-model/anthropic.*
+              - Effect: Allow
                 Action: [logs:CreateLogGroup, logs:CreateLogStream, logs:PutLogEvents, logs:DescribeLogStreams]
                 Resource: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/telltale/*
 
@@ -331,6 +341,7 @@ Resources:
           export TELLTALE_ALERT_TOPIC=${AlertTopic}
           export TELLTALE_APPROVAL_URL=${ApprovalUrl.FunctionUrl}
           export TELLTALE_SECRET_PARAM=/${AWS::StackName}/approval-secret
+          export TELLTALE_AGENT=${AgentMode}
           mkdir -p /opt/telltale && cd /opt/telltale
           apt-get update -y
           apt-get install -y python3-venv python3-pip unzip curl

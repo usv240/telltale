@@ -66,6 +66,13 @@
     <p id="iv-empty" class="empty" hidden>No acceleration detected yet. This chart fills in once the short-average velocity stays above the long-average velocity for three epochs.</p>
   </section>
 
+  <section class="panel" aria-labelledby="h-agent">
+    <h2 id="h-agent">Supervising agent</h2>
+    <details class="help"><summary>How to read this</summary><p>When the instrument raises an event (acceleration, camera event, quality drop), a bounded agent investigates by calling OpenCV 5 again: re-measuring against alternate references, re-estimating camera motion, checking sharpness and direction coherence. Each result changes what it calls next. It can page a person or close the event as a false alarm; it can never send a public alert. Every tool call is logged here.</p></details>
+    <p id="agent-empty" class="empty">No events investigated yet.</p>
+    <div id="agent-events"></div>
+  </section>
+
   <section class="panel" aria-labelledby="h-health">
     <h2 id="h-health">Instrument health</h2>
     <details class="help"><summary>How to read this</summary><p>The honesty panel. Coverage is the share of patches that passed quality checks; stabilisation inliers and the chosen camera model show how well camera motion was explained; the OpenCV build and worker identity prove which code ran where. The epoch log lists every epoch, including the unusable ones and why.</p></details>

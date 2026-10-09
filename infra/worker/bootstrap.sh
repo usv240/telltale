@@ -10,7 +10,7 @@ if [ -x /opt/cool/venvs/python_3.12/bin/python ]; then
   # COOL AMI: use the COOL-built OpenCV 5 environment as-is (this is the award's core claim).
   PY=/opt/cool/venvs/python_3.12/bin/python
   MODE=cool
-  "$PY" -m pip install --quiet boto3==1.40.0
+  "$PY" -m pip install --quiet boto3==1.40.0 "anthropic[bedrock]==1.12.1"
 else
   # Stock AMI: pinned pip OpenCV 5 wheel (the E6 baseline).
   MODE=stock
@@ -30,6 +30,7 @@ TELLTALE_MODE=${MODE}
 TELLTALE_ALERT_TOPIC=${TELLTALE_ALERT_TOPIC:-}
 TELLTALE_APPROVAL_URL=${TELLTALE_APPROVAL_URL:-}
 TELLTALE_SECRET_PARAM=${TELLTALE_SECRET_PARAM:-}
+TELLTALE_AGENT=${TELLTALE_AGENT:-llm}
 EOF
 
 cat > /etc/systemd/system/telltale-worker.service <<EOF

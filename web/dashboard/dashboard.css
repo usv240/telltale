@@ -86,3 +86,9 @@ details.help { margin: 2px 0 10px; color: var(--muted); font-size: 0.9rem; }
 details.help summary { cursor: pointer; color: var(--accent); font-weight: 600; }
 details.help p { margin: 6px 0 0; }
 a.btn { text-decoration: none; }
+.agent-event { border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; margin: 8px 0; }
+.agent-event summary { cursor: pointer; }
+.agent-summary { margin: 8px 0; }
+.trace ol { padding-left: 20px; font-size: 0.85rem; }
+.trace li { margin: 4px 0; }
+.trace code { font-size: 0.78rem; word-break: break-all; color: var(--muted); }

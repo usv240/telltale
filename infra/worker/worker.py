@@ -39,6 +39,8 @@ from pathlib import Path
 import cv2
 import numpy as np
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))   # repo root, for `agent`
+
 from telltale import (ForecastConfig, SiteConfig, compute_field, forecast, polygon_mask,
                       stabilize, stack_burst, zone_displacement)
 from telltale.forecast import moving_average, smoothed_velocities
@@ -231,6 +233,8 @@ def process_epoch(store, site_name: str, t: float, frames: list[np.ndarray],
     if stack.status in (STATUS_BLIND, STATUS_BLURRED):
         record["reason"] = stack.status
         return _finish(store, site, site_name, record, None, t0)
+    # Keep the stacked epoch so the supervising agent can re-run stabilization and DIC later.
+    store.put(f"{priv}/stacked/{t:g}.npy", _npy(stack.image))
 
     chained = site.reference_mode == "chained"
     ref_key = f"{priv}/previous.npy" if chained else f"{priv}/reference.npy"
@@ -262,6 +266,7 @@ def process_epoch(store, site_name: str, t: float, frames: list[np.ndarray],
     if st.verdict != VERDICT_OK:
         record["reason"] = st.verdict
         return _finish(store, site, site_name, record, None, t0)
+    store.put(f"{priv}/stabilized/{t:g}.npy", _npy(st.image))
 
     grid_mask = None
     if site.mask_window > 0:
@@ -459,12 +464,42 @@ def _finish(store, site: SiteConfig, site_name: str, record: dict, fld, t0: floa
     store.put(f"{pub}/series.json", _json(series), "application/json")
 
     approval = approval_status(store, site_name, series["records"], overall)
-    if overall == "CRITICAL" and prev_state != "CRITICAL":
+    payload = {"site": site_name, "state": overall, "state_display": overall_display,
+               "updated_t": record["t"], "n_epochs": len(series["records"]),
+               "n_unusable": n_unusable, "zones": fcs, "runtime": record["runtime"],
+               "mm_per_px": site.mm_per_px, "approval": approval}
+    store.put(f"{pub}/forecast.json", _json(payload), "application/json")
+
+    # ---- supervising agent: investigates events; may page a human, never alerts the public
+    agent_mode = os.environ.get("TELLTALE_AGENT", "llm" if hasattr(store, "s3") else "rules").lower()
+    trace = None
+    event = None
+    if agent_mode != "off":
+        from agent.supervisor import _event_from, investigate
+        prev_recs = [r for r in series["records"] if r["t"] < record["t"]]
+        prev_reason = prev_recs[-1].get("reason") if prev_recs else None
+        if prev_recs and (prev_recs[-1].get("field") or {}).get("coverage", 1.0) < 0.4:
+            prev_reason = "LOW_COVERAGE"
+        event = _event_from(record, prev_state, overall, prev_reason)
+        if event:
+            trace = investigate(store, site_name, record["t"], event, alerting(),
+                                use_llm=(agent_mode == "llm"))
+            payload["agent"] = {"t": record["t"], "event": event, "policy": trace["policy"],
+                                "verdict": trace["verdict"], "paged_human": trace["paged_human"],
+                                "n_tool_calls": trace["n_tool_calls"], "summary": trace["summary"]}
+            store.put(f"{pub}/forecast.json", _json(payload), "application/json")
+
+    entered_critical = overall == "CRITICAL" and prev_state != "CRITICAL"
+    agent_handled = trace is not None and trace["verdict"] in ("CONFIRMED", "FALSE_ALARM")
+    if entered_critical and not agent_handled:
+        # Safety net: no agent, agent disabled, or agent inconclusive -> a person is paged.
         z = max(fcs.values(), key=lambda f: f.get("horizon") if f.get("horizon") is not None else 1e9, default={})
         links = approval.get("links", {})
         msg = (f"TellTale site {site_name} entered CRITICAL at epoch t={record['t']:g}.\n"
                f"Forecast failure window: t = {z.get('t_lo')} to {z.get('t_hi')} (median {z.get('tf')}), "
-               f"R2 {z.get('r2')}.\n\nNo public alert is sent automatically. Decide:\n"
+               f"R2 {z.get('r2')}.\n"
+               + (f"Agent verdict: {trace['verdict']} ({trace['summary'][:300]})\n" if trace else "")
+               + f"\nNo public alert is sent automatically. Decide:\n"
                f"APPROVE: {links.get('approve', 'approval link not configured')}\n"
                f"DISMISS: {links.get('dismiss', 'approval link not configured')}\n")
         alerting().publish(f"TellTale CRITICAL: {site_name}", msg)
@@ -472,12 +507,6 @@ def _finish(store, site: SiteConfig, site_name: str, record: dict, fld, t0: floa
     elif overall != "CRITICAL" and prev_state == "CRITICAL":
         alerting().publish(f"TellTale {site_name}: left CRITICAL",
                            f"Site {site_name} is now {overall} at epoch t={record['t']:g}.")
-
-    payload = {"site": site_name, "state": overall, "state_display": overall_display,
-               "updated_t": record["t"], "n_epochs": len(series["records"]),
-               "n_unusable": n_unusable, "zones": fcs, "runtime": record["runtime"],
-               "mm_per_px": site.mm_per_px, "approval": approval}
-    store.put(f"{pub}/forecast.json", _json(payload), "application/json")
 
     raw = store.get("public/sites/index.json")
     index = json.loads(raw) if raw else []

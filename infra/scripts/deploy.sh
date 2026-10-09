@@ -31,7 +31,7 @@ echo "== packaging release"
 rm -f /tmp/pipeline.tar.gz
 tar czf /tmp/pipeline.tar.gz \
   --exclude='__pycache__' --exclude='.pytest_cache' --exclude='*.egg-info' \
-  pipeline infra/worker evaluation/e6_cool_benchmark.py
+  pipeline infra/worker agent evaluation/e6_cool_benchmark.py
 
 echo "== ensuring bucket exists for the release artifact (stack creates it on first deploy)"
 if ! aws s3api head-bucket --bucket "$BUCKET" 2>/dev/null; then
@@ -67,7 +67,7 @@ QUEUE=$(aws cloudformation describe-stacks --region "$REGION" --stack-name "$STA
 echo "== refreshing worker code on ${INSTANCE} via SSM (no-op on first boot; user-data does it)"
 aws ssm send-command --region "$REGION" --instance-ids "$INSTANCE" \
   --document-name AWS-RunShellScript --comment "telltale update" \
-  --parameters "commands=[\"set -e\",\"export TELLTALE_BUCKET=${BUCKET} TELLTALE_QUEUE_URL=${QUEUE} TELLTALE_REGION=${REGION} TELLTALE_ALERT_TOPIC=${TOPIC} TELLTALE_APPROVAL_URL=${APPROVAL} TELLTALE_SECRET_PARAM=/${STACK}/approval-secret\",\"cd /opt/telltale && aws s3 cp s3://${BUCKET}/release/pipeline.tar.gz . && tar xzf pipeline.tar.gz && bash infra/worker/bootstrap.sh\"]" \
+  --parameters "commands=[\"set -e\",\"export TELLTALE_BUCKET=${BUCKET} TELLTALE_QUEUE_URL=${QUEUE} TELLTALE_REGION=${REGION} TELLTALE_ALERT_TOPIC=${TOPIC} TELLTALE_APPROVAL_URL=${APPROVAL} TELLTALE_SECRET_PARAM=/${STACK}/approval-secret TELLTALE_AGENT=llm\",\"cd /opt/telltale && aws s3 cp s3://${BUCKET}/release/pipeline.tar.gz . && tar xzf pipeline.tar.gz && bash infra/worker/bootstrap.sh\"]" \
   --query "Command.CommandId" --output text 2>/dev/null || echo "   (SSM not ready yet; worker installs itself on first boot)"
 
 echo
