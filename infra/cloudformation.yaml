@@ -24,12 +24,124 @@ Parameters:
     Type: String
     Default: ""
     Description: Leave blank to use telltale-<account-id>.
+  AlertEmail:
+    Type: String
+    Default: ""
+    Description: Duty contact e-mail for CRITICAL alerts and system-health alarms (optional).
+  ApprovalSecret:
+    Type: String
+    NoEcho: true
+    MinLength: 16
+    Description: Shared secret that signs approve / dismiss links (deploy.sh generates one).
 
 Conditions:
   UseCool: !Not [!Equals [!Ref CoolAmiId, ""]]
   DefaultBucketName: !Equals [!Ref BucketName, ""]
+  HasEmail: !Not [!Equals [!Ref AlertEmail, ""]]
 
 Resources:
+  # ---------------------------------------------------------------- alerting and human approval
+  AlertTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub ${AWS::StackName}-alerts
+      DisplayName: TellTale alerts
+
+  AlertSubscription:
+    Type: AWS::SNS::Subscription
+    Condition: HasEmail
+    Properties:
+      TopicArn: !Ref AlertTopic
+      Protocol: email
+      Endpoint: !Ref AlertEmail
+
+  ApprovalSecretParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub /${AWS::StackName}/approval-secret
+      Type: String
+      Value: !Ref ApprovalSecret
+      Description: Signs approve / dismiss links; read by the worker and the approval function
+
+  ApprovalRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal: { Service: lambda.amazonaws.com }
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: telltale-approval
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action: [s3:GetObject, s3:PutObject]
+                Resource: !Sub arn:aws:s3:::telltale-${AWS::AccountId}/public/sites/*/decisions.json
+              - Effect: Allow
+                Action: [sns:Publish]
+                Resource: !Ref AlertTopic
+
+  ApprovalFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-approval
+      Runtime: python3.12
+      Architectures: [arm64]
+      Handler: index.handler
+      Timeout: 10
+      Role: !GetAtt ApprovalRole.Arn
+      Environment:
+        Variables:
+          BUCKET: !Sub telltale-${AWS::AccountId}
+          SECRET: !Ref ApprovalSecret
+          TOPIC: !Ref AlertTopic
+      Code:
+        ZipFile: |
+          import json, os, hmac, hashlib, time, boto3
+          s3 = boto3.client("s3"); sns = boto3.client("sns")
+          B, S, T = os.environ["BUCKET"], os.environ["SECRET"], os.environ["TOPIC"]
+          def sign(site, t, action):
+              return hmac.new(S.encode(), f"{site}|{t}|{action}".encode(), hashlib.sha256).hexdigest()[:32]
+          def page(title, body, code=200):
+              return {"statusCode": code, "headers": {"content-type": "text/html; charset=utf-8"},
+                      "body": f"<!doctype html><meta name=viewport content='width=device-width'><body style='font-family:system-ui;max-width:40em;margin:3em auto'><h2>{title}</h2><p>{body}</p></body>"}
+          def handler(event, ctx):
+              q = event.get("queryStringParameters") or {}
+              site, t, action, tok = q.get("site", ""), q.get("t", ""), q.get("action", ""), q.get("token", "")
+              if action not in ("approve", "dismiss") or not site or not t:
+                  return page("TellTale", "Missing parameters.", 400)
+              if not hmac.compare_digest(tok, sign(site, t, action)):
+                  return page("TellTale", "This link is not valid.", 403)
+              key = f"public/sites/{site}/decisions.json"
+              try:
+                  dec = json.loads(s3.get_object(Bucket=B, Key=key)["Body"].read())
+              except Exception:
+                  dec = {"decisions": []}
+              ip = (event.get("requestContext", {}).get("http", {}) or {}).get("sourceIp", "")
+              rec = {"site": site, "t": float(t), "action": action, "at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "source": ip}
+              dec["decisions"] = [d for d in dec["decisions"] if not (d["t"] == rec["t"] and d["site"] == site)] + [rec]
+              s3.put_object(Bucket=B, Key=key, Body=json.dumps(dec, indent=1), ContentType="application/json")
+              sns.publish(TopicArn=T, Subject=f"TellTale {site}: alert {action}d", Message=json.dumps(rec, indent=1))
+              verb = "approved. The public alert for this site may now be issued." if action == "approve" else "dismissed. No public alert will be issued for this episode; the instrument keeps measuring."
+              return page("TellTale decision recorded", f"Site <b>{site}</b>, epoch t = {t}: {verb} Logged at {rec['at']}.")
+
+  ApprovalUrl:
+    Type: AWS::Lambda::Url
+    Properties:
+      TargetFunctionArn: !Ref ApprovalFunction
+      AuthType: NONE
+
+  ApprovalUrlPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref ApprovalFunction
+      Action: lambda:InvokeFunctionUrl
+      Principal: "*"
+      FunctionUrlAuthType: NONE
+
   # ---------------------------------------------------------------- queueing
   EpochDLQ:
     Type: AWS::SQS::Queue
@@ -170,6 +282,12 @@ Resources:
                 Condition:
                   StringEquals: { cloudwatch:namespace: TellTale }
               - Effect: Allow
+                Action: [sns:Publish]
+                Resource: !Ref AlertTopic
+              - Effect: Allow
+                Action: [ssm:GetParameter]
+                Resource: !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AWS::StackName}/approval-secret
+              - Effect: Allow
                 Action: [logs:CreateLogGroup, logs:CreateLogStream, logs:PutLogEvents, logs:DescribeLogStreams]
                 Resource: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/telltale/*
 
@@ -210,6 +328,9 @@ Resources:
           export TELLTALE_QUEUE_URL=${EpochQueue}
           export TELLTALE_REGION=${AWS::Region}
           export TELLTALE_STACK=${AWS::StackName}
+          export TELLTALE_ALERT_TOPIC=${AlertTopic}
+          export TELLTALE_APPROVAL_URL=${ApprovalUrl.FunctionUrl}
+          export TELLTALE_SECRET_PARAM=/${AWS::StackName}/approval-secret
           mkdir -p /opt/telltale && cd /opt/telltale
           apt-get update -y
           apt-get install -y python3-venv python3-pip unzip curl
@@ -237,6 +358,8 @@ Resources:
       Threshold: 900
       ComparisonOperator: GreaterThanThreshold
       TreatMissingData: notBreaching
+      AlarmActions: [!Ref AlertTopic]
+      OKActions: [!Ref AlertTopic]
 
   DLQAlarm:
     Type: AWS::CloudWatch::Alarm
@@ -251,8 +374,29 @@ Resources:
       Threshold: 0
       ComparisonOperator: GreaterThanThreshold
       TreatMissingData: notBreaching
+      AlarmActions: [!Ref AlertTopic]
+
+  WorkerStoppedAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: Worker instance stopped reporting CPU for 15 minutes (stopped or crashed)
+      Namespace: AWS/EC2
+      MetricName: CPUUtilization
+      Dimensions: [{ Name: InstanceId, Value: !Ref Worker }]
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 3
+      Threshold: 0
+      ComparisonOperator: LessThanOrEqualToThreshold
+      TreatMissingData: breaching
+      AlarmActions: [!Ref AlertTopic]
+      OKActions: [!Ref AlertTopic]
 
 Outputs:
+  AlertTopicArn:
+    Value: !Ref AlertTopic
+  ApprovalUrl:
+    Value: !GetAtt ApprovalUrl.FunctionUrl
   Bucket:
     Value: !Ref DataBucket
   QueueUrl:

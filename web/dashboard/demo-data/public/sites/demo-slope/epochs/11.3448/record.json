@@ -16,10 +16,10 @@
   "instance_id": null
  },
  "timing": {
-  "stack_s": 0.02108310000039637,
-  "stabilize_s": 0.12147119996370748,
-  "dic_s": 0.11116160004166886,
-  "total_s": 0.2880828999914229
+  "stack_s": 0.02918469998985529,
+  "stabilize_s": 0.10061269998550415,
+  "dic_s": 0.11971890000859275,
+  "total_s": 0.2728011999861337
  },
  "overlay": "epochs/11.3448/overlay.png",
  "stack": {
@@ -47,6 +47,7 @@
   "n_refine": 136,
   "n_verify": 60,
   "mount_moved": true,
+  "coarse": "orb",
   "refine_model": "translation",
   "refine_rms": 0.05051671341061592,
   "refine_inlier_frac": 1.0,
@@ -84,5 +85,6 @@
    "mm": 0.4390679774334523,
    "sigma_mm": 0.018466289938323128
   }
- }
+ },
+ "state": "ACCELERATING"
 }

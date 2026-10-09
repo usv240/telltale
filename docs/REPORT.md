@@ -20,9 +20,11 @@ failure-time forecast, and mines have relied on it with 100k to 500k USD radar f
 (Bingham Canyon 2013: evacuated the morning of a 165-million-tonne collapse, no casualties).
 Communities without instruments do not get the warning (Wayanad 2024, about 400 deaths).
 
-TellTale makes a 30 to 50 USD camera do the radar's job for creep-type failures: measure
-sub-pixel surface displacement, reject everything that merely looks like motion, forecast the
-failure window with uncertainty, and put a person in the loop before any alert.
+TellTale applies the radar's physics to a 30 to 50 USD camera, for creep-type failures in
+daylight: measure sub-pixel surface displacement, reject everything that merely looks like
+motion, forecast the failure window with uncertainty, and put a person in the loop before any
+alert. Measured precision: about 0.01 px on synthetic imagery (E1) and 0.1 to 0.4 px of daily
+scatter on a real vegetated bluff (E4); it is not a substitute for radar where radar exists.
 
 ## 2. Users
 

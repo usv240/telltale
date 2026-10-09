@@ -42,6 +42,7 @@ import numpy as np
 from telltale import (ForecastConfig, SiteConfig, compute_field, forecast, polygon_mask,
                       stabilize, stack_burst, zone_displacement)
 from telltale.forecast import moving_average, smoothed_velocities
+from telltale.masking import variance_mask
 from telltale.overlay import render_overlay, render_status_map
 from telltale.stabilize import VERDICT_OK
 from telltale.stack import STATUS_BLIND, STATUS_BLURRED
@@ -231,9 +232,13 @@ def process_epoch(store, site_name: str, t: float, frames: list[np.ndarray],
         record["reason"] = stack.status
         return _finish(store, site, site_name, record, None, t0)
 
-    ref_raw = store.get(f"{priv}/reference.npy")
+    chained = site.reference_mode == "chained"
+    ref_key = f"{priv}/previous.npy" if chained else f"{priv}/reference.npy"
+    ref_raw = store.get(ref_key)
     if ref_raw is None:
         store.put(f"{priv}/reference.npy", _npy(stack.image))
+        if chained:
+            store.put(f"{priv}/previous.npy", _npy(stack.image))
         store.put(f"{pub}/reference.png", _png(np.clip(stack.image * 255, 0, 255).astype(np.uint8)),
                   "image/png")
         record["usable"] = True
@@ -258,21 +263,49 @@ def process_epoch(store, site_name: str, t: float, frames: list[np.ndarray],
         record["reason"] = st.verdict
         return _finish(store, site, site_name, record, None, t0)
 
+    grid_mask = None
+    if site.mask_window > 0:
+        recent = _recent_epochs(store, priv, site.mask_window)
+        if len(recent) >= 2:
+            grid_mask = variance_mask(recent + [st.image])
+            record["mask"] = {"window": len(recent) + 1,
+                              "excluded_frac": float(1.0 - (grid_mask > 0).mean())}
     st_t = time.perf_counter()
-    fld = compute_field(ref, st.image, site.grid)
+    fld = compute_field(ref, st.image, site.grid, mask=grid_mask)
     record["timing"]["dic_s"] = time.perf_counter() - st_t
+    if site.mask_window > 0:
+        _push_recent(store, priv, t, st.image, site.mask_window)
+    if chained:
+        store.put(f"{priv}/previous.npy", _npy(st.image))
     record["field"] = {"n_subsets": int(len(fld.xs)), "n_valid": fld.n_valid,
                        "coverage": fld.coverage, "status_counts": fld.status_counts(),
                        "crosscheck_px": fld.crosscheck_px, "review": fld.review}
     record["usable"] = not fld.review
     record["reason"] = "REVIEW" if fld.review else "OK"
 
+    prev_zones = {}
+    if chained:
+        raw_series = store.get(f"{pub}/series.json")
+        if raw_series:
+            for r in reversed(json.loads(raw_series)["records"]):
+                if r.get("usable") and r.get("zones"):
+                    prev_zones = r["zones"]
+                    break
     zones = {}
     for name, poly in site.target_zones.items():
         zm = zone_displacement(fld, name, poly)
         zd = zm.to_dict()
-        zd["mm"] = zm.magnitude * site.mm_per_px
-        zd["sigma_mm"] = zm.sigma * site.mm_per_px
+        if chained:
+            pz = prev_zones.get(name, {})
+            zd["increment_u"], zd["increment_v"] = zd["u"], zd["v"]
+            if zd["u"] is not None and np.isfinite(zd["u"]):
+                zd["u"] = (pz.get("u") or 0.0) + zd["u"]
+                zd["v"] = (pz.get("v") or 0.0) + zd["v"]
+                zd["magnitude"] = float(np.hypot(zd["u"], zd["v"]))
+                # chained uncertainty grows as a random walk of per-step sigmas
+                zd["sigma"] = float(np.hypot(pz.get("sigma") or 0.0, zd["sigma"]))
+        zd["mm"] = (zd["magnitude"] or 0.0) * site.mm_per_px
+        zd["sigma_mm"] = (zd["sigma"] or 0.0) * site.mm_per_px
         zones[name] = zd
     record["zones"] = zones
 
@@ -292,20 +325,117 @@ def _npy(a: np.ndarray) -> bytes:
     return buf.getvalue()
 
 
+def _recent_epochs(store, priv: str, window: int) -> list[np.ndarray]:
+    keys = sorted(k for k in store.list(f"{priv}/recent/") if k.endswith(".npy"))[-window:]
+    out = []
+    for k in keys:
+        raw = store.get(k)
+        if raw is not None:
+            out.append(np.load(io.BytesIO(raw)))
+    return out
+
+
+def _push_recent(store, priv: str, t: float, img: np.ndarray, window: int) -> None:
+    store.put(f"{priv}/recent/{t:012.3f}.npy", _npy(img))
+    keys = sorted(k for k in store.list(f"{priv}/recent/") if k.endswith(".npy"))
+    for k in keys[:-window]:
+        try:
+            if hasattr(store, "s3"):
+                store.s3.delete_object(Bucket=store.bucket, Key=k)
+            else:
+                (store.root / k).unlink(missing_ok=True)
+        except Exception as e:
+            log.warning("could not prune %s: %s", k, e)
+
+
+# ------------------------------------------------------------------ human control
+class Alerting:
+    """Signed approve / dismiss links and SNS publication. Inert when not configured, so the
+    local store path and the tests run without AWS."""
+
+    def __init__(self):
+        self.topic = os.environ.get("TELLTALE_ALERT_TOPIC") or None
+        self.url = (os.environ.get("TELLTALE_APPROVAL_URL") or "").rstrip("/") or None
+        self.secret = os.environ.get("TELLTALE_APPROVAL_SECRET") or None
+        param = os.environ.get("TELLTALE_SECRET_PARAM")
+        if self.secret is None and param:
+            try:
+                import boto3
+                ssm = boto3.client("ssm", region_name=os.environ.get("TELLTALE_REGION"))
+                self.secret = ssm.get_parameter(Name=param)["Parameter"]["Value"]
+            except Exception as e:
+                log.warning("approval secret unavailable: %s", e)
+        self._sns = None
+
+    def sign(self, site: str, t: float, action: str) -> str:
+        import hmac
+        return hmac.new(self.secret.encode(), f"{site}|{t}|{action}".encode(),
+                        hashlib.sha256).hexdigest()[:32]
+
+    def links(self, site: str, t: float) -> dict:
+        if not (self.url and self.secret):
+            return {}
+        ts = f"{t:g}"
+        return {a: f"{self.url}/?site={site}&t={ts}&action={a}&token={self.sign(site, ts, a)}"
+                for a in ("approve", "dismiss")}
+
+    def publish(self, subject: str, message: str) -> None:
+        if not self.topic:
+            return
+        try:
+            import boto3
+            self._sns = self._sns or boto3.client("sns", region_name=os.environ.get("TELLTALE_REGION"))
+            self._sns.publish(TopicArn=self.topic, Subject=subject[:99], Message=message)
+        except Exception as e:
+            log.warning("sns publish failed: %s", e)
+
+
+_ALERTING: Alerting | None = None
+
+
+def alerting() -> Alerting:
+    global _ALERTING
+    if _ALERTING is None:
+        _ALERTING = Alerting()
+    return _ALERTING
+
+
+def approval_status(store, site_name: str, records: list[dict], overall: str) -> dict:
+    """Human-control state for the current CRITICAL episode (contiguous trailing run)."""
+    if overall != "CRITICAL":
+        return {"required": False, "status": "none"}
+    episode_start = records[-1]["t"]
+    for r in reversed(records):
+        if r.get("state") == "CRITICAL":
+            episode_start = r["t"]
+        else:
+            break
+    raw = store.get(f"public/sites/{site_name}/decisions.json")
+    decisions = json.loads(raw)["decisions"] if raw else []
+    applicable = [d for d in decisions if d["t"] >= episode_start]
+    out = {"required": True, "episode_start": episode_start, "epoch_t": records[-1]["t"]}
+    if applicable:
+        last = max(applicable, key=lambda d: d["at"])
+        out.update(status="approved" if last["action"] == "approve" else "dismissed",
+                   decided_at=last["at"], decided_t=last["t"])
+    else:
+        out.update(status="pending", links=alerting().links(site_name, records[-1]["t"]))
+    return out
+
+
 def _finish(store, site: SiteConfig, site_name: str, record: dict, fld, t0: float) -> dict:
     pub = f"public/sites/{site_name}"
     record["timing"]["total_s"] = time.perf_counter() - t0
     record = _clean(record)
-    store.put(f"{pub}/epochs/{record['t']:g}/record.json", _json(record), "application/json")
 
     raw = store.get(f"{pub}/series.json")
     series = json.loads(raw) if raw else {"records": []}
-    series["records"] = [r for r in series["records"] if r["t"] != record["t"]] + [record]
-    series["records"].sort(key=lambda r: r["t"])
-    store.put(f"{pub}/series.json", _json(series), "application/json")
+    prev_state = series["records"][-1].get("state", "QUIET") if series["records"] else "QUIET"
 
     fcs, overall = {}, "QUIET"
     rank = {"QUIET": 0, "MOVING": 1, "ACCELERATING": 2, "CRITICAL": 3}
+    series["records"] = [r for r in series["records"] if r["t"] != record["t"]] + [record]
+    series["records"].sort(key=lambda r: r["t"])
     for name in site.target_zones:
         pts = [(r["t"], r["zones"][name]["magnitude"], r["zones"][name]["sigma"])
                for r in series["records"] if r.get("usable") and r.get("zones", {}).get(name)
@@ -324,10 +454,29 @@ def _finish(store, site: SiteConfig, site_name: str, record: dict, fld, t0: floa
         overall_display = f"{overall} (last epoch {record['reason']})"
     else:
         overall_display = overall
+    record["state"] = overall
+    store.put(f"{pub}/epochs/{record['t']:g}/record.json", _json(record), "application/json")
+    store.put(f"{pub}/series.json", _json(series), "application/json")
+
+    approval = approval_status(store, site_name, series["records"], overall)
+    if overall == "CRITICAL" and prev_state != "CRITICAL":
+        z = max(fcs.values(), key=lambda f: f.get("horizon") if f.get("horizon") is not None else 1e9, default={})
+        links = approval.get("links", {})
+        msg = (f"TellTale site {site_name} entered CRITICAL at epoch t={record['t']:g}.\n"
+               f"Forecast failure window: t = {z.get('t_lo')} to {z.get('t_hi')} (median {z.get('tf')}), "
+               f"R2 {z.get('r2')}.\n\nNo public alert is sent automatically. Decide:\n"
+               f"APPROVE: {links.get('approve', 'approval link not configured')}\n"
+               f"DISMISS: {links.get('dismiss', 'approval link not configured')}\n")
+        alerting().publish(f"TellTale CRITICAL: {site_name}", msg)
+        log.info("CRITICAL transition for %s; alert published=%s", site_name, bool(alerting().topic))
+    elif overall != "CRITICAL" and prev_state == "CRITICAL":
+        alerting().publish(f"TellTale {site_name}: left CRITICAL",
+                           f"Site {site_name} is now {overall} at epoch t={record['t']:g}.")
+
     payload = {"site": site_name, "state": overall, "state_display": overall_display,
                "updated_t": record["t"], "n_epochs": len(series["records"]),
                "n_unusable": n_unusable, "zones": fcs, "runtime": record["runtime"],
-               "mm_per_px": site.mm_per_px}
+               "mm_per_px": site.mm_per_px, "approval": approval}
     store.put(f"{pub}/forecast.json", _json(payload), "application/json")
 
     raw = store.get("public/sites/index.json")

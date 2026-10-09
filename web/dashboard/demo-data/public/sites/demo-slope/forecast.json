@@ -344,5 +344,12 @@
   "ami_id": null,
   "instance_id": null
  },
- "mm_per_px": 0.8
+ "mm_per_px": 0.8,
+ "approval": {
+  "required": true,
+  "episode_start": 47.0,
+  "epoch_t": 47.0,
+  "status": "pending",
+  "links": {}
+ }
 }

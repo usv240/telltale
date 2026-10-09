@@ -1,8 +1,8 @@
 # TellTale
 
-**See the ground move before it fails.** TellTale turns any fixed camera into a
-millimetre-precision instrument that measures slope creep and forecasts the time of failure,
-using classical OpenCV 5 computer vision, established geotechnical physics, and AWS.
+**See the ground move before it fails.** TellTale turns any fixed camera into a sub-pixel
+displacement instrument that measures slope creep and forecasts the time of failure, using
+classical OpenCV 5 computer vision, established geotechnical physics, and AWS.
 
 Team Ground Truth, OpenCV AI Competition 2026, powered by AWS.
 Live dashboard: https://d30le2uwgaimao.cloudfront.net/
@@ -12,8 +12,10 @@ Live dashboard: https://d30le2uwgaimao.cloudfront.net/
 Creep-type slope failures give warning: for days or weeks the surface moves a few millimetres
 per day and keeps accelerating. Mines watch for this with radar that costs 100k to 500k USD per
 site, and evacuate in time (Bingham Canyon 2013, Brienz 2023). Communities that cannot afford
-monitoring do not get the warning (Wayanad 2024, about 400 deaths). TellTale does the same
-measurement with a 30 to 50 USD camera and cents of cloud compute per day.
+monitoring do not get the warning (Wayanad 2024, about 400 deaths). TellTale applies the same
+physics to a 30 to 50 USD camera and cents of cloud compute per day. It is not a radar: it
+measures what a camera can see, in daylight, on creep-type failures, and it says so when it
+cannot see.
 
 ## How it works
 

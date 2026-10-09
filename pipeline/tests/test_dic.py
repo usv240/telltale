@@ -49,6 +49,16 @@ def test_zone_displacement_median_and_sigma():
     assert zm.sigma < 0.1
 
 
+def test_threaded_and_serial_fields_are_identical():
+    tex = make_texture(256, 256, seed=11)
+    ref, cur, _ = shift_image(tex, 0.625, -0.375, noise=0.005)
+    serial = compute_field(ref, cur, GridConfig(template=41, stride=16, search=8, threads=1))
+    threaded = compute_field(ref, cur, GridConfig(template=41, stride=16, search=8, threads=4))
+    assert len(serial.xs) >= 64
+    assert np.array_equal(serial.status, threaded.status)
+    assert np.allclose(serial.u, threaded.u) and np.allclose(serial.v, threaded.v)
+
+
 def test_field_roundtrip(tmp_path):
     tex = make_texture(200, 200, seed=6)
     ref, cur, _ = shift_image(tex, 0.375, 0.0)

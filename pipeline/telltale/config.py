@@ -26,6 +26,7 @@ class GridConfig:
     min_texture: float = 1e-4   # minimum mean corner response (image scaled 0..1)
     max_disp: Optional[float] = None  # sanity bound on |displacement|, default search - 1
     refine_iters: int = 1       # sub-pixel re-sampling passes after the first peak estimate
+    threads: int = 0            # worker threads for the subset loop; 0 = one per CPU
 
     def __post_init__(self) -> None:
         if self.template % 2 == 0:
@@ -56,6 +57,8 @@ class SiteConfig:
     grid: GridConfig = field(default_factory=GridConfig)
     forecast: ForecastConfig = field(default_factory=ForecastConfig)
     burst_size: int = 7
+    reference_mode: str = "fixed"   # "fixed": compare to the reference epoch; "chained": to the previous usable epoch and integrate
+    mask_window: int = 0            # epochs of trailing variance mask for vegetation/water; 0 = off
     notes: str = ""
 
     def to_json(self, path: str | Path) -> None:

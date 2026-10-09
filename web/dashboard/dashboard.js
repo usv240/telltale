@@ -57,6 +57,8 @@
     if (last && !last.usable) line += ` Last epoch unusable (${last.reason}).`;
     $("status-line").textContent = line;
 
+    renderApproval(fc.approval, base);
+
     $("overlay").src = lastUsable && lastUsable.overlay ? `${base}/${lastUsable.overlay}` : "";
     $("overlay-cap").textContent = lastUsable ? `Epoch t = ${fmt(lastUsable.t, 2)}; colour = displacement magnitude since the reference epoch, arrows = direction (scaled).` : "";
 
@@ -97,6 +99,39 @@
 
     drawDisp($("chart-disp"), z, mm);
     drawIV($("chart-iv"), z);
+  }
+
+  async function renderApproval(ap, base) {
+    const box = $("approval");
+    if (!ap || !ap.required) { box.hidden = true; return; }
+    box.hidden = false;
+    const txt = $("approval-text"), act = $("approval-actions"), list = $("decisions");
+    act.innerHTML = ""; list.innerHTML = "";
+    if (ap.status === "pending") {
+      txt.textContent = `Human decision required for the CRITICAL episode that began at t = ${fmt(ap.episode_start, 2)}. Nothing has been sent to the public.`;
+      if (ap.links && ap.links.approve) {
+        for (const [name, cls] of [["approve", "btn-approve"], ["dismiss", "btn-dismiss"]]) {
+          const a = document.createElement("a");
+          a.href = ap.links[name]; a.target = "_blank"; a.rel = "noopener";
+          a.className = "btn " + cls; a.textContent = name === "approve" ? "Approve public alert" : "Dismiss (false alarm)";
+          act.appendChild(a);
+        }
+      } else {
+        const s = document.createElement("span"); s.className = "hint";
+        s.textContent = "Approval links are issued by the deployed stack (e-mail and SNS); not available in the offline demo.";
+        act.appendChild(s);
+      }
+    } else {
+      txt.textContent = `Episode decision: ${ap.status} at ${ap.decided_at} (for epoch t = ${fmt(ap.decided_t, 2)}).`;
+    }
+    try {
+      const dec = await getJSON(`${base}/decisions.json`);
+      for (const d of [...dec.decisions].reverse().slice(0, 10)) {
+        const li = document.createElement("li");
+        li.textContent = `${d.at}: ${d.action} for epoch t = ${fmt(d.t, 2)}${d.source ? " from " + d.source : ""}`;
+        list.appendChild(li);
+      }
+    } catch (e) { /* no decisions yet */ }
   }
 
   const median = (a) => { const s = [...a].sort((x, y) => x - y); const m = Math.floor(s.length / 2); return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };

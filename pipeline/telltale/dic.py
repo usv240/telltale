@@ -240,10 +240,10 @@ def compute_field(ref: np.ndarray, cur: np.ndarray, grid: GridConfig | None = No
     tex = texture_map(ref, grid.template)[ys, xs].astype(np.float32) if n else np.zeros(0, np.float32)
     side = 2 * s + 1
 
-    for i in range(n):
+    def one(i: int) -> None:
         if tex[i] < grid.min_texture:
             status[i] = STATUS_LOW_TEXTURE
-            continue
+            return
         x, y = int(xs[i]), int(ys[i])
         tpl = ref[y - half:y + half + 1, x - half:x + half + 1]
         win = cur[y - half - s:y + half + s + 1, x - half - s:x + half + s + 1]
@@ -253,17 +253,17 @@ def compute_field(ref: np.ndarray, cur: np.ndarray, grid: GridConfig | None = No
         corr[i] = peak
         if not np.isfinite(peak) or peak < grid.min_corr:
             status[i] = STATUS_LOW_CORR
-            continue
+            return
         if px == 0 or py == 0 or px == side - 1 or py == side - 1:
             status[i] = STATUS_EDGE_PEAK
-            continue
+            return
         r2 = r.copy()
         r2[max(0, py - 3):py + 4, max(0, px - 3):px + 4] = -np.inf
         second = float(r2.max()) if np.isfinite(r2).any() else -1.0
         margin[i] = peak - second
         if margin[i] < grid.min_margin:
             status[i] = STATUS_LOW_MARGIN
-            continue
+            return
         ddx, ddy = subpixel_peak(r[py - 1:py + 2, px - 1:px + 2])
         ui, vi = px - s + ddx, py - s + ddy
         for _ in range(grid.refine_iters):
@@ -273,6 +273,19 @@ def compute_field(ref: np.ndarray, cur: np.ndarray, grid: GridConfig | None = No
         u[i], v[i] = ui, vi
         if np.hypot(u[i], v[i]) > grid.max_disp:
             status[i] = STATUS_OUT_OF_BOUND
+
+    # matchTemplate and warpAffine release the GIL, so a thread pool over subsets scales with
+    # cores; each subset writes only its own index, so no locking is needed.
+    n_threads = grid.threads if grid.threads > 0 else max(1, cv2.getNumberOfCPUs())
+    if n_threads > 1 and n >= 64:
+        from concurrent.futures import ThreadPoolExecutor
+        chunk = max(16, n // (n_threads * 4))
+        with ThreadPoolExecutor(max_workers=n_threads) as ex:
+            list(ex.map(lambda rng_: [one(i) for i in rng_],
+                        [range(a, min(n, a + chunk)) for a in range(0, n, chunk)]))
+    else:
+        for i in range(n):
+            one(i)
 
     fld = DisplacementField(xs, ys, u, v, corr, margin, tex, status, ref.shape,
                             grid.template, grid.stride, grid.search)
