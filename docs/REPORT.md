@@ -269,14 +269,27 @@ What the data support is that the documented movement days stand out from the qu
 by a factor of four to seven with coherent direction, and that the two failure modes seen
 (camera on moving ground, wet lens) are reported as such and never as ground motion.
 
+### E2 physical metrology (harness verified, photographs pending)
+
+`evaluation/e2_target.py` prints a 190 mm random-speckle target with a 100 mm scale bar;
+`evaluation/e2_metrology.py` turns bursts before and after known moves into a measured-versus-
+true regression per distance and lens. The harness was verified on synthetic captures rendered
+from the printed target at 20, 50 and 100 m equivalents (`e2_synthetic_captures.py`): slope
+0.997 to 1.002, intercept under 0.02 mm, RMS 0.009 to 0.048 mm (0.02 px). These are synthetic
+numbers and are labelled as such; the physical run is scheduled before the rig runs.
+
 ### Pending
 
-E2 physical metrology (micrometer stage at 20 to 100 m), E3 tabletop physical collapses
-(rig design and capture script are ready), E6 COOL and x86 cells.
+E2 photographs, E3 tabletop physical collapses (rig design and capture script are ready),
+E6 COOL cell.
 
 ## 7. User experience
 
-One static page, no framework, light and dark themes, keyboard-reachable controls. The first
+One static page, no framework, light and dark themes, keyboard-reachable controls, a "How it
+works" page, and a "How to read this" disclosure on every panel. A replay slider rewinds the
+whole instrument to any earlier epoch (overlay, facts, charts and the forecast as it stood then)
+and a Play button animates the record; judges can watch the acceleration and the forecast
+window appear without waiting for a slope to fail. The first
 sentence answers "is this slope okay", then the overlay image, then the series and the
 inverse-velocity chart with the forecast intercept and window, then the instrument health
 panel (coverage, stabilization inliers and model, epoch time, OpenCV build and worker identity)

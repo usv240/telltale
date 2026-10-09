@@ -48,7 +48,9 @@ python -m telltale simulate --jitter 1.0 --out ../out/sim    # synthetic collaps
 cd ..
 python infra/scripts/seed_demo.py --local web/dashboard/demo-data   # full worker path, offline
 python -m http.server 8765 -d web/dashboard                          # then open
-#   http://127.0.0.1:8765/?root=demo-data/public/sites
+#   http://127.0.0.1:8765/?root=demo-data/public/sites  (use the Replay slider)
+python evaluation/e2_target.py                 # printable speckle target for the metrology test
+python evaluation/e2_metrology.py --captures evaluation/e2/captures   # your photos -> mm table
 ```
 
 Deploy to AWS with `infra/scripts/deploy.sh` (see `infra/README.md`), then
@@ -72,7 +74,7 @@ Deploy to AWS with `infra/scripts/deploy.sh` (see `infra/README.md`), then
 | E1 synthetic sub-pixel accuracy | done | MAE 0.006 to 0.010 px, bias under 0.003 px, p95 under 0.025 px |
 | E3 synthetic collapse through the full cloud path | done | forecast 50.26, window [48.9, 61.9], truth 50.0, R² 0.98 |
 | E3 tabletop physical collapses | pending | rig and capture script ready |
-| E2 physical metrology | pending | |
+| E2 physical metrology | harness ready, photos pending | synthetic self-test at 20, 50, 100 m: slope 1.00, RMS 0.01 to 0.05 mm; printable target in `evaluation/e2/` |
 | E4 real landslide imagery (USGS Mukilteo) | done | documented Dec 9 2015 movement measured at 4 to 7x the quiet baseline with coherent downslope vectors; wet-lens period from Feb 10 correctly rejected |
 | E5 confounders (thresholds only) | done | zero false alarms under camera bump, lighting step, fog; non-rigid lens distortion partially caught |
 | E5 agent ablation (off / rules / Claude on Bedrock) | done | zero false pages in every arm; agent closes all four camera-distortion events as false alarms and pages a person at confirmed acceleration, 39 time units earlier than thresholds alone |

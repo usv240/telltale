@@ -7,6 +7,8 @@
   const ROOT = (qs.get("root") || "sites").replace(/\/$/, "");
   const $ = (id) => document.getElementById(id);
   const fmt = (x, d = 2) => (x === null || x === undefined || Number.isNaN(x)) ? "–" : Number(x).toFixed(d);
+  // Python's %g (6 significant digits, trailing zeros stripped): artifact folders are named with it.
+  const gfmt = (x) => { const n = Number(x); if (n === 0) return "0"; let s = n.toPrecision(6); if (s.includes("e")) return String(n); if (s.includes(".")) s = s.replace(/0+$/, "").replace(/\.$/, ""); return s; };
 
   // ---- theme
   const applyTheme = (t) => { if (t) document.documentElement.dataset.theme = t; else delete document.documentElement.dataset.theme; };
@@ -54,7 +56,7 @@
     i = Math.max(0, Math.min(recs.length - 1, i));
     const r = recs[i];
     let fc;
-    try { fc = await getJSON(`${d.base}/epochs/${Number(r.t)}/forecast.json`); }
+    try { fc = await getJSON(`${d.base}/epochs/${gfmt(r.t)}/forecast.json`); }
     catch (e) { fc = d.fc; }
     const series = { records: recs.slice(0, i + 1) };
     $("scrub-label").textContent = `epoch ${i + 1} of ${recs.length} · t = ${fmt(r.t, 2)} · ${fc.state}`;
@@ -108,7 +110,9 @@
     if (!z) line = `No measurements yet for ${site}.`;
     else if (state === "QUIET") line = `No significant movement in zone ${zoneName} over ${recs.length} epochs.`;
     else if (state === "MOVING") line = `Zone ${zoneName} is creeping steadily at ${fmt(lastV(z) * mm, 3)} mm per time unit; no acceleration detected.`;
-    else if (state === "ACCELERATING") line = `Zone ${zoneName} is accelerating since t = ${fmt(z.ooa_time, 1)}. Forecast failure window t = ${fmt(z.t_lo, 1)} to ${fmt(z.t_hi, 1)} (fit R² ${fmt(z.r2, 2)}).`;
+    else if (state === "ACCELERATING") line = z.tf !== null && z.tf !== undefined
+      ? `Zone ${zoneName} is accelerating since t = ${fmt(z.ooa_time, 1)}. Forecast failure window t = ${fmt(z.t_lo, 1)} to ${fmt(z.t_hi, 1)} (fit R² ${fmt(z.r2, 2)}).`
+      : `Zone ${zoneName} is accelerating since t = ${fmt(z.ooa_time, 1)}. Too few accelerating epochs for a forecast yet; the window appears once the inverse-velocity fit has enough points.`;
     else line = `CRITICAL: zone ${zoneName} forecast to fail between t = ${fmt(z.t_lo, 1)} and ${fmt(z.t_hi, 1)}, horizon ${fmt(z.horizon, 1)}. Human approval required before any public alert.`;
     if (last && !last.usable) line += ` Last epoch unusable (${last.reason}).`;
     $("status-line").textContent = line;
@@ -175,7 +179,7 @@
         if (!d.open || d.dataset.loaded) return;
         d.dataset.loaded = "1";
         try {
-          const tr = await getJSON(`${base}/agent/${Number(e.t)}.json`);
+          const tr = await getJSON(`${base}/agent/${gfmt(e.t)}.json`);
           const ol = document.createElement("ol");
           for (const c of tr.calls) {
             const li = document.createElement("li");
