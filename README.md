@@ -63,7 +63,7 @@ Deploy to AWS with `infra/scripts/deploy.sh` (see `infra/README.md`), then
 | `web/dashboard/` | Static dashboard (no framework) with bundled demo data | `web/DESIGN.md` |
 | `evaluation/` | E1 to E6 harnesses and results | `evaluation/DESIGN.md` |
 | `demo-rig/` | Tabletop collapse rig: build, capture script, run log | `demo-rig/DESIGN.md` |
-| `agent/` | Supervising agent design (investigation policy, MCP tools) | `agent/DESIGN.md` |
+| `agent/` | Supervising agent: OpenCV tools, Claude-on-Bedrock loop, rule policy | `agent/DESIGN.md`, `docs/agent_workflow.svg` |
 
 ## Evidence status
 
@@ -75,7 +75,8 @@ Deploy to AWS with `infra/scripts/deploy.sh` (see `infra/README.md`), then
 | E2 physical metrology | pending | |
 | E4 real landslide imagery (USGS Mukilteo) | done | documented Dec 9 2015 movement measured at 4 to 7x the quiet baseline with coherent downslope vectors; wet-lens period from Feb 10 correctly rejected |
 | E5 confounders (thresholds only) | done | zero false alarms under camera bump, lighting step, fog; non-rigid lens distortion partially caught |
-| E6 COOL benchmark | running | stock OpenCV 5 on c8g.large measured; COOL AMI pending subscription |
+| E5 agent ablation (off / rules / Claude on Bedrock) | done | zero false pages in every arm; agent closes all four camera-distortion events as false alarms and pages a person at confirmed acceleration, 39 time units earlier than thresholds alone |
+| E6 Graviton vs x86 | done | c8g.large 1.72 s per epoch vs c7i.large 2.73 s; 44 percent cheaper per 1,000 epochs; COOL cell pending subscription |
 
 ## Scope and responsible use
 

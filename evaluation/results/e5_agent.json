@@ -1,0 +1,452 @@
+{
+ "summary": {
+  "off": {
+   "false_pages": 0,
+   "correct_pages": 1,
+   "events": 0,
+   "tool_calls": 0
+  },
+  "rules": {
+   "false_pages": 0,
+   "correct_pages": 1,
+   "events": 7,
+   "tool_calls": 43
+  },
+  "llm": {
+   "false_pages": 0,
+   "correct_pages": 1,
+   "events": 7,
+   "tool_calls": 52
+  }
+ },
+ "arms": {
+  "off": {
+   "quiet": {
+    "final_state": "QUIET",
+    "true_tf": null,
+    "pages": 0,
+    "false_page": false,
+    "correct_page": false,
+    "events": [],
+    "verdicts": [],
+    "tool_calls": 0,
+    "forecast": {
+     "tf": null,
+     "t_lo": null,
+     "t_hi": null,
+     "r2": null
+    }
+   },
+   "quiet+bump": {
+    "final_state": "QUIET",
+    "true_tf": null,
+    "pages": 0,
+    "false_page": false,
+    "correct_page": false,
+    "events": [],
+    "verdicts": [],
+    "tool_calls": 0,
+    "forecast": {
+     "tf": null,
+     "t_lo": null,
+     "t_hi": null,
+     "r2": null
+    }
+   },
+   "quiet+lighting": {
+    "final_state": "QUIET",
+    "true_tf": null,
+    "pages": 0,
+    "false_page": false,
+    "correct_page": false,
+    "events": [],
+    "verdicts": [],
+    "tool_calls": 0,
+    "forecast": {
+     "tf": null,
+     "t_lo": null,
+     "t_hi": null,
+     "r2": null
+    }
+   },
+   "quiet+fog": {
+    "final_state": "QUIET",
+    "true_tf": null,
+    "pages": 0,
+    "false_page": false,
+    "correct_page": false,
+    "events": [],
+    "verdicts": [],
+    "tool_calls": 0,
+    "forecast": {
+     "tf": null,
+     "t_lo": null,
+     "t_hi": null,
+     "r2": null
+    }
+   },
+   "quiet+lens": {
+    "final_state": "MOVING",
+    "true_tf": null,
+    "pages": 0,
+    "false_page": false,
+    "correct_page": false,
+    "events": [],
+    "verdicts": [],
+    "tool_calls": 0,
+    "forecast": {
+     "tf": null,
+     "t_lo": null,
+     "t_hi": null,
+     "r2": null
+    }
+   },
+   "creep+bump": {
+    "final_state": "CRITICAL",
+    "true_tf": 50.0,
+    "pages": 1,
+    "false_page": false,
+    "correct_page": true,
+    "events": [],
+    "verdicts": [],
+    "tool_calls": 0,
+    "forecast": {
+     "tf": 50.50246008126937,
+     "t_lo": 49.39504927059025,
+     "t_hi": 71.02483861214557,
+     "r2": 0.9756574529129252
+    }
+   }
+  },
+  "rules": {
+   "quiet": {
+    "final_state": "QUIET",
+    "true_tf": null,
+    "pages": 0,
+    "false_page": false,
+    "correct_page": false,
+    "events": [],
+    "verdicts": [],
+    "tool_calls": 0,
+    "forecast": {
+     "tf": null,
+     "t_lo": null,
+     "t_hi": null,
+     "r2": null
+    }
+   },
+   "quiet+bump": {
+    "final_state": "QUIET",
+    "true_tf": null,
+    "pages": 0,
+    "false_page": false,
+    "correct_page": false,
+    "events": [],
+    "verdicts": [],
+    "tool_calls": 0,
+    "forecast": {
+     "tf": null,
+     "t_lo": null,
+     "t_hi": null,
+     "r2": null
+    }
+   },
+   "quiet+lighting": {
+    "final_state": "QUIET",
+    "true_tf": null,
+    "pages": 0,
+    "false_page": false,
+    "correct_page": false,
+    "events": [],
+    "verdicts": [],
+    "tool_calls": 0,
+    "forecast": {
+     "tf": null,
+     "t_lo": null,
+     "t_hi": null,
+     "r2": null
+    }
+   },
+   "quiet+fog": {
+    "final_state": "QUIET",
+    "true_tf": null,
+    "pages": 0,
+    "false_page": false,
+    "correct_page": false,
+    "events": [],
+    "verdicts": [],
+    "tool_calls": 0,
+    "forecast": {
+     "tf": null,
+     "t_lo": null,
+     "t_hi": null,
+     "r2": null
+    }
+   },
+   "quiet+lens": {
+    "final_state": "MOVING",
+    "true_tf": null,
+    "pages": 0,
+    "false_page": false,
+    "correct_page": false,
+    "events": [
+     {
+      "t": 16.206896551724135,
+      "event": "E_CAMERA",
+      "verdict": "FALSE_ALARM",
+      "n_tool_calls": 4,
+      "paged_human": false,
+      "seconds": 0.15
+     },
+     {
+      "t": 25.93103448275862,
+      "event": "E_CAMERA",
+      "verdict": "FALSE_ALARM",
+      "n_tool_calls": 4,
+      "paged_human": false,
+      "seconds": 0.15
+     },
+     {
+      "t": 35.6551724137931,
+      "event": "E_CAMERA",
+      "verdict": "FALSE_ALARM",
+      "n_tool_calls": 4,
+      "paged_human": false,
+      "seconds": 0.1
+     },
+     {
+      "t": 42.137931034482754,
+      "event": "E_CAMERA",
+      "verdict": "FALSE_ALARM",
+      "n_tool_calls": 4,
+      "paged_human": false,
+      "seconds": 0.16
+     }
+    ],
+    "verdicts": [
+     "FALSE_ALARM",
+     "FALSE_ALARM",
+     "FALSE_ALARM",
+     "FALSE_ALARM"
+    ],
+    "tool_calls": 16,
+    "forecast": {
+     "tf": null,
+     "t_lo": null,
+     "t_hi": null,
+     "r2": null
+    }
+   },
+   "creep+bump": {
+    "final_state": "CRITICAL",
+    "true_tf": 50.0,
+    "pages": 3,
+    "false_page": false,
+    "correct_page": true,
+    "events": [
+     {
+      "t": 8.103448275862068,
+      "event": "E_ANOMALY",
+      "verdict": "CONFIRMED",
+      "n_tool_calls": 9,
+      "paged_human": true,
+      "seconds": 0.8
+     },
+     {
+      "t": 11.344827586206897,
+      "event": "E_ANOMALY",
+      "verdict": "CONFIRMED",
+      "n_tool_calls": 9,
+      "paged_human": true,
+      "seconds": 0.7
+     },
+     {
+      "t": 47.0,
+      "event": "E_ANOMALY",
+      "verdict": "CONFIRMED",
+      "n_tool_calls": 9,
+      "paged_human": true,
+      "seconds": 0.4
+     }
+    ],
+    "verdicts": [
+     "CONFIRMED",
+     "CONFIRMED",
+     "CONFIRMED"
+    ],
+    "tool_calls": 27,
+    "forecast": {
+     "tf": 50.50246008126937,
+     "t_lo": 49.39504927059025,
+     "t_hi": 71.02483861214557,
+     "r2": 0.9756574529129252
+    }
+   }
+  },
+  "llm": {
+   "quiet": {
+    "final_state": "QUIET",
+    "true_tf": null,
+    "pages": 0,
+    "false_page": false,
+    "correct_page": false,
+    "events": [],
+    "verdicts": [],
+    "tool_calls": 0,
+    "forecast": {
+     "tf": null,
+     "t_lo": null,
+     "t_hi": null,
+     "r2": null
+    }
+   },
+   "quiet+bump": {
+    "final_state": "QUIET",
+    "true_tf": null,
+    "pages": 0,
+    "false_page": false,
+    "correct_page": false,
+    "events": [],
+    "verdicts": [],
+    "tool_calls": 0,
+    "forecast": {
+     "tf": null,
+     "t_lo": null,
+     "t_hi": null,
+     "r2": null
+    }
+   },
+   "quiet+lighting": {
+    "final_state": "QUIET",
+    "true_tf": null,
+    "pages": 0,
+    "false_page": false,
+    "correct_page": false,
+    "events": [],
+    "verdicts": [],
+    "tool_calls": 0,
+    "forecast": {
+     "tf": null,
+     "t_lo": null,
+     "t_hi": null,
+     "r2": null
+    }
+   },
+   "quiet+fog": {
+    "final_state": "QUIET",
+    "true_tf": null,
+    "pages": 0,
+    "false_page": false,
+    "correct_page": false,
+    "events": [],
+    "verdicts": [],
+    "tool_calls": 0,
+    "forecast": {
+     "tf": null,
+     "t_lo": null,
+     "t_hi": null,
+     "r2": null
+    }
+   },
+   "quiet+lens": {
+    "final_state": "MOVING",
+    "true_tf": null,
+    "pages": 0,
+    "false_page": false,
+    "correct_page": false,
+    "events": [
+     {
+      "t": 16.206896551724135,
+      "event": "E_CAMERA",
+      "verdict": "FALSE_ALARM",
+      "n_tool_calls": 5,
+      "paged_human": false,
+      "seconds": 31.16
+     },
+     {
+      "t": 25.93103448275862,
+      "event": "E_CAMERA",
+      "verdict": "FALSE_ALARM",
+      "n_tool_calls": 7,
+      "paged_human": false,
+      "seconds": 25.36
+     },
+     {
+      "t": 35.6551724137931,
+      "event": "E_CAMERA",
+      "verdict": "FALSE_ALARM",
+      "n_tool_calls": 8,
+      "paged_human": false,
+      "seconds": 24.86
+     },
+     {
+      "t": 42.137931034482754,
+      "event": "E_CAMERA",
+      "verdict": "FALSE_ALARM",
+      "n_tool_calls": 6,
+      "paged_human": false,
+      "seconds": 26.19
+     }
+    ],
+    "verdicts": [
+     "FALSE_ALARM",
+     "FALSE_ALARM",
+     "FALSE_ALARM",
+     "FALSE_ALARM"
+    ],
+    "tool_calls": 26,
+    "forecast": {
+     "tf": null,
+     "t_lo": null,
+     "t_hi": null,
+     "r2": null
+    }
+   },
+   "creep+bump": {
+    "final_state": "CRITICAL",
+    "true_tf": 50.0,
+    "pages": 3,
+    "false_page": false,
+    "correct_page": true,
+    "events": [
+     {
+      "t": 8.103448275862068,
+      "event": "E_ANOMALY",
+      "verdict": "CONFIRMED",
+      "n_tool_calls": 9,
+      "paged_human": true,
+      "seconds": 32.25
+     },
+     {
+      "t": 11.344827586206897,
+      "event": "E_ANOMALY",
+      "verdict": "CONFIRMED",
+      "n_tool_calls": 9,
+      "paged_human": true,
+      "seconds": 35.17
+     },
+     {
+      "t": 47.0,
+      "event": "E_ANOMALY",
+      "verdict": "CONFIRMED",
+      "n_tool_calls": 8,
+      "paged_human": true,
+      "seconds": 30.34
+     }
+    ],
+    "verdicts": [
+     "CONFIRMED",
+     "CONFIRMED",
+     "CONFIRMED"
+    ],
+    "tool_calls": 26,
+    "forecast": {
+     "tf": 50.50246008126937,
+     "t_lo": 49.39504927059025,
+     "t_hi": 71.02483861214557,
+     "r2": 0.9756574529129252
+    }
+   }
+  }
+ }
+}

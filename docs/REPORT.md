@@ -2,10 +2,10 @@
 
 Team Ground Truth: Ujwal Suresh Vanjare, Arpita Madhukar Kalburgi.
 OpenCV AI Competition 2026, powered by AWS. Featured paths: Best Use of COOL (pending
-subscription); Agentic Vision (designed, not yet claimed).
+subscription); Agentic Vision (claimed: supervising agent on Amazon Bedrock, section 6b).
 
-Live endpoint: https://d30le2uwgaimao.cloudfront.net/
-Repository: https://github.com/usv240/telltale
+Live endpoint: https://d30le2uwgaimao.cloudfront.net/ (how it works: /about.html)
+Repository: https://github.com/usv240/telltale (CI on x86 and arm64)
 
 > Status markers: **measured** means the number comes from a script in `evaluation/` or from
 > the deployed system; **pending** means the method exists but the run has not happened.
@@ -37,9 +37,13 @@ duty officers read one sentence on the dashboard; experts drill into the series 
 
 See `docs/architecture.svg`. Field camera, burst upload to S3 (frames first, manifest last), S3
 event to SQS with a dead-letter queue, one Graviton EC2 worker running the OpenCV 5 pipeline,
-artifacts published to a `public/` prefix served by CloudFront, CloudWatch metrics and two
-liveness alarms (queue age, DLQ). One CloudFormation template; one deploy script; one code path
-for laptop and cloud (`infra/worker/worker.py` has a local and an S3 storage backend).
+artifacts published to a `public/` prefix served by CloudFront, CloudWatch metrics and three
+alarms (queue age, dead-letter queue, worker stopped) that publish to an SNS topic with an
+optional e-mail subscriber. A Lambda function URL records human approve / dismiss decisions
+from HMAC-signed links. The supervising agent runs on the worker and calls Claude on Amazon
+Bedrock. One CloudFormation template; one deploy script; one code path for laptop and cloud
+(`infra/worker/worker.py` has a local and an S3 storage backend); GitHub Actions runs the test
+suite, the E1 gate and the offline worker path on x86 and arm64 on every push.
 
 ## 4. OpenCV 5 implementation
 
@@ -124,6 +128,63 @@ jitter per epoch, run through stack, stabilize, DIC and forecast. 36 epochs to t
 | quiet + non-rigid lens distortion | 12/30 | CAMERA_EVENT: 18 | 2 (MOVING) | 0.632 px | partial failure, see section 8 |
 | creep + camera bump at epoch 20 | 30/30 | none | 0 | | CRITICAL, 50.29, window [48.8, 70.9] contains truth |
 
+### E5 agent ablation (measured)
+
+`python evaluation/e5_agent.py --arms off rules llm`. The same six scenarios through the full
+worker (`process_epoch`, local store) with the supervising agent off (thresholds only), the
+deterministic rule policy, and Claude Sonnet 4.5 on Amazon Bedrock. Pages are counted through a
+stand-in for SNS.
+
+| Arm | False pages (5 quiet scenarios) | Events investigated | OpenCV tool calls | First human page in the creep scenario | Lead time before true failure (t = 50) |
+|---|---|---|---|---|---|
+| off (thresholds) | 0 | 0 | 0 | t = 47.0 (CRITICAL transition) | 3.0 |
+| rules | 0 | 7 | 43 | t = 8.1 (acceleration confirmed) | 41.9 |
+| Claude on Bedrock | 0 | 7 | 52 | t = 8.1 (acceleration confirmed) | 41.9 |
+
+What the agent changed. In the non-rigid lens scenario the stabilizer raised four camera events;
+both agent arms re-ran stabilization and DIC and closed all four as FALSE_ALARM without paging
+anyone, with the named measurement in the verdict ("1.20 px stabilization scatter, 0.64 px
+residual, affine model required"). In the creep scenario both arms confirmed the acceleration at
+its onset by re-measuring against two independent references and checking direction coherence,
+and paged a person 39 time units before the thresholds-only system would have. The thresholds-only
+arm also had zero false pages here, because the synthetic confounders are the ones the stabilizer
+and the BLIND / BLURRED logic already catch; the agent's measurable value in this suite is earlier,
+evidence-backed escalation and a verdict log for every event. Each Claude investigation used 8 to 9
+tool calls, 21k to 31k input tokens, and 30 to 42 seconds.
+
+## 6b. Supervising agent (Agentic Vision path)
+
+Workflow diagram: `docs/agent_workflow.svg`. Code: `agent/tools.py`, `agent/supervisor.py`.
+
+The worker raises an event when a zone's state rises to ACCELERATING or CRITICAL (E_ANOMALY),
+when the stabilizer returns CAMERA_EVENT (E_CAMERA), or when the cross-check flags REVIEW or
+coverage collapses (E_QUALITY); runs of identical failures raise one event. The agent then runs
+a bounded perception-decision-action loop:
+
+- **Perception tools re-run OpenCV 5 on stored images.** `remeasure(t, reference)` runs dense
+  DIC again against the previous epoch, the site reference, or any earlier epoch (real creep is
+  reference-independent). `check_stabilization(t)` re-estimates the camera model from the
+  stacked image and reports stable-ground residual and scatter. `inspect_quality(t)` returns
+  sharpness, contrast and subset status counts. `motion_coherence(t)` measures the share of
+  subsets moving within 45 degrees of the zone's median direction.
+- **Decision.** Claude (Anthropic SDK tool runner over Amazon Bedrock, model
+  `us.anthropic.claude-sonnet-4-5`) is prompted as a skeptic with explicit rules for what real
+  creep looks like and a budget of ten tool calls. Every tool result determines the next call;
+  the trace of calls, arguments and results is written to `public/sites/<site>/agent/<t>.json`.
+  A deterministic rule policy drives the same tools as the control arm and the fallback when
+  Bedrock is unreachable.
+- **Actions.** `set_capture_cadence` writes the camera's control file; `request_human_approval`
+  pages the duty contact with an evidence summary and signed approve / dismiss links;
+  `close_event` records CONFIRMED, FALSE_ALARM or INCONCLUSIVE. The agent cannot send a public
+  alert. If it is inconclusive, errors, or is disabled, the worker's own CRITICAL page still
+  fires: a missed page is treated as worse than an extra one.
+
+Observability and human control: the dashboard's agent panel lists every event with its verdict,
+policy, tool-call count and duration, and expands to the full trace; decisions by the human are
+logged with time and source in `decisions.json`. On the live demo site the agent confirmed the
+acceleration at t = 8.1 and again at the CRITICAL transition at t = 47, each with nine tool calls,
+and the human page carried its evidence summary.
+
 ### E6 COOL benchmark (baseline measured, COOL pending)
 
 `evaluation/e6_cool_benchmark.py`, 1080p synthetic workload, 7-frame burst, 3,234 subsets,
@@ -131,10 +192,15 @@ jitter per epoch, run through stack, stabilize, DIC and forecast. 36 epochs to t
 
 | Cell | cv2 path | Threads | Epoch p50 | Stack | Stabilize | DIC | Epochs/hour | USD per 1,000 epochs |
 |---|---|---|---|---|---|---|---|---|
-| stock OpenCV 5 wheel, c8g.large | /opt/telltale/venv/... | 2 | 2.504 s | 0.470 | 1.012 | 1.023 | 1,438 | 0.055 |
-| COOL, c8g.large | /opt/cool/... | 2 | pending | | | | | |
-| stock wheel, c7i.large (x86) | | 2 | pending | | | | | |
-| laptop (reference only) | | 22 | 8.539 s | 1.332 | 3.096 | 2.660 | 422 | |
+| stock OpenCV 5 wheel, c8g.large (Graviton4, 0.07976 USD/h) | /opt/telltale/venv/... | 2 | 1.719 s | 0.474 | 0.687 | 0.560 | 2,094 | 0.038 |
+| stock OpenCV 5 wheel, c7i.large (x86, 0.08925 USD/h) | /opt/telltale/venv/... | 2 | 2.732 s | 0.688 | 1.147 | 0.902 | 1,318 | 0.068 |
+| COOL, c8g.large | /opt/cool/... | 2 | pending subscription | | | | | |
+
+Same release tarball, same pinned wheel, same synthetic pixels, both with the threaded DIC loop.
+Graviton4 is 1.6x faster per epoch than the matched-vCPU x86 instance and 44 percent cheaper per
+1,000 epochs at on-demand list prices before COOL is applied. An earlier single-threaded run on
+c8g.large measured 2.504 s per epoch; the thread pool over subsets brought the DIC stage from
+1.02 s to 0.56 s on two vCPUs.
 
 Op-level microbenchmark on c8g.large (p50, ms): 1,000 x matchTemplate 41-in-81: 152.5;
 warpPerspective Lanczos 1080p: 24.1; cornerMinEigenVal: 10.3; GaussianBlur sigma 3: 4.3;
@@ -234,8 +300,9 @@ offline from bundled demo data.
 ## 9. Responsible use
 
 Cameras point at ground and structures; there is no person detection or face processing in the
-code. The system never sends a public alert on its own: CRITICAL is a request for human
-approval. Unusable epochs are always recorded with a reason; the monitor's own liveness is
+code. The system never sends a public alert on its own: CRITICAL pages the duty contact with
+signed approve / dismiss links (tested: a tampered link is rejected with HTTP 403, a valid one
+is logged with time and source), and the dashboard shows the decision state. Unusable epochs are always recorded with a reason; the monitor's own liveness is
 alarmed (queue age, dead-letter queue) so that a silent monitor cannot pass for a quiet slope.
 Raw imagery expires after 30 days; derived series are small and auditable. The report states
 every limitation above on the dashboard footer and in the README.
