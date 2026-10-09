@@ -48,6 +48,10 @@ Rules:
 - If the acceleration is real or cannot be ruled out, call request_human_approval with a
   short evidence summary (numbers, not adjectives), and raise the capture cadence.
 - If it is an artefact, close it as FALSE_ALARM and say which measurement proves it.
+- On a chained site (reference_mode "chained"), every measurement is day-to-day: compare
+  remeasure results with the recorded increment, never with the cumulative sum. A camera pose
+  change that stabilization corrected (mount_moved) is not an artefact by itself; residual and
+  scatter after correction are what count.
 - An E_JUMP is a sudden step, not a trend: decide whether the step is ground (coherent,
   present against both references, camera clean) or an artefact. A confirmed step on a slope
   is worth a page even without acceleration.

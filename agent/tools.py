@@ -95,12 +95,21 @@ class Toolbox:
                          "coverage": (r.get("field") or {}).get("coverage"),
                          "stabilize": {k: (r.get("stabilize") or {}).get(k)
                                        for k in ("verdict", "refine_model", "residual", "scatter", "n_inliers")},
-                         "zones": {z: {k: v.get(k) for k in ("magnitude", "sigma", "n_valid", "n_total")}
+                         "zones": {z: ({"increment_px": (None if v.get("increment_u") is None else
+                                                          float(np.hypot(v["increment_u"], v["increment_v"]))),
+                                        "cumulative_px": v.get("magnitude")}
+                                       if self.cfg.reference_mode == "chained" else
+                                       {k: v.get(k) for k in ("magnitude", "sigma", "n_valid", "n_total")})
                                    for z, v in (r.get("zones") or {}).items()}})
         zones = {z: {k: v.get(k) for k in ("state", "tf", "t_lo", "t_hi", "r2", "ooa_time", "horizon")}
                  for z, v in fc.get("zones", {}).items()}
         out = {"site": self.site, "state": fc.get("state"), "zones": zones, "recent_epochs": last,
-               "mm_per_px": self.cfg.mm_per_px}
+               "mm_per_px": self.cfg.mm_per_px, "reference_mode": self.cfg.reference_mode,
+               "note": ("chained site: each epoch is measured against the previous epoch; increment_px is "
+                        "that day's motion and is what remeasure returns; cumulative_px is the running sum "
+                        "and is not comparable to a single re-measurement"
+                        if self.cfg.reference_mode == "chained" else
+                        "fixed site: magnitudes are displacement since the site reference")}
         return self._record("get_site_status", {}, out)
 
     def remeasure(self, t: float, reference: str = "previous") -> dict:
@@ -123,8 +132,22 @@ class Toolbox:
             ref_t = prev[0] if prev else None
             kind = "stacked" if self.cfg.reference_mode == "chained" else "stabilized"
             ref = self._epoch_image(ref_t, kind) if ref_t is not None else None
+        stab_note = None
         if self.cfg.reference_mode == "chained":
-            cur = self._epoch_image(t, "stacked")   # chained increments are raw-to-raw, as in the worker
+            # Chained increments are measured exactly as the worker measures them: the raw
+            # stacked image of epoch t is stabilised against the chosen reference image first,
+            # so camera motion on either day is removed before the dense correlation.
+            cur = self._epoch_image(t, "stacked")
+            if ref is not None and cur is not None:
+                mask = polygon_mask(ref.shape, self.cfg.stable_polys) if self.cfg.stable_polys else None
+                st = stabilize(ref, cur, mask)
+                if st.verdict != "OK":
+                    return self._record("remeasure", {"t": t, "reference": reference},
+                                        {"error": f"stabilization against this reference failed: {st.verdict}",
+                                         "reference_t": ref_t, "residual_px": list(st.residual), "scatter_px": st.scatter})
+                cur = st.image
+                stab_note = {"camera_model": st.diag.get("refine_model"), "residual_px": list(st.residual),
+                             "scatter_px": st.scatter}
         if ref is None or cur is None:
             return self._record("remeasure", {"t": t, "reference": reference},
                                 {"error": "reference image unavailable"})
@@ -138,17 +161,26 @@ class Toolbox:
                            "coherence": _coherence(fld, poly)}
         out = {"t": t, "reference": reference, "reference_t": ref_t, "coverage": fld.coverage,
                "review": fld.review, "zones": _clean(zones)}
+        if stab_note:
+            out["stabilization"] = _clean(stab_note)
         # Compare with what the worker recorded for the same epoch
         rec = next((r for r in self._series() if r["t"] == t), None)
-        if rec and rec.get("zones") and reference == "reference":
-            out["worker_recorded"] = {z: rec["zones"][z].get("magnitude") for z in rec["zones"]}
+        if rec and rec.get("zones") and reference in ("reference", "previous"):
+            if self.cfg.reference_mode == "chained":
+                out["worker_recorded_increment"] = {z: (None if rec["zones"][z].get("increment_u") is None else
+                                                        float(np.hypot(rec["zones"][z]["increment_u"], rec["zones"][z]["increment_v"])))
+                                                    for z in rec["zones"]}
+            else:
+                out["worker_recorded"] = {z: rec["zones"][z].get("magnitude") for z in rec["zones"]}
         return self._record("remeasure", {"t": t, "reference": reference}, out)
 
     def check_stabilization(self, t: float) -> dict:
         """Re-run camera-motion estimation for epoch t from the stacked (unwarped) image and
         measure what the stable ground did after the warp. Residual or scatter above 0.3 px
         means the camera model does not explain the stable regions: suspect the camera, not
-        the slope."""
+        the slope. mount_moved only says the camera pose differed from the reference and was
+        corrected; a corrected pose with a small residual and scatter is a clean measurement,
+        not evidence against ground motion."""
         stacked = self._epoch_image(t, "stacked")
         ref = self._reference(t)
         if stacked is None or ref is None:
