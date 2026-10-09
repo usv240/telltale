@@ -154,6 +154,30 @@ def select_camera_model(src: np.ndarray, dst: np.ndarray, min_inliers: int,
     return None
 
 
+def phase_translation(ref: np.ndarray, cur: np.ndarray, mask8: np.ndarray | None,
+                      min_response: float = 0.05) -> tuple[float, float] | None:
+    """Global shift of the masked stable regions via phase correlation (coarse fallback)."""
+    from .stack import shift_of
+    if mask8 is None:
+        a, b = ref, cur
+    else:
+        m = (mask8 > 0).astype(np.float32)
+        ys, xs = np.nonzero(m)
+        if len(ys) < 1024:
+            return None
+        y0, y1, x0, x1 = ys.min(), ys.max() + 1, xs.min(), xs.max() + 1
+        mm = m[y0:y1, x0:x1]
+        a = (ref[y0:y1, x0:x1] - ref[y0:y1, x0:x1][mm > 0].mean()) * mm
+        b = (cur[y0:y1, x0:x1] - cur[y0:y1, x0:x1][mm > 0].mean()) * mm
+    if a.shape[0] < 32 or a.shape[1] < 32:
+        return None
+    dx, dy, resp = shift_of(np.ascontiguousarray(a, np.float32), np.ascontiguousarray(b, np.float32),
+                            downscale=1, refine=False)
+    if resp < min_response:
+        return None
+    return (float(dx), float(dy))
+
+
 def stabilize(ref: np.ndarray, cur: np.ndarray, stable_mask: np.ndarray | None = None,
               n_features: int = 4000, ratio: float = 0.75, reproj_px: float = 2.0,
               min_inliers: int = 12, residual_px: float = 0.3, max_scatter: float = 0.3,
@@ -171,11 +195,21 @@ def stabilize(ref: np.ndarray, cur: np.ndarray, stable_mask: np.ndarray | None =
                                {"failed_stage": stage})
 
     coarse = coarse_homography(ref, cur, mask8, n_features, ratio, reproj_px, min_inliers)
-    if coarse is None:
-        return failed(0, "coarse")
-    H, n_matches, n_inl, rms = coarse
-    warped = _warp(cur, H, ref.shape)
     diag = {}
+    if coarse is None:
+        # Low-texture or dark stable regions starve ORB (winter vegetation, fog). Fall back to a
+        # global translation from phase correlation on the stable regions; the DIC refinement
+        # below then recovers rotation and scale if the data support them.
+        t = phase_translation(ref, cur, mask8)
+        if t is None:
+            return failed(0, "coarse")
+        H = np.array([[1, 0, t[0]], [0, 1, t[1]], [0, 0, 1]], dtype=np.float64)
+        n_matches, n_inl, rms = 0, 0, float("nan")
+        diag["coarse"] = "phase"
+    else:
+        H, n_matches, n_inl, rms = coarse
+        diag["coarse"] = "orb"
+    warped = _warp(cur, H, ref.shape)
 
     n_refine = 0
     if refine:

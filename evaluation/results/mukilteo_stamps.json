@@ -1,0 +1,4489 @@
+{
+"1": {
+"stamp": "08/20/2015 08:59",
+"min_score": 1.0,
+"valid": true
+},
+"2": {
+"stamp": "08/20/2015 11:59",
+"min_score": 0.915,
+"valid": true
+},
+"3": {
+"stamp": "08/20/2015 15:59",
+"min_score": 1.0,
+"valid": true
+},
+"4": {
+"stamp": "08/21/2015 08:59",
+"min_score": 0.665,
+"valid": true
+},
+"5": {
+"stamp": "08/21/2015 11:59",
+"min_score": 0.54,
+"valid": true
+},
+"6": {
+"stamp": "08/21/2015 15:59",
+"min_score": 0.98,
+"valid": true
+},
+"7": {
+"stamp": "08/22/2015 08:59",
+"min_score": 0.884,
+"valid": true
+},
+"8": {
+"stamp": "08/22/2015 11:59",
+"min_score": 0.74,
+"valid": true
+},
+"9": {
+"stamp": "08/22/2015 15:59",
+"min_score": 0.542,
+"valid": true
+},
+"10": {
+"stamp": "08/23/2015 08:59",
+"min_score": 1.0,
+"valid": true
+},
+"11": {
+"stamp": "08/23/2015 11:59",
+"min_score": 0.528,
+"valid": true
+},
+"12": {
+"stamp": "08/23/2015 15:59",
+"min_score": 0.545,
+"valid": true
+},
+"13": {
+"stamp": "08/24/2015 08:59",
+"min_score": 1.0,
+"valid": true
+},
+"14": {
+"stamp": "08/24/2015 11:59",
+"min_score": 0.546,
+"valid": true
+},
+"15": {
+"stamp": "08/24/2015 15:59",
+"min_score": 0.658,
+"valid": true
+},
+"16": {
+"stamp": "08/25/2015 08:59",
+"min_score": 0.619,
+"valid": true
+},
+"17": {
+"stamp": "08/25/2015 11:59",
+"min_score": 0.965,
+"valid": true
+},
+"18": {
+"stamp": "08/25/2015 15:59",
+"min_score": 0.974,
+"valid": true
+},
+"19": {
+"stamp": "08/26/2015 09:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"20": {
+"stamp": "08/26/2015 11:59",
+"min_score": 0.908,
+"valid": true
+},
+"21": {
+"stamp": "08/26/2015 15:59",
+"min_score": 0.941,
+"valid": true
+},
+"22": {
+"stamp": "08/27/2015 09:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"23": {
+"stamp": "08/27/2015 11:59",
+"min_score": 0.545,
+"valid": true
+},
+"24": {
+"stamp": "08/27/2015 15:59",
+"min_score": 0.993,
+"valid": true
+},
+"25": {
+"stamp": "08/28/2015 09:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"26": {
+"stamp": "08/28/2015 12:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"27": {
+"stamp": "08/28/2015 15:59",
+"min_score": 0.522,
+"valid": true
+},
+"28": {
+"stamp": "08/29/2015 09:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"29": {
+"stamp": "08/29/2015 11:59",
+"min_score": 0.949,
+"valid": true
+},
+"30": {
+"stamp": "08/29/2015 16:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"31": {
+"stamp": "08/30/2015 09:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"32": {
+"stamp": "08/30/2015 11:59",
+"min_score": 0.825,
+"valid": true
+},
+"33": {
+"stamp": "08/30/2015 15:59",
+"min_score": 0.854,
+"valid": true
+},
+"34": {
+"stamp": "08/31/2015 09:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"35": {
+"stamp": "08/31/2015 12:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"36": {
+"stamp": "08/31/2015 16:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"37": {
+"stamp": "09/01/2015 09:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"38": {
+"stamp": "09/01/2015 12:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"39": {
+"stamp": "09/01/2015 16:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"40": {
+"stamp": "09/02/2015 09:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"41": {
+"stamp": "09/02/2015 11:59",
+"min_score": 0.775,
+"valid": true
+},
+"42": {
+"stamp": "09/02/2015 15:59",
+"min_score": 0.943,
+"valid": true
+},
+"43": {
+"stamp": "09/03/2015 09:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"44": {
+"stamp": "09/03/2015 11:59",
+"min_score": 0.855,
+"valid": true
+},
+"45": {
+"stamp": "09/03/2015 15:59",
+"min_score": 0.695,
+"valid": true
+},
+"46": {
+"stamp": "09/04/2015 08:59",
+"min_score": 0.601,
+"valid": true
+},
+"47": {
+"stamp": "09/04/2015 11:59",
+"min_score": 0.862,
+"valid": true
+},
+"48": {
+"stamp": "09/04/2015 15:59",
+"min_score": 0.858,
+"valid": true
+},
+"49": {
+"stamp": "09/05/2015 09:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"50": {
+"stamp": "09/05/2015 11:59",
+"min_score": 0.967,
+"valid": true
+},
+"51": {
+"stamp": "09/05/2015 15:59",
+"min_score": 0.564,
+"valid": true
+},
+"52": {
+"stamp": "09/06/2015 09:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"53": {
+"stamp": "09/06/2015 12:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"54": {
+"stamp": "09/06/2015 15:59",
+"min_score": 0.587,
+"valid": true
+},
+"55": {
+"stamp": "09/07/2015 08:59",
+"min_score": 0.537,
+"valid": true
+},
+"56": {
+"stamp": "09/07/2015 11:59",
+"min_score": 0.936,
+"valid": true
+},
+"57": {
+"stamp": "09/07/2015 15:59",
+"min_score": 0.973,
+"valid": true
+},
+"58": {
+"stamp": "09/08/2015 08:59",
+"min_score": 0.556,
+"valid": true
+},
+"59": {
+"stamp": "09/08/2015 11:59",
+"min_score": 0.573,
+"valid": true
+},
+"60": {
+"stamp": "09/08/2015 15:59",
+"min_score": 0.942,
+"valid": true
+},
+"61": {
+"stamp": "09/09/2015 09:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"62": {
+"stamp": "09/09/2015 11:59",
+"min_score": 0.941,
+"valid": true
+},
+"63": {
+"stamp": "09/09/2015 15:59",
+"min_score": 0.992,
+"valid": true
+},
+"64": {
+"stamp": "09/10/2015 09:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"65": {
+"stamp": "09/10/2015 11:59",
+"min_score": 0.918,
+"valid": true
+},
+"66": {
+"stamp": "09/10/2015 15:59",
+"min_score": 0.991,
+"valid": true
+},
+"67": {
+"stamp": "09/11/2015 09:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"68": {
+"stamp": "09/11/2015 11:59",
+"min_score": 0.862,
+"valid": true
+},
+"69": {
+"stamp": "09/11/2015 15:59",
+"min_score": 0.99,
+"valid": true
+},
+"70": {
+"stamp": "09/12/2015 09:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"71": {
+"stamp": "09/12/2015 11:59",
+"min_score": 0.88,
+"valid": true
+},
+"72": {
+"stamp": "09/12/2015 15:59",
+"min_score": 0.989,
+"valid": true
+},
+"73": {
+"stamp": "09/13/2015 09:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"74": {
+"stamp": "09/13/2015 12:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"75": {
+"stamp": "09/13/2015 16:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"76": {
+"stamp": "09/14/2015 09:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"77": {
+"stamp": "09/14/2015 12:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"78": {
+"stamp": "09/14/2015 15:59",
+"min_score": 0.583,
+"valid": true
+},
+"79": {
+"stamp": "09/15/2015 09:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"80": {
+"stamp": "09/15/2015 11:59",
+"min_score": 0.848,
+"valid": true
+},
+"81": {
+"stamp": "09/15/2015 16:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"82": {
+"stamp": "09/16/2015 09:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"83": {
+"stamp": "09/16/2015 11:59",
+"min_score": 0.85,
+"valid": true
+},
+"84": {
+"stamp": "09/16/2015 15:59",
+"min_score": 0.938,
+"valid": true
+},
+"85": {
+"stamp": "09/17/2015 08:59",
+"min_score": 0.704,
+"valid": true
+},
+"86": {
+"stamp": "09/17/2015 11:59",
+"min_score": 0.516,
+"valid": true
+},
+"87": {
+"stamp": "09/17/2015 15:59",
+"min_score": 0.967,
+"valid": true
+},
+"88": {
+"stamp": "09/18/2015 08:59",
+"min_score": 0.547,
+"valid": true
+},
+"89": {
+"stamp": "09/18/2015 11:59",
+"min_score": 0.549,
+"valid": true
+},
+"90": {
+"stamp": "09/18/2015 15:59",
+"min_score": 0.648,
+"valid": true
+},
+"91": {
+"stamp": "09/19/2015 08:59",
+"min_score": 0.538,
+"valid": true
+},
+"92": {
+"stamp": "09/19/2015 11:59",
+"min_score": 0.544,
+"valid": true
+},
+"93": {
+"stamp": "09/19/2015 15:59",
+"min_score": 0.905,
+"valid": true
+},
+"94": {
+"stamp": "09/20/2015 09:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"95": {
+"stamp": "09/20/2015 12:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"96": {
+"stamp": "09/20/2015 15:59",
+"min_score": 0.991,
+"valid": true
+},
+"97": {
+"stamp": "09/21/2015 09:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"98": {
+"stamp": "09/21/2015 11:59",
+"min_score": 0.915,
+"valid": true
+},
+"99": {
+"stamp": "09/21/2015 15:59",
+"min_score": 0.993,
+"valid": true
+},
+"100": {
+"stamp": "09/22/2015 09:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"101": {
+"stamp": "09/22/2015 11:59",
+"min_score": 0.863,
+"valid": true
+},
+"102": {
+"stamp": "09/22/2015 15:59",
+"min_score": 0.993,
+"valid": true
+},
+"103": {
+"stamp": "09/23/2015 09:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"104": {
+"stamp": "09/23/2015 11:59",
+"min_score": 0.815,
+"valid": true
+},
+"105": {
+"stamp": "09/28/2015 15:59",
+"min_score": 0.662,
+"valid": true
+},
+"106": {
+"stamp": "00/24/2015 08:59",
+"min_score": 0.503,
+"valid": false
+},
+"107": {
+"stamp": "09/24/2015 11:59",
+"min_score": 0.779,
+"valid": false
+},
+"108": {
+"stamp": "09/24/2015 15:59",
+"min_score": 0.672,
+"valid": false
+},
+"109": {
+"stamp": "09/25/2015 08:59",
+"min_score": 0.262,
+"valid": false
+},
+"110": {
+"stamp": "00/25/2015 11:59",
+"min_score": 0.262,
+"valid": false
+},
+"111": {
+"stamp": "00/25/2015 15:59",
+"min_score": 0.267,
+"valid": false
+},
+"112": {
+"stamp": "00/20/2015 08:59",
+"min_score": 0.278,
+"valid": false
+},
+"113": {
+"stamp": "09/26/2015 11:50",
+"min_score": 0.456,
+"valid": false
+},
+"114": {
+"stamp": "00/25/2015 15:50",
+"min_score": 0.433,
+"valid": false
+},
+"115": {
+"stamp": "00/27/2015 08:59",
+"min_score": 0.276,
+"valid": false
+},
+"116": {
+"stamp": "09/27/2015 11:50",
+"min_score": 0.456,
+"valid": false
+},
+"117": {
+"stamp": "09/27/2015 15:59",
+"min_score": 0.992,
+"valid": false
+},
+"118": {
+"stamp": "00/28/2015 08:59",
+"min_score": 0.263,
+"valid": false
+},
+"119": {
+"stamp": "09/28/2015 11:50",
+"min_score": 0.485,
+"valid": false
+},
+"120": {
+"stamp": "09/28/2015 15:59",
+"min_score": 0.988,
+"valid": true
+},
+"121": {
+"stamp": "09/29/2015 09:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"122": {
+"stamp": "09/29/2015 12:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"123": {
+"stamp": "09/29/2015 15:59",
+"min_score": 0.991,
+"valid": true
+},
+"124": {
+"stamp": "09/30/2015 09:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"125": {
+"stamp": "09/30/2015 12:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"126": {
+"stamp": "09/30/2015 15:59",
+"min_score": 0.854,
+"valid": true
+},
+"127": {
+"stamp": "10/01/2015 09:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"128": {
+"stamp": "10/01/2015 11:59",
+"min_score": 0.866,
+"valid": true
+},
+"129": {
+"stamp": "10/01/2015 15:59",
+"min_score": 0.992,
+"valid": true
+},
+"130": {
+"stamp": "10/02/2015 08:59",
+"min_score": 0.557,
+"valid": true
+},
+"131": {
+"stamp": "10/02/2015 11:59",
+"min_score": 0.857,
+"valid": true
+},
+"132": {
+"stamp": "10/02/2015 15:59",
+"min_score": 0.88,
+"valid": true
+},
+"133": {
+"stamp": "10/03/2015 09:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"134": {
+"stamp": "10/03/2015 12:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"135": {
+"stamp": "10/03/2015 15:59",
+"min_score": 0.857,
+"valid": true
+},
+"136": {
+"stamp": "10/04/2015 08:59",
+"min_score": 0.579,
+"valid": true
+},
+"137": {
+"stamp": "10/04/2015 11:59",
+"min_score": 0.843,
+"valid": true
+},
+"138": {
+"stamp": "10/04/2015 15:59",
+"min_score": 0.862,
+"valid": true
+},
+"139": {
+"stamp": "10/05/2015 09:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"140": {
+"stamp": "10/05/2015 11:59",
+"min_score": 0.867,
+"valid": true
+},
+"141": {
+"stamp": "10/05/2015 15:59",
+"min_score": 0.988,
+"valid": true
+},
+"142": {
+"stamp": "10/06/2015 09:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"143": {
+"stamp": "10/06/2015 11:59",
+"min_score": 0.609,
+"valid": true
+},
+"144": {
+"stamp": "10/06/2015 16:59",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"145": {
+"stamp": "10/07/2015 08:59",
+"min_score": 0.771,
+"valid": true
+},
+"146": {
+"stamp": "10/07/2015 11:59",
+"min_score": 0.774,
+"valid": true
+},
+"147": {
+"stamp": "10/07/2015 15:59",
+"min_score": 0.803,
+"valid": true
+},
+"148": {
+"stamp": "10/08/2015 08:59",
+"min_score": 0.712,
+"valid": true
+},
+"149": {
+"stamp": "10/08/2015 11:59",
+"min_score": 0.826,
+"valid": true
+},
+"150": {
+"stamp": "10/08/2015 15:59",
+"min_score": 0.506,
+"valid": true
+},
+"151": {
+"stamp": "10/09/2015 08:59",
+"min_score": 0.584,
+"valid": true
+},
+"152": {
+"stamp": "10/09/2015 11:59",
+"min_score": 0.506,
+"valid": true
+},
+"153": {
+"stamp": "10/09/2015 15:59",
+"min_score": 0.85,
+"valid": true
+},
+"154": {
+"stamp": "10/10/2015 08:59",
+"min_score": 0.63,
+"valid": true
+},
+"155": {
+"stamp": "10/10/2015 11:59",
+"min_score": 0.545,
+"valid": true
+},
+"156": {
+"stamp": "10/10/2015 15:59",
+"min_score": 0.561,
+"valid": true
+},
+"157": {
+"stamp": "10/11/2015 08:59",
+"min_score": 0.532,
+"valid": true
+},
+"158": {
+"stamp": "10/11/2015 11:59",
+"min_score": 0.897,
+"valid": true
+},
+"159": {
+"stamp": "10/11/2015 15:59",
+"min_score": 0.846,
+"valid": true
+},
+"160": {
+"stamp": "10/12/2015 08:59",
+"min_score": 0.834,
+"valid": true
+},
+"161": {
+"stamp": "10/12/2015 11:59",
+"min_score": 0.929,
+"valid": true
+},
+"162": {
+"stamp": "10/12/2015 15:59",
+"min_score": 0.904,
+"valid": true
+},
+"163": {
+"stamp": "10/13/2015 08:59",
+"min_score": 0.633,
+"valid": true
+},
+"164": {
+"stamp": "10/13/2015 11:59",
+"min_score": 0.814,
+"valid": true
+},
+"165": {
+"stamp": "10/13/2015 15:59",
+"min_score": 0.823,
+"valid": true
+},
+"166": {
+"stamp": "10/14/2015 08:58",
+"min_score": 0.601,
+"valid": true
+},
+"167": {
+"stamp": "10/14/2015 11:58",
+"min_score": 0.871,
+"valid": true
+},
+"168": {
+"stamp": "10/14/2015 15:58",
+"min_score": 0.84,
+"valid": true
+},
+"169": {
+"stamp": "10/15/2015 08:58",
+"min_score": 0.563,
+"valid": true
+},
+"170": {
+"stamp": "10/15/2015 11:58",
+"min_score": 0.874,
+"valid": true
+},
+"171": {
+"stamp": "10/15/2015 15:58",
+"min_score": 0.977,
+"valid": true
+},
+"172": {
+"stamp": "10/16/2015 09:58",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"173": {
+"stamp": "10/16/2015 12:58",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"174": {
+"stamp": "10/16/2015 15:58",
+"min_score": 0.921,
+"valid": true
+},
+"175": {
+"stamp": "10/17/2015 08:58",
+"min_score": 0.673,
+"valid": true
+},
+"176": {
+"stamp": "10/17/2015 11:58",
+"min_score": 0.791,
+"valid": true
+},
+"177": {
+"stamp": "10/17/2015 15:58",
+"min_score": 0.73,
+"valid": true
+},
+"178": {
+"stamp": "10/18/2015 08:58",
+"min_score": 0.555,
+"valid": true
+},
+"179": {
+"stamp": "10/18/2015 11:58",
+"min_score": 0.543,
+"valid": true
+},
+"180": {
+"stamp": "10/18/2015 15:58",
+"min_score": 0.588,
+"valid": true
+},
+"181": {
+"stamp": "10/19/2015 08:58",
+"min_score": 0.772,
+"valid": true
+},
+"182": {
+"stamp": "10/19/2015 11:58",
+"min_score": 0.757,
+"valid": true
+},
+"183": {
+"stamp": "10/19/2015 15:58",
+"min_score": 0.776,
+"valid": true
+},
+"184": {
+"stamp": "10/20/2015 08:58",
+"min_score": 0.567,
+"valid": true
+},
+"185": {
+"stamp": "10/20/2015 11:58",
+"min_score": 0.822,
+"valid": true
+},
+"186": {
+"stamp": "10/20/2015 15:58",
+"min_score": 0.989,
+"valid": true
+},
+"187": {
+"stamp": "10/21/2015 08:58",
+"min_score": 0.695,
+"valid": true
+},
+"188": {
+"stamp": "10/21/2015 11:58",
+"min_score": 0.864,
+"valid": true
+},
+"189": {
+"stamp": "10/21/2015 15:58",
+"min_score": 0.95,
+"valid": true
+},
+"190": {
+"stamp": "10/22/2015 08:58",
+"min_score": 0.558,
+"valid": true
+},
+"191": {
+"stamp": "10/22/2015 11:58",
+"min_score": 0.843,
+"valid": true
+},
+"192": {
+"stamp": "10/22/2015 15:58",
+"min_score": 0.925,
+"valid": true
+},
+"193": {
+"stamp": "10/23/2015 08:58",
+"min_score": 0.53,
+"valid": true
+},
+"194": {
+"stamp": "10/23/2015 11:58",
+"min_score": 0.552,
+"valid": true
+},
+"195": {
+"stamp": "10/23/2015 15:58",
+"min_score": 0.856,
+"valid": true
+},
+"196": {
+"stamp": "10/24/2015 08:58",
+"min_score": 0.543,
+"valid": true
+},
+"197": {
+"stamp": "10/24/2015 11:58",
+"min_score": 0.518,
+"valid": true
+},
+"198": {
+"stamp": "10/24/2015 15:58",
+"min_score": 0.884,
+"valid": true
+},
+"199": {
+"stamp": "10/25/2015 08:58",
+"min_score": 0.6,
+"valid": true
+},
+"200": {
+"stamp": "10/25/2015 11:58",
+"min_score": 0.857,
+"valid": true
+},
+"201": {
+"stamp": "10/25/2015 15:58",
+"min_score": 0.518,
+"valid": true
+},
+"202": {
+"stamp": "10/26/2015 08:58",
+"min_score": 0.584,
+"valid": true
+},
+"203": {
+"stamp": "10/26/2015 11:58",
+"min_score": 0.84,
+"valid": true
+},
+"204": {
+"stamp": "10/26/2015 15:58",
+"min_score": 0.782,
+"valid": true
+},
+"205": {
+"stamp": "10/27/2015 08:58",
+"min_score": 0.588,
+"valid": true
+},
+"206": {
+"stamp": "10/27/2015 11:58",
+"min_score": 0.757,
+"valid": true
+},
+"207": {
+"stamp": "10/27/2015 15:58",
+"min_score": 0.817,
+"valid": true
+},
+"208": {
+"stamp": "10/28/2015 08:58",
+"min_score": 0.573,
+"valid": true
+},
+"209": {
+"stamp": "10/28/2015 11:58",
+"min_score": 0.573,
+"valid": true
+},
+"210": {
+"stamp": "10/28/2015 15:58",
+"min_score": 0.533,
+"valid": true
+},
+"211": {
+"stamp": "10/29/2015 09:58",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"212": {
+"stamp": "10/29/2015 11:58",
+"min_score": 0.815,
+"valid": true
+},
+"213": {
+"stamp": "10/29/2015 16:58",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"214": {
+"stamp": "10/30/2015 08:58",
+"min_score": 0.553,
+"valid": true
+},
+"215": {
+"stamp": "10/30/2015 11:58",
+"min_score": 0.782,
+"valid": true
+},
+"216": {
+"stamp": "10/30/2015 16:58",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"217": {
+"stamp": "10/31/2015 09:58",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"218": {
+"stamp": "10/31/2015 11:58",
+"min_score": 0.712,
+"valid": true
+},
+"219": {
+"stamp": "10/31/2015 15:58",
+"min_score": 0.582,
+"valid": true
+},
+"220": {
+"stamp": "11/01/2015 08:58",
+"min_score": 0.564,
+"valid": true
+},
+"221": {
+"stamp": "11/01/2015 11:58",
+"min_score": 0.529,
+"valid": true
+},
+"222": {
+"stamp": "11/01/2015 15:58",
+"min_score": 0.974,
+"valid": true
+},
+"223": {
+"stamp": "11/02/2015 08:58",
+"min_score": 0.533,
+"valid": true
+},
+"224": {
+"stamp": "11/02/2015 11:58",
+"min_score": 0.537,
+"valid": true
+},
+"225": {
+"stamp": "11/02/2015 15:58",
+"min_score": 0.835,
+"valid": true
+},
+"226": {
+"stamp": "11/03/2015 08:58",
+"min_score": 0.875,
+"valid": true
+},
+"227": {
+"stamp": "11/03/2015 11:58",
+"min_score": 0.823,
+"valid": true
+},
+"228": {
+"stamp": "11/03/2015 15:58",
+"min_score": 0.842,
+"valid": true
+},
+"229": {
+"stamp": "11/04/2015 08:58",
+"min_score": 0.54,
+"valid": true
+},
+"230": {
+"stamp": "11/04/2015 11:58",
+"min_score": 0.822,
+"valid": true
+},
+"231": {
+"stamp": "11/04/2015 15:58",
+"min_score": 0.872,
+"valid": true
+},
+"232": {
+"stamp": "11/05/2015 08:58",
+"min_score": 0.624,
+"valid": true
+},
+"233": {
+"stamp": "11/05/2015 11:58",
+"min_score": 0.643,
+"valid": true
+},
+"234": {
+"stamp": "11/05/2015 15:58",
+"min_score": 0.812,
+"valid": true
+},
+"235": {
+"stamp": "11/06/2015 08:58",
+"min_score": 0.726,
+"valid": true
+},
+"236": {
+"stamp": "11/06/2015 12:58",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"237": {
+"stamp": "11/06/2015 16:58",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"238": {
+"stamp": "11/07/2015 08:58",
+"min_score": 0.696,
+"valid": true
+},
+"239": {
+"stamp": "11/07/2015 11:58",
+"min_score": 0.819,
+"valid": true
+},
+"240": {
+"stamp": "11/07/2015 15:58",
+"min_score": 0.819,
+"valid": true
+},
+"241": {
+"stamp": "11/08/2015 08:58",
+"min_score": 0.529,
+"valid": true
+},
+"242": {
+"stamp": "11/08/2015 11:58",
+"min_score": 0.537,
+"valid": true
+},
+"243": {
+"stamp": "11/08/2015 15:58",
+"min_score": 0.941,
+"valid": true
+},
+"244": {
+"stamp": "11/09/2015 08:58",
+"min_score": 0.555,
+"valid": true
+},
+"245": {
+"stamp": "11/09/2015 11:58",
+"min_score": 0.765,
+"valid": true
+},
+"246": {
+"stamp": "11/09/2015 15:58",
+"min_score": 0.527,
+"valid": true
+},
+"247": {
+"stamp": "11/10/2015 08:58",
+"min_score": 0.638,
+"valid": true
+},
+"248": {
+"stamp": "11/10/2015 11:58",
+"min_score": 0.564,
+"valid": true
+},
+"249": {
+"stamp": "11/10/2015 15:58",
+"min_score": 0.572,
+"valid": true
+},
+"250": {
+"stamp": "11/11/2015 09:58",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"251": {
+"stamp": "11/11/2015 11:58",
+"min_score": 0.888,
+"valid": true
+},
+"252": {
+"stamp": "11/11/2015 15:58",
+"min_score": 0.896,
+"valid": true
+},
+"253": {
+"stamp": "11/12/2015 08:58",
+"min_score": 0.741,
+"valid": true
+},
+"254": {
+"stamp": "11/12/2015 11:58",
+"min_score": 0.777,
+"valid": true
+},
+"255": {
+"stamp": "11/12/2015 15:58",
+"min_score": 0.793,
+"valid": true
+},
+"256": {
+"stamp": "11/13/2015 09:58",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"257": {
+"stamp": "11/13/2015 11:58",
+"min_score": 0.521,
+"valid": true
+},
+"258": {
+"stamp": "11/13/2015 16:58",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"259": {
+"stamp": "11/14/2015 08:58",
+"min_score": 0.747,
+"valid": true
+},
+"260": {
+"stamp": "11/14/2015 11:58",
+"min_score": 0.781,
+"valid": true
+},
+"261": {
+"stamp": "11/14/2015 15:58",
+"min_score": 0.801,
+"valid": true
+},
+"262": {
+"stamp": "11/15/2015 08:58",
+"min_score": 0.519,
+"valid": true
+},
+"263": {
+"stamp": "11/15/2015 11:58",
+"min_score": 0.834,
+"valid": true
+},
+"264": {
+"stamp": "11/15/2015 15:58",
+"min_score": 0.942,
+"valid": true
+},
+"265": {
+"stamp": "11/16/2015 09:58",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"266": {
+"stamp": "11/16/2015 11:58",
+"min_score": 0.747,
+"valid": true
+},
+"267": {
+"stamp": "11/16/2015 15:58",
+"min_score": 0.741,
+"valid": true
+},
+"268": {
+"stamp": "11/17/2015 08:58",
+"min_score": 0.773,
+"valid": true
+},
+"269": {
+"stamp": "11/17/2015 11:58",
+"min_score": 0.827,
+"valid": true
+},
+"270": {
+"stamp": "11/17/2015 15:58",
+"min_score": 0.681,
+"valid": true
+},
+"271": {
+"stamp": "11/18/2015 08:58",
+"min_score": 0.521,
+"valid": true
+},
+"272": {
+"stamp": "11/18/2015 11:58",
+"min_score": 0.565,
+"valid": true
+},
+"273": {
+"stamp": "11/18/2015 15:58",
+"min_score": 0.619,
+"valid": true
+},
+"274": {
+"stamp": "11/19/2015 09:58",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"275": {
+"stamp": "11/19/2015 12:58",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"276": {
+"stamp": "11/19/2015 15:58",
+"min_score": 0.96,
+"valid": true
+},
+"277": {
+"stamp": "11/20/2015 08:58",
+"min_score": 0.536,
+"valid": true
+},
+"278": {
+"stamp": "11/20/2015 11:58",
+"min_score": 0.549,
+"valid": true
+},
+"279": {
+"stamp": "11/20/2015 15:58",
+"min_score": 0.955,
+"valid": true
+},
+"280": {
+"stamp": "11/21/2015 08:58",
+"min_score": 0.588,
+"valid": true
+},
+"281": {
+"stamp": "11/21/2015 11:58",
+"min_score": 0.582,
+"valid": true
+},
+"282": {
+"stamp": "11/21/2015 15:58",
+"min_score": 0.952,
+"valid": true
+},
+"283": {
+"stamp": "11/22/2015 08:58",
+"min_score": 0.587,
+"valid": true
+},
+"284": {
+"stamp": "11/22/2015 11:58",
+"min_score": 0.586,
+"valid": true
+},
+"285": {
+"stamp": "11/22/2015 15:58",
+"min_score": 0.939,
+"valid": true
+},
+"286": {
+"stamp": "11/23/2015 08:58",
+"min_score": 0.731,
+"valid": true
+},
+"287": {
+"stamp": "11/23/2015 11:58",
+"min_score": 0.771,
+"valid": true
+},
+"288": {
+"stamp": "11/23/2015 15:58",
+"min_score": 0.8,
+"valid": true
+},
+"289": {
+"stamp": "11/24/2015 08:58",
+"min_score": 0.644,
+"valid": true
+},
+"290": {
+"stamp": "11/24/2015 11:58",
+"min_score": 0.572,
+"valid": true
+},
+"291": {
+"stamp": "11/24/2015 15:58",
+"min_score": 0.853,
+"valid": true
+},
+"292": {
+"stamp": "11/25/2015 08:58",
+"min_score": 0.581,
+"valid": true
+},
+"293": {
+"stamp": "11/25/2015 11:58",
+"min_score": 0.609,
+"valid": true
+},
+"294": {
+"stamp": "11/25/2015 15:58",
+"min_score": 0.965,
+"valid": true
+},
+"295": {
+"stamp": "11/26/2015 08:58",
+"min_score": 0.566,
+"valid": true
+},
+"296": {
+"stamp": "11/26/2015 12:58",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"297": {
+"stamp": "11/26/2015 15:58",
+"min_score": 0.9,
+"valid": true
+},
+"298": {
+"stamp": "11/27/2015 08:58",
+"min_score": 0.564,
+"valid": true
+},
+"299": {
+"stamp": "11/27/2015 11:58",
+"min_score": 0.581,
+"valid": true
+},
+"300": {
+"stamp": "11/27/2015 15:58",
+"min_score": 0.912,
+"valid": true
+},
+"301": {
+"stamp": "11/28/2015 08:58",
+"min_score": 0.557,
+"valid": true
+},
+"302": {
+"stamp": "11/28/2015 11:58",
+"min_score": 0.579,
+"valid": true
+},
+"303": {
+"stamp": "11/28/2015 15:58",
+"min_score": 0.949,
+"valid": true
+},
+"304": {
+"stamp": "11/29/2015 08:58",
+"min_score": 0.52,
+"valid": true
+},
+"305": {
+"stamp": "11/29/2015 11:58",
+"min_score": 0.797,
+"valid": true
+},
+"306": {
+"stamp": "11/29/2015 15:58",
+"min_score": 0.963,
+"valid": true
+},
+"307": {
+"stamp": "11/30/2015 08:58",
+"min_score": 0.544,
+"valid": true
+},
+"308": {
+"stamp": "11/30/2015 11:58",
+"min_score": 0.58,
+"valid": true
+},
+"309": {
+"stamp": "11/80/2015 15:58",
+"min_score": 0.455,
+"valid": false
+},
+"310": {
+"stamp": "11/30/2015 16:02",
+"min_score": 0.653,
+"valid": true
+},
+"311": {
+"stamp": "12/01/2015 08:58",
+"min_score": 0.55,
+"valid": true
+},
+"312": {
+"stamp": "12/01/2015 11:58",
+"min_score": 0.549,
+"valid": true
+},
+"313": {
+"stamp": "12/01/2015 15:58",
+"min_score": 0.789,
+"valid": true
+},
+"314": {
+"stamp": "12/02/2015 08:58",
+"min_score": 0.535,
+"valid": true
+},
+"315": {
+"stamp": "12/02/2015 11:58",
+"min_score": 0.799,
+"valid": true
+},
+"316": {
+"stamp": "12/02/2015 15:58",
+"min_score": 0.82,
+"valid": true
+},
+"317": {
+"stamp": "12/03/2015 08:58",
+"min_score": 0.818,
+"valid": true
+},
+"318": {
+"stamp": "12/03/2015 11:58",
+"min_score": 0.535,
+"valid": true
+},
+"319": {
+"stamp": "12/03/2015 15:58",
+"min_score": 0.674,
+"valid": true
+},
+"320": {
+"stamp": "12/04/2015 08:58",
+"min_score": 0.663,
+"valid": true
+},
+"321": {
+"stamp": "12/04/2015 11:58",
+"min_score": 0.574,
+"valid": true
+},
+"322": {
+"stamp": "12/04/2015 15:58",
+"min_score": 0.853,
+"valid": true
+},
+"323": {
+"stamp": "12/05/2015 08:58",
+"min_score": 0.799,
+"valid": true
+},
+"324": {
+"stamp": "12/05/2015 11:58",
+"min_score": 0.83,
+"valid": true
+},
+"325": {
+"stamp": "12/05/2015 15:58",
+"min_score": 0.622,
+"valid": true
+},
+"326": {
+"stamp": "12/06/2015 08:58",
+"min_score": 0.827,
+"valid": true
+},
+"327": {
+"stamp": "12/06/2015 11:58",
+"min_score": 0.812,
+"valid": true
+},
+"328": {
+"stamp": "12/06/2015 15:58",
+"min_score": 0.729,
+"valid": true
+},
+"329": {
+"stamp": "12/07/2015 08:58",
+"min_score": 0.55,
+"valid": true
+},
+"330": {
+"stamp": "12/07/2015 11:58",
+"min_score": 0.625,
+"valid": true
+},
+"331": {
+"stamp": "12/07/2015 15:58",
+"min_score": 0.811,
+"valid": true
+},
+"332": {
+"stamp": "12/08/2015 08:58",
+"min_score": 1.0,
+"valid": true
+},
+"333": {
+"stamp": "12/08/2015 11:58",
+"min_score": 0.793,
+"valid": true
+},
+"334": {
+"stamp": "12/08/2015 15:58",
+"min_score": 0.795,
+"valid": true
+},
+"335": {
+"stamp": "12/09/2015 08:58",
+"min_score": 0.78,
+"valid": true
+},
+"336": {
+"stamp": "12/09/2015 11:58",
+"min_score": 0.806,
+"valid": true
+},
+"337": {
+"stamp": "12/09/2015 12:03",
+"min_score": 0.862,
+"valid": true
+},
+"338": {
+"stamp": "12/09/2015 15:58",
+"min_score": 0.894,
+"valid": true
+},
+"339": {
+"stamp": "12/10/2015 08:58",
+"min_score": 0.539,
+"valid": true
+},
+"340": {
+"stamp": "12/10/2015 11:58",
+"min_score": 0.855,
+"valid": true
+},
+"341": {
+"stamp": "12/10/2015 15:58",
+"min_score": 0.978,
+"valid": true
+},
+"342": {
+"stamp": "12/11/2015 08:58",
+"min_score": 0.629,
+"valid": true
+},
+"343": {
+"stamp": "12/11/2015 11:58",
+"min_score": 0.716,
+"valid": true
+},
+"344": {
+"stamp": "12/11/2015 15:04",
+"min_score": 0.801,
+"valid": true
+},
+"345": {
+"stamp": "12/11/2015 15:58",
+"min_score": 0.79,
+"valid": true
+},
+"346": {
+"stamp": "12/12/2015 08:58",
+"min_score": 0.642,
+"valid": true
+},
+"347": {
+"stamp": "12/12/2015 11:58",
+"min_score": 0.879,
+"valid": true
+},
+"348": {
+"stamp": "12/12/2015 15:58",
+"min_score": 0.879,
+"valid": true
+},
+"349": {
+"stamp": "12/13/2015 08:58",
+"min_score": 0.647,
+"valid": true
+},
+"350": {
+"stamp": "12/13/2015 11:58",
+"min_score": 0.798,
+"valid": true
+},
+"351": {
+"stamp": "12/13/2015 15:58",
+"min_score": 0.831,
+"valid": true
+},
+"352": {
+"stamp": "12/14/2015 08:58",
+"min_score": 0.81,
+"valid": true
+},
+"353": {
+"stamp": "12/14/2015 11:58",
+"min_score": 0.858,
+"valid": true
+},
+"354": {
+"stamp": "12/14/2015 15:58",
+"min_score": 0.891,
+"valid": true
+},
+"355": {
+"stamp": "12/15/2015 08:58",
+"min_score": 0.604,
+"valid": true
+},
+"356": {
+"stamp": "12/15/2015 11:58",
+"min_score": 0.868,
+"valid": true
+},
+"357": {
+"stamp": "12/15/2015 15:58",
+"min_score": 0.859,
+"valid": true
+},
+"358": {
+"stamp": "12/16/2015 08:58",
+"min_score": 0.545,
+"valid": true
+},
+"359": {
+"stamp": "12/16/2015 11:58",
+"min_score": 0.539,
+"valid": true
+},
+"360": {
+"stamp": "12/16/2015 15:58",
+"min_score": 0.845,
+"valid": true
+},
+"361": {
+"stamp": "12/17/2015 08:57",
+"min_score": 0.876,
+"valid": true
+},
+"362": {
+"stamp": "12/17/2015 11:57",
+"min_score": 0.859,
+"valid": true
+},
+"363": {
+"stamp": "12/17/2015 15:57",
+"min_score": 0.848,
+"valid": true
+},
+"364": {
+"stamp": "12/18/2015 08:57",
+"min_score": 0.607,
+"valid": true
+},
+"365": {
+"stamp": "12/18/2015 11:57",
+"min_score": 0.581,
+"valid": true
+},
+"366": {
+"stamp": "12/18/2015 15:57",
+"min_score": 0.947,
+"valid": true
+},
+"367": {
+"stamp": "12/19/2015 09:57",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"368": {
+"stamp": "12/19/2015 12:57",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"369": {
+"stamp": "12/19/2015 16:57",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"370": {
+"stamp": "12/20/2015 08:57",
+"min_score": 0.888,
+"valid": true
+},
+"371": {
+"stamp": "12/20/2015 11:57",
+"min_score": 0.558,
+"valid": true
+},
+"372": {
+"stamp": "12/20/2015 15:57",
+"min_score": 0.544,
+"valid": true
+},
+"373": {
+"stamp": "12/21/2015 08:57",
+"min_score": 0.883,
+"valid": true
+},
+"374": {
+"stamp": "12/21/2015 11:57",
+"min_score": 0.906,
+"valid": true
+},
+"375": {
+"stamp": "12/21/2015 15:57",
+"min_score": 0.908,
+"valid": true
+},
+"376": {
+"stamp": "12/22/2015 08:57",
+"min_score": 0.858,
+"valid": true
+},
+"377": {
+"stamp": "12/22/2015 11:57",
+"min_score": 0.758,
+"valid": true
+},
+"378": {
+"stamp": "12/22/2015 15:57",
+"min_score": 0.862,
+"valid": true
+},
+"379": {
+"stamp": "12/23/2015 08:57",
+"min_score": 0.787,
+"valid": true
+},
+"380": {
+"stamp": "12/23/2015 11:57",
+"min_score": 0.773,
+"valid": true
+},
+"381": {
+"stamp": "12/23/2015 15:57",
+"min_score": 0.767,
+"valid": true
+},
+"382": {
+"stamp": "12/24/2015 08:57",
+"min_score": 0.88,
+"valid": true
+},
+"383": {
+"stamp": "12/24/2015 11:57",
+"min_score": 0.864,
+"valid": true
+},
+"384": {
+"stamp": "12/24/2015 15:57",
+"min_score": 0.824,
+"valid": true
+},
+"385": {
+"stamp": "12/25/2015 08:57",
+"min_score": 0.639,
+"valid": true
+},
+"386": {
+"stamp": "12/25/2015 11:57",
+"min_score": 0.779,
+"valid": true
+},
+"387": {
+"stamp": "12/25/2015 15:57",
+"min_score": 0.88,
+"valid": true
+},
+"388": {
+"stamp": "12/26/2015 08:57",
+"min_score": 0.566,
+"valid": true
+},
+"389": {
+"stamp": "12/26/2015 11:57",
+"min_score": 0.586,
+"valid": true
+},
+"390": {
+"stamp": "12/26/2015 15:57",
+"min_score": 0.613,
+"valid": true
+},
+"391": {
+"stamp": "12/27/2015 08:57",
+"min_score": 0.631,
+"valid": true
+},
+"392": {
+"stamp": "12/27/2015 11:57",
+"min_score": 0.839,
+"valid": true
+},
+"393": {
+"stamp": "12/27/2015 15:57",
+"min_score": 0.887,
+"valid": true
+},
+"394": {
+"stamp": "12/28/2015 08:57",
+"min_score": 0.616,
+"valid": true
+},
+"395": {
+"stamp": "12/28/2015 11:57",
+"min_score": 0.879,
+"valid": true
+},
+"396": {
+"stamp": "12/28/2015 15:57",
+"min_score": 0.541,
+"valid": true
+},
+"397": {
+"stamp": "12/29/2015 09:57",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"398": {
+"stamp": "12/29/2015 11:57",
+"min_score": 0.545,
+"valid": true
+},
+"399": {
+"stamp": "12/29/2015 15:57",
+"min_score": 0.554,
+"valid": true
+},
+"400": {
+"stamp": "12/30/2015 08:57",
+"min_score": 0.588,
+"valid": true
+},
+"401": {
+"stamp": "12/30/2015 11:57",
+"min_score": 0.589,
+"valid": true
+},
+"402": {
+"stamp": "12/30/2015 15:57",
+"min_score": 0.784,
+"valid": true
+},
+"403": {
+"stamp": "12/31/2015 08:57",
+"min_score": 0.59,
+"valid": true
+},
+"404": {
+"stamp": "12/31/2015 11:57",
+"min_score": 0.603,
+"valid": true
+},
+"405": {
+"stamp": "12/31/2015 15:57",
+"min_score": 0.81,
+"valid": true
+},
+"406": {
+"stamp": "01/01/2016 08:57",
+"min_score": 0.661,
+"valid": true
+},
+"407": {
+"stamp": "01/01/2016 11:57",
+"min_score": 0.563,
+"valid": true
+},
+"408": {
+"stamp": "01/01/2016 15:57",
+"min_score": 0.873,
+"valid": true
+},
+"409": {
+"stamp": "01/02/2016 08:57",
+"min_score": 0.675,
+"valid": true
+},
+"410": {
+"stamp": "01/02/2016 11:57",
+"min_score": 0.572,
+"valid": true
+},
+"411": {
+"stamp": "01/02/2016 15:57",
+"min_score": 0.873,
+"valid": true
+},
+"412": {
+"stamp": "01/03/2016 08:57",
+"min_score": 0.733,
+"valid": true
+},
+"413": {
+"stamp": "01/03/2016 11:57",
+"min_score": 0.67,
+"valid": true
+},
+"414": {
+"stamp": "01/03/2016 15:57",
+"min_score": 0.73,
+"valid": true
+},
+"415": {
+"stamp": "01/04/2016 08:57",
+"min_score": 0.606,
+"valid": true
+},
+"416": {
+"stamp": "01/04/2016 11:57",
+"min_score": 0.67,
+"valid": true
+},
+"417": {
+"stamp": "01/04/2016 15:57",
+"min_score": 0.665,
+"valid": true
+},
+"418": {
+"stamp": "01/05/2016 09:57",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"419": {
+"stamp": "01/05/2016 11:57",
+"min_score": 0.834,
+"valid": true
+},
+"420": {
+"stamp": "01/05/2016 15:57",
+"min_score": 0.833,
+"valid": true
+},
+"421": {
+"stamp": "01/06/2016 09:57",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"422": {
+"stamp": "01/06/2016 12:57",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"423": {
+"stamp": "01/06/2016 15:57",
+"min_score": 0.58,
+"valid": true
+},
+"424": {
+"stamp": "01/07/2016 09:57",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"425": {
+"stamp": "01/07/2016 11:57",
+"min_score": 0.598,
+"valid": true
+},
+"426": {
+"stamp": "01/07/2016 15:57",
+"min_score": 0.59,
+"valid": true
+},
+"427": {
+"stamp": "01/08/2016 08:57",
+"min_score": 0.572,
+"valid": true
+},
+"428": {
+"stamp": "01/08/2016 11:57",
+"min_score": 0.578,
+"valid": true
+},
+"429": {
+"stamp": "01/08/2016 15:57",
+"min_score": 0.899,
+"valid": true
+},
+"430": {
+"stamp": "01/09/2016 09:57",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"431": {
+"stamp": "01/09/2016 12:57",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"432": {
+"stamp": "01/09/2016 15:57",
+"min_score": 0.776,
+"valid": true
+},
+"433": {
+"stamp": "01/10/2016 09:57",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"434": {
+"stamp": "01/10/2016 12:57",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"435": {
+"stamp": "01/10/2016 15:57",
+"min_score": 0.575,
+"valid": true
+},
+"436": {
+"stamp": "01/11/2016 09:57",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"437": {
+"stamp": "01/11/2016 11:57",
+"min_score": 0.578,
+"valid": true
+},
+"438": {
+"stamp": "01/11/2016 15:57",
+"min_score": 0.967,
+"valid": true
+},
+"439": {
+"stamp": "01/12/2016 08:57",
+"min_score": 0.854,
+"valid": true
+},
+"440": {
+"stamp": "01/12/2016 11:57",
+"min_score": 0.81,
+"valid": true
+},
+"441": {
+"stamp": "01/12/2016 16:57",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"442": {
+"stamp": "01/13/2016 08:57",
+"min_score": 0.869,
+"valid": true
+},
+"443": {
+"stamp": "01/13/2016 11:57",
+"min_score": 0.838,
+"valid": true
+},
+"444": {
+"stamp": "01/13/2016 15:57",
+"min_score": 0.743,
+"valid": true
+},
+"445": {
+"stamp": "01/14/2016 09:57",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"446": {
+"stamp": "01/14/2016 12:57",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"447": {
+"stamp": "01/14/2016 15:57",
+"min_score": 0.887,
+"valid": true
+},
+"448": {
+"stamp": "01/15/2016 08:57",
+"min_score": 0.606,
+"valid": true
+},
+"449": {
+"stamp": "01/15/2016 11:57",
+"min_score": 0.837,
+"valid": true
+},
+"450": {
+"stamp": "01/15/2016 15:57",
+"min_score": 0.886,
+"valid": true
+},
+"451": {
+"stamp": "01/16/2016 08:57",
+"min_score": 0.886,
+"valid": true
+},
+"452": {
+"stamp": "01/16/2016 11:57",
+"min_score": 0.918,
+"valid": true
+},
+"453": {
+"stamp": "01/16/2016 16:57",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"454": {
+"stamp": "01/17/2016 08:57",
+"min_score": 0.927,
+"valid": true
+},
+"455": {
+"stamp": "01/17/2016 11:57",
+"min_score": 0.918,
+"valid": true
+},
+"456": {
+"stamp": "01/17/2016 15:57",
+"min_score": 0.828,
+"valid": true
+},
+"457": {
+"stamp": "01/18/2016 08:57",
+"min_score": 0.626,
+"valid": true
+},
+"458": {
+"stamp": "01/18/2016 11:57",
+"min_score": 0.775,
+"valid": true
+},
+"459": {
+"stamp": "01/18/2016 15:57",
+"min_score": 0.585,
+"valid": true
+},
+"460": {
+"stamp": "01/19/2016 09:57",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"461": {
+"stamp": "01/19/2016 11:57",
+"min_score": 0.604,
+"valid": true
+},
+"462": {
+"stamp": "01/19/2016 15:57",
+"min_score": 0.857,
+"valid": true
+},
+"463": {
+"stamp": "01/20/2016 08:57",
+"min_score": 0.836,
+"valid": true
+},
+"464": {
+"stamp": "01/20/2016 11:57",
+"min_score": 0.792,
+"valid": true
+},
+"465": {
+"stamp": "01/20/2016 15:57",
+"min_score": 0.801,
+"valid": true
+},
+"466": {
+"stamp": "01/21/2016 08:57",
+"min_score": 0.873,
+"valid": true
+},
+"467": {
+"stamp": "01/21/2016 11:57",
+"min_score": 0.857,
+"valid": true
+},
+"468": {
+"stamp": "01/21/2016 15:57",
+"min_score": 0.812,
+"valid": true
+},
+"469": {
+"stamp": "01/22/2016 08:57",
+"min_score": 0.864,
+"valid": true
+},
+"470": {
+"stamp": "01/22/2016 11:57",
+"min_score": 0.892,
+"valid": true
+},
+"471": {
+"stamp": "01/22/2016 15:57",
+"min_score": 0.835,
+"valid": true
+},
+"472": {
+"stamp": "01/23/2016 08:57",
+"min_score": 0.796,
+"valid": true
+},
+"473": {
+"stamp": "01/23/2016 11:57",
+"min_score": 0.796,
+"valid": true
+},
+"474": {
+"stamp": "01/23/2016 15:57",
+"min_score": 0.808,
+"valid": true
+},
+"475": {
+"stamp": "01/24/2016 08:57",
+"min_score": 0.893,
+"valid": true
+},
+"476": {
+"stamp": "01/24/2016 11:57",
+"min_score": 0.842,
+"valid": true
+},
+"477": {
+"stamp": "01/24/2016 15:57",
+"min_score": 0.781,
+"valid": true
+},
+"478": {
+"stamp": "01/25/2016 08:57",
+"min_score": 0.853,
+"valid": true
+},
+"479": {
+"stamp": "01/25/2016 11:57",
+"min_score": 0.659,
+"valid": true
+},
+"480": {
+"stamp": "01/25/2016 15:57",
+"min_score": 0.926,
+"valid": true
+},
+"481": {
+"stamp": "01/26/2016 09:57",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"482": {
+"stamp": "01/26/2016 11:57",
+"min_score": 0.814,
+"valid": true
+},
+"483": {
+"stamp": "01/26/2016 15:57",
+"min_score": 0.56,
+"valid": true
+},
+"484": {
+"stamp": "01/27/2016 08:57",
+"min_score": 0.697,
+"valid": true
+},
+"485": {
+"stamp": "01/27/2016 11:57",
+"min_score": 0.705,
+"valid": true
+},
+"486": {
+"stamp": "01/27/2016 15:57",
+"min_score": 0.707,
+"valid": true
+},
+"487": {
+"stamp": "01/28/2016 08:57",
+"min_score": 0.862,
+"valid": true
+},
+"488": {
+"stamp": "01/28/2016 11:57",
+"min_score": 0.798,
+"valid": true
+},
+"489": {
+"stamp": "01/28/2016 15:57",
+"min_score": 0.856,
+"valid": true
+},
+"490": {
+"stamp": "01/29/2016 08:57",
+"min_score": 0.663,
+"valid": true
+},
+"491": {
+"stamp": "01/29/2016 11:57",
+"min_score": 0.89,
+"valid": true
+},
+"492": {
+"stamp": "01/29/2016 15:57",
+"min_score": 0.727,
+"valid": true
+},
+"493": {
+"stamp": "01/30/2016 08:57",
+"min_score": 0.836,
+"valid": true
+},
+"494": {
+"stamp": "01/30/2016 11:57",
+"min_score": 0.829,
+"valid": true
+},
+"495": {
+"stamp": "01/30/2016 15:57",
+"min_score": 0.802,
+"valid": true
+},
+"496": {
+"stamp": "01/31/2016 08:57",
+"min_score": 0.815,
+"valid": true
+},
+"497": {
+"stamp": "01/31/2016 11:57",
+"min_score": 0.843,
+"valid": true
+},
+"498": {
+"stamp": "01/31/2016 15:57",
+"min_score": 0.8,
+"valid": true
+},
+"499": {
+"stamp": "02/01/2016 08:57",
+"min_score": 0.676,
+"valid": true
+},
+"500": {
+"stamp": "02/01/2016 11:57",
+"min_score": 1.0,
+"valid": true
+},
+"501": {
+"stamp": "02/01/2016 15:57",
+"min_score": 0.794,
+"valid": true
+},
+"502": {
+"stamp": "02/02/2016 08:56",
+"min_score": 0.721,
+"valid": true
+},
+"503": {
+"stamp": "02/02/2016 11:56",
+"min_score": 0.629,
+"valid": true
+},
+"504": {
+"stamp": "02/02/2016 15:56",
+"min_score": 0.936,
+"valid": true
+},
+"505": {
+"stamp": "02/08/2016 08:56",
+"min_score": 0.508,
+"valid": true
+},
+"506": {
+"stamp": "02/05/2016 11:56",
+"min_score": 0.385,
+"valid": false
+},
+"507": {
+"stamp": "02/03/2016 15:56",
+"min_score": 0.692,
+"valid": false
+},
+"508": {
+"stamp": "02/04/2016 08:56",
+"min_score": 0.748,
+"valid": false
+},
+"509": {
+"stamp": "02/04/2016 11:56",
+"min_score": 0.713,
+"valid": false
+},
+"510": {
+"stamp": "02/04/2016 15:56",
+"min_score": 0.704,
+"valid": false
+},
+"511": {
+"stamp": "02/05/2016 08:56",
+"min_score": 0.72,
+"valid": false
+},
+"512": {
+"stamp": "02/05/2016 11:56",
+"min_score": 0.739,
+"valid": false
+},
+"513": {
+"stamp": "02/05/2016 15:56",
+"min_score": 0.727,
+"valid": false
+},
+"514": {
+"stamp": "02/05/2016 08:56",
+"min_score": 0.555,
+"valid": false
+},
+"515": {
+"stamp": "02/06/2016 11:56",
+"min_score": 0.547,
+"valid": false
+},
+"516": {
+"stamp": "02/06/2016 15:56",
+"min_score": 0.882,
+"valid": false
+},
+"517": {
+"stamp": "02/07/2016 08:56",
+"min_score": 0.676,
+"valid": false
+},
+"518": {
+"stamp": "02/07/2016 11:56",
+"min_score": 0.707,
+"valid": false
+},
+"519": {
+"stamp": "02/07/2016 15:56",
+"min_score": 0.855,
+"valid": false
+},
+"520": {
+"stamp": "02/08/2016 08:56",
+"min_score": 0.45,
+"valid": false
+},
+"521": {
+"stamp": "02/08/2016 11:56",
+"min_score": 0.478,
+"valid": false
+},
+"522": {
+"stamp": "02/08/2016 15:56",
+"min_score": 0.935,
+"valid": true
+},
+"523": {
+"stamp": "02/09/2016 08:56",
+"min_score": 0.635,
+"valid": true
+},
+"524": {
+"stamp": "02/09/2016 11:56",
+"min_score": 0.656,
+"valid": true
+},
+"525": {
+"stamp": "02/09/2016 15:56",
+"min_score": 0.577,
+"valid": true
+},
+"526": {
+"stamp": "02/10/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"527": {
+"stamp": "02/10/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"528": {
+"stamp": "02/10/2016 16:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"529": {
+"stamp": "02/11/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"530": {
+"stamp": "02/11/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"531": {
+"stamp": "02/11/2016 16:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"532": {
+"stamp": "02/12/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"533": {
+"stamp": "02/12/2016 11:56",
+"min_score": 0.61,
+"valid": true
+},
+"534": {
+"stamp": "02/12/2016 15:56",
+"min_score": 0.642,
+"valid": true
+},
+"535": {
+"stamp": "02/13/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"536": {
+"stamp": "02/13/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"537": {
+"stamp": "02/13/2016 16:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"538": {
+"stamp": "02/14/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"539": {
+"stamp": "02/14/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"540": {
+"stamp": "02/14/2016 16:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"541": {
+"stamp": "02/15/2016 08:56",
+"min_score": 0.62,
+"valid": true
+},
+"542": {
+"stamp": "02/15/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"543": {
+"stamp": "02/15/2016 16:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"544": {
+"stamp": "02/16/2016 08:56",
+"min_score": 0.589,
+"valid": true
+},
+"545": {
+"stamp": "02/16/2016 11:56",
+"min_score": 0.615,
+"valid": true
+},
+"546": {
+"stamp": "02/16/2016 16:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"547": {
+"stamp": "02/17/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"548": {
+"stamp": "02/17/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"549": {
+"stamp": "02/17/2016 15:56",
+"min_score": 0.65,
+"valid": true
+},
+"550": {
+"stamp": "02/18/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"551": {
+"stamp": "02/18/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"552": {
+"stamp": "02/18/2016 15:56",
+"min_score": 0.621,
+"valid": true
+},
+"553": {
+"stamp": "02/19/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"554": {
+"stamp": "02/19/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"555": {
+"stamp": "02/19/2016 16:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"556": {
+"stamp": "02/20/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"557": {
+"stamp": "02/20/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"558": {
+"stamp": "02/20/2016 16:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"559": {
+"stamp": "02/21/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"560": {
+"stamp": "02/21/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"561": {
+"stamp": "02/21/2016 15:56",
+"min_score": 0.671,
+"valid": true
+},
+"562": {
+"stamp": "02/22/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"563": {
+"stamp": "02/22/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"564": {
+"stamp": "02/22/2016 15:56",
+"min_score": 0.618,
+"valid": true
+},
+"565": {
+"stamp": "02/23/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"566": {
+"stamp": "02/23/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"567": {
+"stamp": "02/23/2016 15:56",
+"min_score": 0.612,
+"valid": true
+},
+"568": {
+"stamp": "02/24/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"569": {
+"stamp": "02/24/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"570": {
+"stamp": "02/24/2016 16:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"571": {
+"stamp": "02/25/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"572": {
+"stamp": "02/25/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"573": {
+"stamp": "02/25/2016 15:56",
+"min_score": 0.653,
+"valid": true
+},
+"574": {
+"stamp": "02/26/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"575": {
+"stamp": "02/26/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"576": {
+"stamp": "02/26/2016 16:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"577": {
+"stamp": "02/27/2016 08:56",
+"min_score": 0.557,
+"valid": true
+},
+"578": {
+"stamp": "02/27/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"579": {
+"stamp": "02/27/2016 16:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"580": {
+"stamp": "02/28/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"581": {
+"stamp": "02/28/2016 11:56",
+"min_score": 0.618,
+"valid": true
+},
+"582": {
+"stamp": "02/28/2016 16:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"583": {
+"stamp": "02/29/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"584": {
+"stamp": "02/29/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"585": {
+"stamp": "02/29/2016 16:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"586": {
+"stamp": "03/01/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"587": {
+"stamp": "03/01/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"588": {
+"stamp": "03/01/2016 16:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"589": {
+"stamp": "03/02/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"590": {
+"stamp": "03/02/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"591": {
+"stamp": "03/02/2016 16:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"592": {
+"stamp": "03/03/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"593": {
+"stamp": "03/03/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"594": {
+"stamp": "03/03/2016 15:56",
+"min_score": 0.623,
+"valid": true
+},
+"595": {
+"stamp": "03/04/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"596": {
+"stamp": "03/04/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"597": {
+"stamp": "03/04/2016 16:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"598": {
+"stamp": "03/05/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"599": {
+"stamp": "03/05/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"600": {
+"stamp": "03/05/2016 15:56",
+"min_score": 0.623,
+"valid": true
+},
+"601": {
+"stamp": "03/06/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"602": {
+"stamp": "03/06/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"603": {
+"stamp": "03/06/2016 16:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"604": {
+"stamp": "03/07/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"605": {
+"stamp": "03/07/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"606": {
+"stamp": "03/07/2016 15:56",
+"min_score": 0.719,
+"valid": true
+},
+"607": {
+"stamp": "03/08/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"608": {
+"stamp": "03/08/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"609": {
+"stamp": "03/08/2016 16:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"610": {
+"stamp": "03/09/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"611": {
+"stamp": "03/09/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"612": {
+"stamp": "03/09/2016 16:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"613": {
+"stamp": "03/10/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"614": {
+"stamp": "03/10/2016 11:56",
+"min_score": 0.615,
+"valid": true
+},
+"615": {
+"stamp": "03/10/2016 16:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"616": {
+"stamp": "03/11/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"617": {
+"stamp": "03/11/2016 11:56",
+"min_score": 0.728,
+"valid": true
+},
+"618": {
+"stamp": "03/11/2016 15:56",
+"min_score": 0.68,
+"valid": true
+},
+"619": {
+"stamp": "03/12/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"620": {
+"stamp": "03/12/2016 11:56",
+"min_score": 0.533,
+"valid": true
+},
+"621": {
+"stamp": "03/12/2016 16:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"622": {
+"stamp": "03/13/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"623": {
+"stamp": "03/13/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"624": {
+"stamp": "03/13/2016 16:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"625": {
+"stamp": "03/14/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"626": {
+"stamp": "03/14/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"627": {
+"stamp": "03/14/2016 16:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"628": {
+"stamp": "03/15/2016 08:56",
+"min_score": 0.512,
+"valid": true
+},
+"629": {
+"stamp": "03/15/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"630": {
+"stamp": "03/15/2016 15:56",
+"min_score": 0.723,
+"valid": true
+},
+"631": {
+"stamp": "03/16/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"632": {
+"stamp": "03/16/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"633": {
+"stamp": "03/16/2016 15:56",
+"min_score": 0.762,
+"valid": true
+},
+"634": {
+"stamp": "03/17/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"635": {
+"stamp": "03/17/2016 11:56",
+"min_score": 0.567,
+"valid": true
+},
+"636": {
+"stamp": "03/17/2016 15:56",
+"min_score": 0.783,
+"valid": true
+},
+"637": {
+"stamp": "03/18/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"638": {
+"stamp": "03/18/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"639": {
+"stamp": "03/18/2016 16:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"640": {
+"stamp": "03/19/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"641": {
+"stamp": "03/19/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"642": {
+"stamp": "03/19/2016 16:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"643": {
+"stamp": "03/20/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"644": {
+"stamp": "03/20/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"645": {
+"stamp": "03/20/2016 15:56",
+"min_score": 0.512,
+"valid": true
+},
+"646": {
+"stamp": "03/21/2016 08:56",
+"min_score": 0.502,
+"valid": true
+},
+"647": {
+"stamp": "03/21/2016 11:56",
+"min_score": 0.504,
+"valid": true
+},
+"648": {
+"stamp": "03/21/2016 16:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"649": {
+"stamp": "03/22/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"650": {
+"stamp": "03/22/2016 11:56",
+"min_score": 0.567,
+"valid": true
+},
+"651": {
+"stamp": "03/22/2016 15:56",
+"min_score": 0.734,
+"valid": true
+},
+"652": {
+"stamp": "03/23/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"653": {
+"stamp": "03/23/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"654": {
+"stamp": "03/23/2016 16:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"655": {
+"stamp": "03/24/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"656": {
+"stamp": "03/24/2016 11:56",
+"min_score": 0.523,
+"valid": true
+},
+"657": {
+"stamp": "03/24/2016 15:56",
+"min_score": 0.555,
+"valid": true
+},
+"658": {
+"stamp": "03/25/2016 08:56",
+"min_score": 0.537,
+"valid": true
+},
+"659": {
+"stamp": "03/25/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"660": {
+"stamp": "03/25/2016 15:56",
+"min_score": 0.762,
+"valid": true
+},
+"661": {
+"stamp": "03/26/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"662": {
+"stamp": "03/26/2016 11:56",
+"min_score": 0.773,
+"valid": true
+},
+"663": {
+"stamp": "03/26/2016 16:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"664": {
+"stamp": "03/27/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"665": {
+"stamp": "03/27/2016 11:56",
+"min_score": 0.681,
+"valid": true
+},
+"666": {
+"stamp": "03/27/2016 16:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"667": {
+"stamp": "03/28/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"668": {
+"stamp": "03/28/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"669": {
+"stamp": "03/28/2016 15:56",
+"min_score": 0.806,
+"valid": true
+},
+"670": {
+"stamp": "03/29/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"671": {
+"stamp": "03/29/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"672": {
+"stamp": "03/29/2016 15:56",
+"min_score": 0.808,
+"valid": true
+},
+"673": {
+"stamp": "03/30/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"674": {
+"stamp": "03/30/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"675": {
+"stamp": "03/30/2016 15:56",
+"min_score": 0.816,
+"valid": true
+},
+"676": {
+"stamp": "03/31/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"677": {
+"stamp": "03/31/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"678": {
+"stamp": "03/31/2016 15:56",
+"min_score": 0.806,
+"valid": true
+},
+"679": {
+"stamp": "04/01/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"680": {
+"stamp": "04/01/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"681": {
+"stamp": "04/01/2016 15:56",
+"min_score": 0.803,
+"valid": true
+},
+"682": {
+"stamp": "04/02/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"683": {
+"stamp": "04/02/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"684": {
+"stamp": "04/02/2016 15:56",
+"min_score": 0.812,
+"valid": true
+},
+"685": {
+"stamp": "04/05/2015 08:56",
+"min_score": 0.339,
+"valid": false
+},
+"686": {
+"stamp": "04/05/2016 11:56",
+"min_score": 0.402,
+"valid": false
+},
+"687": {
+"stamp": "04/08/2016 15:56",
+"min_score": 0.503,
+"valid": true
+},
+"688": {
+"stamp": "04/04/2020 08:56",
+"min_score": 0.374,
+"valid": false
+},
+"689": {
+"stamp": "04/04/2010 11:56",
+"min_score": 0.566,
+"valid": false
+},
+"690": {
+"stamp": "04/04/2010 15:56",
+"min_score": 0.556,
+"valid": false
+},
+"691": {
+"stamp": "04/05/2016 08:56",
+"min_score": 0.613,
+"valid": false
+},
+"692": {
+"stamp": "04/05/2010 11:56",
+"min_score": 0.541,
+"valid": false
+},
+"693": {
+"stamp": "04/05/2016 15:56",
+"min_score": 0.663,
+"valid": false
+},
+"694": {
+"stamp": "04/00/2015 08:56",
+"min_score": 0.467,
+"valid": false
+},
+"695": {
+"stamp": "04/06/2016 11:56",
+"min_score": 0.829,
+"valid": false
+},
+"696": {
+"stamp": "04/06/2016 15:56",
+"min_score": 0.855,
+"valid": false
+},
+"697": {
+"stamp": "04/07/2015 08:56",
+"min_score": 0.494,
+"valid": false
+},
+"698": {
+"stamp": "04/07/2016 11:56",
+"min_score": 0.687,
+"valid": false
+},
+"699": {
+"stamp": "04/07/2016 15:56",
+"min_score": 0.748,
+"valid": false
+},
+"700": {
+"stamp": "04/00/2015 08:56",
+"min_score": 0.372,
+"valid": false
+},
+"701": {
+"stamp": "04/08/2016 11:56",
+"min_score": 0.83,
+"valid": false
+},
+"702": {
+"stamp": "04/08/2016 15:56",
+"min_score": 0.594,
+"valid": true
+},
+"703": {
+"stamp": "04/09/2016 09:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"704": {
+"stamp": "04/09/2016 12:56",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"705": {
+"stamp": "04/09/2016 15:55",
+"min_score": 0.673,
+"valid": true
+},
+"706": {
+"stamp": "04/10/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"707": {
+"stamp": "04/10/2016 12:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"708": {
+"stamp": "04/10/2016 15:55",
+"min_score": 0.576,
+"valid": true
+},
+"709": {
+"stamp": "04/11/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"710": {
+"stamp": "04/11/2016 11:55",
+"min_score": 0.546,
+"valid": true
+},
+"711": {
+"stamp": "04/11/2016 15:55",
+"min_score": 0.546,
+"valid": true
+},
+"712": {
+"stamp": "04/12/2016 08:55",
+"min_score": 0.505,
+"valid": true
+},
+"713": {
+"stamp": "04/12/2016 11:55",
+"min_score": 0.555,
+"valid": true
+},
+"714": {
+"stamp": "04/12/2016 15:55",
+"min_score": 0.502,
+"valid": true
+},
+"715": {
+"stamp": "04/13/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"716": {
+"stamp": "04/13/2016 12:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"717": {
+"stamp": "04/13/2016 16:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"718": {
+"stamp": "04/14/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"719": {
+"stamp": "04/14/2016 11:55",
+"min_score": 0.557,
+"valid": true
+},
+"720": {
+"stamp": "04/14/2016 15:55",
+"min_score": 0.644,
+"valid": true
+},
+"721": {
+"stamp": "04/15/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"722": {
+"stamp": "04/15/2016 11:55",
+"min_score": 0.55,
+"valid": true
+},
+"723": {
+"stamp": "04/15/2016 15:55",
+"min_score": 0.572,
+"valid": true
+},
+"724": {
+"stamp": "04/16/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"725": {
+"stamp": "04/16/2016 12:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"726": {
+"stamp": "04/16/2016 15:55",
+"min_score": 0.824,
+"valid": true
+},
+"727": {
+"stamp": "04/17/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"728": {
+"stamp": "04/17/2016 11:55",
+"min_score": 0.683,
+"valid": true
+},
+"729": {
+"stamp": "04/17/2016 15:55",
+"min_score": 0.827,
+"valid": true
+},
+"730": {
+"stamp": "04/18/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"731": {
+"stamp": "04/18/2016 11:55",
+"min_score": 0.81,
+"valid": true
+},
+"732": {
+"stamp": "04/18/2016 15:55",
+"min_score": 0.862,
+"valid": true
+},
+"733": {
+"stamp": "04/19/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"734": {
+"stamp": "04/19/2016 11:55",
+"min_score": 0.821,
+"valid": true
+},
+"735": {
+"stamp": "04/19/2016 15:55",
+"min_score": 0.864,
+"valid": true
+},
+"736": {
+"stamp": "04/20/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"737": {
+"stamp": "04/20/2016 11:55",
+"min_score": 0.819,
+"valid": true
+},
+"738": {
+"stamp": "04/20/2016 15:55",
+"min_score": 0.863,
+"valid": true
+},
+"739": {
+"stamp": "04/21/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"740": {
+"stamp": "04/21/2016 11:55",
+"min_score": 0.836,
+"valid": true
+},
+"741": {
+"stamp": "04/21/2016 15:55",
+"min_score": 0.7,
+"valid": true
+},
+"742": {
+"stamp": "04/22/2016 08:55",
+"min_score": 0.723,
+"valid": true
+},
+"743": {
+"stamp": "04/22/2016 11:55",
+"min_score": 0.643,
+"valid": true
+},
+"744": {
+"stamp": "04/22/2016 16:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"745": {
+"stamp": "04/23/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"746": {
+"stamp": "04/23/2016 12:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"747": {
+"stamp": "04/23/2016 16:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"748": {
+"stamp": "04/24/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"749": {
+"stamp": "04/24/2016 12:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"750": {
+"stamp": "04/24/2016 16:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"751": {
+"stamp": "04/25/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"752": {
+"stamp": "04/25/2016 11:55",
+"min_score": 0.86,
+"valid": true
+},
+"753": {
+"stamp": "04/25/2016 15:55",
+"min_score": 0.852,
+"valid": true
+},
+"754": {
+"stamp": "04/26/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"755": {
+"stamp": "04/26/2016 11:55",
+"min_score": 0.781,
+"valid": true
+},
+"756": {
+"stamp": "04/26/2016 16:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"757": {
+"stamp": "04/27/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"758": {
+"stamp": "04/27/2016 12:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"759": {
+"stamp": "04/27/2016 15:55",
+"min_score": 0.567,
+"valid": true
+},
+"760": {
+"stamp": "04/28/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"761": {
+"stamp": "04/28/2016 12:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"762": {
+"stamp": "04/28/2016 16:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"763": {
+"stamp": "04/29/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"764": {
+"stamp": "04/29/2016 12:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"765": {
+"stamp": "04/29/2016 15:55",
+"min_score": 0.838,
+"valid": true
+},
+"766": {
+"stamp": "04/30/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"767": {
+"stamp": "04/30/2016 11:55",
+"min_score": 0.857,
+"valid": true
+},
+"768": {
+"stamp": "04/30/2016 15:55",
+"min_score": 0.852,
+"valid": true
+},
+"769": {
+"stamp": "05/01/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"770": {
+"stamp": "05/01/2016 11:55",
+"min_score": 0.862,
+"valid": true
+},
+"771": {
+"stamp": "05/01/2016 15:55",
+"min_score": 0.942,
+"valid": true
+},
+"772": {
+"stamp": "05/02/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"773": {
+"stamp": "05/02/2016 11:55",
+"min_score": 0.864,
+"valid": true
+},
+"774": {
+"stamp": "05/02/2016 15:55",
+"min_score": 0.936,
+"valid": true
+},
+"775": {
+"stamp": "05/03/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"776": {
+"stamp": "05/03/2016 11:55",
+"min_score": 0.696,
+"valid": true
+},
+"777": {
+"stamp": "05/03/2016 16:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"778": {
+"stamp": "05/04/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"779": {
+"stamp": "05/04/2016 12:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"780": {
+"stamp": "05/04/2016 15:55",
+"min_score": 0.575,
+"valid": true
+},
+"781": {
+"stamp": "05/05/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"782": {
+"stamp": "05/05/2016 11:55",
+"min_score": 0.821,
+"valid": true
+},
+"783": {
+"stamp": "05/05/2016 15:55",
+"min_score": 0.881,
+"valid": true
+},
+"784": {
+"stamp": "05/06/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"785": {
+"stamp": "05/06/2016 11:55",
+"min_score": 0.879,
+"valid": true
+},
+"786": {
+"stamp": "05/06/2016 15:55",
+"min_score": 0.936,
+"valid": true
+},
+"787": {
+"stamp": "05/07/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"788": {
+"stamp": "05/07/2016 11:55",
+"min_score": 0.916,
+"valid": true
+},
+"789": {
+"stamp": "05/07/2016 15:55",
+"min_score": 0.939,
+"valid": true
+},
+"790": {
+"stamp": "05/08/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"791": {
+"stamp": "05/08/2016 12:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"792": {
+"stamp": "05/08/2016 16:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"793": {
+"stamp": "05/09/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"794": {
+"stamp": "05/09/2016 11:55",
+"min_score": 0.879,
+"valid": true
+},
+"795": {
+"stamp": "05/09/2016 15:55",
+"min_score": 0.939,
+"valid": true
+},
+"796": {
+"stamp": "05/10/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"797": {
+"stamp": "05/10/2016 11:55",
+"min_score": 0.923,
+"valid": true
+},
+"798": {
+"stamp": "05/10/2016 15:55",
+"min_score": 0.935,
+"valid": true
+},
+"799": {
+"stamp": "05/11/2016 08:55",
+"min_score": 0.517,
+"valid": true
+},
+"800": {
+"stamp": "05/11/2016 11:55",
+"min_score": 0.938,
+"valid": true
+},
+"801": {
+"stamp": "05/11/2016 15:55",
+"min_score": 0.942,
+"valid": true
+},
+"802": {
+"stamp": "05/12/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"803": {
+"stamp": "05/12/2016 11:55",
+"min_score": 0.941,
+"valid": true
+},
+"804": {
+"stamp": "05/12/2016 15:55",
+"min_score": 0.937,
+"valid": true
+},
+"805": {
+"stamp": "05/13/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"806": {
+"stamp": "05/13/2016 11:55",
+"min_score": 0.855,
+"valid": true
+},
+"807": {
+"stamp": "05/13/2016 15:55",
+"min_score": 0.893,
+"valid": true
+},
+"808": {
+"stamp": "05/14/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"809": {
+"stamp": "05/14/2016 11:55",
+"min_score": 0.681,
+"valid": true
+},
+"810": {
+"stamp": "05/14/2016 15:55",
+"min_score": 0.532,
+"valid": true
+},
+"811": {
+"stamp": "05/15/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"812": {
+"stamp": "05/15/2016 12:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"813": {
+"stamp": "05/15/2016 16:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"814": {
+"stamp": "05/16/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"815": {
+"stamp": "05/16/2016 12:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"816": {
+"stamp": "05/16/2016 16:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"817": {
+"stamp": "05/17/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"818": {
+"stamp": "05/17/2016 11:55",
+"min_score": 0.673,
+"valid": true
+},
+"819": {
+"stamp": "05/17/2016 15:55",
+"min_score": 0.662,
+"valid": true
+},
+"820": {
+"stamp": "05/18/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"821": {
+"stamp": "05/18/2016 12:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"822": {
+"stamp": "05/18/2016 16:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"823": {
+"stamp": "05/19/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"824": {
+"stamp": "05/19/2016 11:55",
+"min_score": 0.873,
+"valid": true
+},
+"825": {
+"stamp": "05/19/2016 16:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"826": {
+"stamp": "05/20/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"827": {
+"stamp": "05/20/2016 11:55",
+"min_score": 0.93,
+"valid": true
+},
+"828": {
+"stamp": "05/20/2016 15:55",
+"min_score": 0.872,
+"valid": true
+},
+"829": {
+"stamp": "05/21/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"830": {
+"stamp": "05/21/2016 12:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"831": {
+"stamp": "05/21/2016 16:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"832": {
+"stamp": "05/22/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"833": {
+"stamp": "05/22/2016 11:55",
+"min_score": 0.929,
+"valid": true
+},
+"834": {
+"stamp": "05/22/2016 15:55",
+"min_score": 0.658,
+"valid": true
+},
+"835": {
+"stamp": "05/23/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"836": {
+"stamp": "05/23/2016 12:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"837": {
+"stamp": "05/23/2016 16:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"838": {
+"stamp": "05/24/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"839": {
+"stamp": "05/24/2016 12:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"840": {
+"stamp": "05/24/2016 15:55",
+"min_score": 0.695,
+"valid": true
+},
+"841": {
+"stamp": "05/25/2016 09:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"842": {
+"stamp": "05/25/2016 12:55",
+"min_score": 0.0,
+"valid": true,
+"filled": true
+},
+"843": {
+"stamp": "05/25/2016 15:55",
+"min_score": 1.0,
+"valid": true
+}
+}
