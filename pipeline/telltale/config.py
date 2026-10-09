@@ -27,6 +27,7 @@ class GridConfig:
     max_disp: Optional[float] = None  # sanity bound on |displacement|, default search - 1
     refine_iters: int = 1       # sub-pixel re-sampling passes after the first peak estimate
     threads: int = 0            # worker threads for the subset loop; 0 = one per CPU
+    pyramid_levels: int = 0     # coarse-to-fine levels (0 = single level); reach = search x 2^levels
 
     def __post_init__(self) -> None:
         if self.template % 2 == 0:

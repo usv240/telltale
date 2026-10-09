@@ -55,7 +55,7 @@ All vision is classical `core` and `imgproc`; there is no neural network in the 
 |---|---|---|
 | A Stack | Register burst frames to frame 1 (phase correlation for the coarse shift, ZNCC on a large central template for sub-pixel precision), median-stack. Contrast below 2 percent is BLIND; inter-frame shift above 3 px is UNSTABLE. | `phaseCorrelate`, `createHanningWindow`, `matchTemplate`, `warpAffine` |
 | B Stabilize | ORB in operator-marked stable regions, Lowe ratio 0.75, homography with `USAC_MAGSAC`. The coarse warp is then correlated against the reference inside the stable regions with the same sub-pixel DIC as the measurement; those correspondences are mapped back to the current frame and the simplest camera model that explains them (translation, similarity, affine, homography) is selected by residual. A verification pass measures what is left: coherent residual above 0.3 px or scatter above 0.3 px is a CAMERA_EVENT and the epoch is rejected. | `ORB_create`, `BFMatcher`, `findHomography(USAC_MAGSAC)`, `estimateAffinePartial2D`, `estimateAffine2D`, `perspectiveTransform`, `warpPerspective` |
-| C Measure | Regular grid of 41 px subsets at 24 px stride (3,000 to 3,500 per 1080p frame). Texture pre-screen on the mean minimum eigenvalue of the structure tensor. ZNCC (`TM_CCOEFF_NORMED`) over a 16 px search radius; separable three-point Gaussian sub-pixel fit; one re-sampling pass (window shifted by the fractional estimate with Lanczos, re-matched) which halves the residual pixel-locking bias; per-subset codes OK, LOW_TEXTURE, LOW_CORR, LOW_MARGIN, OUT_OF_BOUND, EDGE_PEAK. A random 10 percent of valid subsets is cross-checked with phase correlation on 2x patches as a gross-error detector. Zone displacement is the median over valid subsets; uncertainty is 1.4826 x MAD. | `cornerMinEigenVal`, `boxFilter`, `matchTemplate`, `warpAffine`, `phaseCorrelate`, `fillPoly` |
+| C Measure | Optional coarse-to-fine pyramid (`pyrDown`, normalised-convolution infill of the coarse field, residual search at each finer level) so a fixed reference can follow motions of tens of pixels (E3b). Regular grid of 41 px subsets at 24 px stride (3,000 to 3,500 per 1080p frame). Texture pre-screen on the mean minimum eigenvalue of the structure tensor. ZNCC (`TM_CCOEFF_NORMED`) over a 16 px search radius; separable three-point Gaussian sub-pixel fit; one re-sampling pass (window shifted by the fractional estimate with Lanczos, re-matched) which halves the residual pixel-locking bias; per-subset codes OK, LOW_TEXTURE, LOW_CORR, LOW_MARGIN, OUT_OF_BOUND, EDGE_PEAK. A random 10 percent of valid subsets is cross-checked with phase correlation on 2x patches as a gross-error detector. Zone displacement is the median over valid subsets; uncertainty is 1.4826 x MAD. | `cornerMinEigenVal`, `boxFilter`, `matchTemplate`, `warpAffine`, `phaseCorrelate`, `fillPoly` |
 | D Mask | Temporal-variance mask for vegetation and water, applied from a trailing window of epochs when `mask_window` is set. | `GaussianBlur`, `morphologyEx`, `findContours` |
 | Scale | Metric conversion across an oblique slope: a homography from image to the ground plane (least squares or RANSAC on surveyed point pairs) whose local Jacobian converts each subset's pixel displacement to millimetres; a scalar `mm_per_px` remains the simple default. | `getPerspectiveTransform`, `findHomography`, `perspectiveTransform` |
 | Magnify | Motion magnification for people: the reference is re-sampled by `gain` x the measured dense field (holes filled by normalised convolution), so 0.3 px of creep becomes visible motion. The measurement is the only input; nothing is synthesised. | `blur`, `resize`, `remap` |
@@ -324,6 +324,28 @@ warpPerspective Lanczos 1080p: 24.1; cornerMinEigenVal: 10.3; GaussianBlur sigma
 ORB 4,000 features: 64.0; median stack of 7: 72.4. The DIC stage is dominated by
 `matchTemplate` and the stabilizer by Lanczos warps and ORB, which are the operation classes
 COOL advertises as accelerated.
+
+### E3b large motion: coarse-to-fine DIC against chaining (measured)
+
+`python evaluation/e3_large_motion.py`. A Voight collapse whose final displacement is
+28.1 px, beyond a 16 px search radius, rendered with 0.8 px camera jitter and run
+through the unmodified worker three times.
+
+| Arm | Epochs measured | Epochs beyond the 16 px search measured | MAE vs truth (px) | Final-epoch error (px) | Forecast failure time (truth 50) | State |
+|---|---|---|---|---|---|---|
+| fixed, single level | 27/30 | 3/5 | 2.689 | 28.071 | 63.02 | ACCELERATING |
+| chained, single level | 30/30 | 5/5 | 0.079 | 0.167 | 49.65 | CRITICAL |
+| fixed, coarse-to-fine (3 levels) | 30/30 | 5/5 | 0.007 | 0.002 | 49.78 | CRITICAL |
+
+A single-level fixed search loses the slope once it moves more than its radius (the final
+epoch is wrong by the whole displacement and the forecast drifts late). Chaining follows it but
+sums daily errors into a random walk. Fixed reference with three pyramid levels
+(`cv2.pyrDown`, coarse field infilled by normalised convolution, each finer level searching only
+the residual around the upsampled prediction) follows it with 0.08
+times the error of chaining, about 12 times better, and forecasts
+failure at t = 49.78. Sites whose texture survives weeks should run fixed reference with
+`pyramid_levels: 3`; chaining remains the mode for scenes that decorrelate, such as the
+vegetated Mukilteo bluff.
 
 ### E4 real landslide imagery: USGS Mukilteo bluff (measured)
 

@@ -66,3 +66,16 @@ def test_field_roundtrip(tmp_path):
     fld.save(tmp_path / "f.npz")
     back = type(fld).load(tmp_path / "f.npz")
     assert np.allclose(back.u, fld.u) and back.shape == fld.shape and back.n_valid == fld.n_valid
+
+
+@pytest.mark.parametrize("dx,dy", [(25.375, -12.25), (-40.5, 18.125)])
+def test_pyramid_follows_motion_far_beyond_the_search(dx, dy):
+    from telltale.dic import compute_field_pyramid
+    tex = make_texture(512, 512, seed=31)
+    ref, cur, (ax, ay) = shift_image(tex, dx, dy, noise=0.005, crop=0)
+    single = compute_field(ref, cur, GridConfig(template=41, stride=24, search=8))
+    assert single.n_valid == 0 or abs(np.median(single.u[single.valid]) - ax) > 1.0
+    fld = compute_field_pyramid(ref, cur, GridConfig(template=41, stride=24, search=8, pyramid_levels=3))
+    assert fld.n_valid >= 40, fld.status_counts()
+    assert abs(np.median(fld.u[fld.valid]) - ax) < 0.05
+    assert abs(np.median(fld.v[fld.valid]) - ay) < 0.05

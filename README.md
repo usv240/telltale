@@ -79,6 +79,7 @@ Motion-magnified video of the demo creep: `python -m telltale magnify --site-dir
 |---|---|---|
 | E1 synthetic sub-pixel accuracy | done | MAE 0.006 to 0.010 px, bias under 0.003 px, p95 under 0.025 px |
 | E3 synthetic collapse through the full cloud path | done | forecast 50.26, window [48.9, 61.9], truth 50.0, R² 0.98 |
+| E3b large motion (28 px collapse, 16 px search) | done | fixed reference + coarse-to-fine DIC: MAE 0.007 px, forecast t = 49.78; chaining 0.079 px; single-level fixed loses the slope |
 | E3 tabletop physical collapses | pending | rig and capture script ready |
 | E2 physical metrology | harness ready, photos pending | synthetic self-test at 20, 50, 100 m: slope 1.00, RMS 0.01 to 0.05 mm; printable target in `evaluation/e2/` |
 | E4 real landslide imagery (USGS Mukilteo) | done | documented Dec 9 2015 movement measured at 4 to 7x the quiet baseline with coherent downslope vectors; wet-lens period from Feb 10 correctly rejected |

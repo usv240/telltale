@@ -83,3 +83,7 @@ state, the gap, the risk if left, and the fix. Status: **open**, **in progress**
 | 10 Shipped surface | pass | live URL, setup tool, offline demo |
 | 11 Limits as measured properties | closed except E2 photos and COOL cell | every limit has a number; two items still await the user |
 | 12 Inspectable and rerunnable | pass | 29 tests, CI, result JSON, traces |
+
+| Coarse-to-fine DIC (`compute_field_pyramid`) | fixed reference follows 28 px of motion at 0.007 px MAE; removes the random-walk cost of chaining on textured scenes | closed |
+| Real landslide inside the product (`mukilteo-usgs` live site, Claude traces) | judges scrub a real slide and read the agent on a documented day | closed |
+| Second public landslide record (USGS Barry Arm) | no public time-lapse data release exists (InSAR and maps only); not pursued | closed as not available |

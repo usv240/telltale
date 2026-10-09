@@ -1,0 +1,50 @@
+{
+ "true_final_px": 28.118610385294648,
+ "arms": {
+  "fixed, single level": {
+   "epochs_measured": 27,
+   "epochs": 30,
+   "mae_px": 2.6890590677927637,
+   "max_err_px": 28.071452831284756,
+   "final_err_px": 28.071452831284756,
+   "epochs_beyond_search_measured": 3,
+   "epochs_beyond_search": 5,
+   "forecast_tf": 63.02128909616272,
+   "window": [
+    50.74709759326385,
+    212.9153508070532
+   ],
+   "state": "ACCELERATING"
+  },
+  "chained, single level": {
+   "epochs_measured": 30,
+   "epochs": 30,
+   "mae_px": 0.07899388149149676,
+   "max_err_px": 0.16719171417573264,
+   "final_err_px": 0.16719171417573264,
+   "epochs_beyond_search_measured": 5,
+   "epochs_beyond_search": 5,
+   "forecast_tf": 49.6483432065,
+   "window": [
+    48.53807070428622,
+    50.51502564148665
+   ],
+   "state": "CRITICAL"
+  },
+  "fixed, coarse-to-fine (3 levels)": {
+   "epochs_measured": 30,
+   "epochs": 30,
+   "mae_px": 0.00670943635186048,
+   "max_err_px": 0.032327377446216055,
+   "final_err_px": 0.002180192149751292,
+   "epochs_beyond_search_measured": 5,
+   "epochs_beyond_search": 5,
+   "forecast_tf": 49.775588864989835,
+   "window": [
+    49.25007773414629,
+    50.51167882669077
+   ],
+   "state": "CRITICAL"
+  }
+ }
+}

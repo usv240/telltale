@@ -41,7 +41,7 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))   # repo root, for `agent`
 
-from telltale import (ForecastConfig, SiteConfig, compute_field, forecast, polygon_mask,
+from telltale import (ForecastConfig, SiteConfig, compute_field, compute_field_pyramid, forecast, polygon_mask,
                       stabilize, stack_burst, zone_displacement)
 from telltale.forecast import moving_average, smoothed_velocities
 from telltale.masking import variance_mask
@@ -291,7 +291,7 @@ def process_epoch(store, site_name: str, t: float, frames: list[np.ndarray],
             record["mask"] = {"window": len(recent) + 1,
                               "excluded_frac": float(1.0 - (grid_mask > 0).mean())}
     st_t = time.perf_counter()
-    fld = compute_field(ref, st.image, site.grid, mask=grid_mask)
+    fld = compute_field_pyramid(ref, st.image, site.grid, mask=grid_mask)
     record["timing"]["dic_s"] = time.perf_counter() - st_t
     if site.mask_window > 0:
         _push_recent(store, priv, t, st.image, site.mask_window)

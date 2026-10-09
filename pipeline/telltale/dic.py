@@ -222,8 +222,14 @@ def _crosscheck(ref: np.ndarray, cur: np.ndarray, xs, ys, u, v, valid, half: int
 
 def compute_field(ref: np.ndarray, cur: np.ndarray, grid: GridConfig | None = None,
                   mask: np.ndarray | None = None, seed: int = 0,
-                  crosscheck_frac: float = 0.1, crosscheck_tol: float = 1.0) -> DisplacementField:
-    """Dense sub-pixel displacement of ``cur`` relative to ``ref`` (float32 gray, same shape)."""
+                  crosscheck_frac: float = 0.1, crosscheck_tol: float = 1.0,
+                  prior_flow: np.ndarray | None = None) -> DisplacementField:
+    """Dense sub-pixel displacement of ``cur`` relative to ``ref`` (float32 gray, same shape).
+
+    ``prior_flow`` (H, W, 2), optional: a predicted displacement field. Each subset's search
+    window is centred on its rounded prediction, so the search radius only has to cover the
+    residual. Used by ``compute_field_pyramid`` to follow motions far larger than the search.
+    """
     grid = grid or GridConfig()
     if ref.shape != cur.shape:
         raise ValueError("reference and current epoch must have the same shape")
@@ -239,14 +245,27 @@ def compute_field(ref: np.ndarray, cur: np.ndarray, grid: GridConfig | None = No
     status = np.zeros(n, np.int8)
     tex = texture_map(ref, grid.template)[ys, xs].astype(np.float32) if n else np.zeros(0, np.float32)
     side = 2 * s + 1
+    if prior_flow is not None and n:
+        ox_all = np.rint(prior_flow[ys, xs, 0]).astype(np.int32)
+        oy_all = np.rint(prior_flow[ys, xs, 1]).astype(np.int32)
+    else:
+        ox_all = np.zeros(n, np.int32)
+        oy_all = np.zeros(n, np.int32)
+    H, W = ref.shape
 
     def one(i: int) -> None:
         if tex[i] < grid.min_texture:
             status[i] = STATUS_LOW_TEXTURE
             return
         x, y = int(xs[i]), int(ys[i])
+        ox, oy = int(ox_all[i]), int(oy_all[i])
         tpl = ref[y - half:y + half + 1, x - half:x + half + 1]
-        win = cur[y - half - s:y + half + s + 1, x - half - s:x + half + s + 1]
+        y0, y1 = y + oy - half - s, y + oy + half + s + 1
+        x0, x1 = x + ox - half - s, x + ox + half + s + 1
+        if y0 < 0 or x0 < 0 or y1 > H or x1 > W:
+            status[i] = STATUS_OUT_OF_BOUND
+            return
+        win = cur[y0:y1, x0:x1]
         r = cv2.matchTemplate(win, tpl, cv2.TM_CCOEFF_NORMED)
         py, px = np.unravel_index(int(np.argmax(r)), r.shape)
         peak = float(r[py, px])
@@ -265,13 +284,13 @@ def compute_field(ref: np.ndarray, cur: np.ndarray, grid: GridConfig | None = No
             status[i] = STATUS_LOW_MARGIN
             return
         ddx, ddy = subpixel_peak(r[py - 1:py + 2, px - 1:px + 2])
-        ui, vi = px - s + ddx, py - s + ddy
+        ui, vi = ox + px - s + ddx, oy + py - s + ddy
         for _ in range(grid.refine_iters):
             ui, vi, ok = _resample_refine(cur, tpl, x, y, ui, vi, half)
             if not ok:
                 break
         u[i], v[i] = ui, vi
-        if np.hypot(u[i], v[i]) > grid.max_disp:
+        if np.hypot(u[i] - ox, v[i] - oy) > grid.max_disp:
             status[i] = STATUS_OUT_OF_BOUND
 
     # matchTemplate and warpAffine release the GIL, so a thread pool over subsets scales with
@@ -294,6 +313,46 @@ def compute_field(ref: np.ndarray, cur: np.ndarray, grid: GridConfig | None = No
                                     crosscheck_frac, rng)
     fld.review = bool(np.isfinite(fld.crosscheck_px) and fld.crosscheck_px > crosscheck_tol)
     return fld
+
+
+def compute_field_pyramid(ref: np.ndarray, cur: np.ndarray, grid: GridConfig | None = None,
+                          mask: np.ndarray | None = None, seed: int = 0, levels: int | None = None,
+                          crosscheck_frac: float = 0.1, crosscheck_tol: float = 1.0) -> DisplacementField:
+    """Coarse-to-fine DIC. The images are reduced ``levels`` times with ``cv2.pyrDown``; the
+    coarse field (same search radius, so 2^levels times the reach) becomes a dense prediction
+    by normalised-convolution infill; each finer level searches only the residual around the
+    upsampled prediction. A fixed-reference site can then follow motions of tens of pixels
+    without chaining, so measurement error does not accumulate as a random walk."""
+    from .magnify import dense_flow
+    grid = grid or GridConfig()
+    L = grid.pyramid_levels if levels is None else levels
+    if L <= 0:
+        return compute_field(ref, cur, grid, mask, seed, crosscheck_frac, crosscheck_tol)
+    refs = [np.ascontiguousarray(ref, np.float32)]
+    curs = [np.ascontiguousarray(cur, np.float32)]
+    masks = [mask]
+    for _ in range(L):
+        refs.append(cv2.pyrDown(refs[-1]))
+        curs.append(cv2.pyrDown(curs[-1]))
+        m = masks[-1]
+        masks.append(None if m is None else cv2.resize(m, (refs[-1].shape[1], refs[-1].shape[0]),
+                                                     interpolation=cv2.INTER_NEAREST))
+    flow = None
+    for lvl in range(L, 0, -1):
+        f = 2 ** lvl
+        g = GridConfig(template=max(15, (grid.template // f) | 1), stride=max(6, grid.stride // f),
+                       search=grid.search, min_corr=grid.min_corr, min_margin=grid.min_margin,
+                       min_texture=grid.min_texture / f, refine_iters=0, threads=grid.threads)
+        fld = compute_field(refs[lvl], curs[lvl], g, masks[lvl], seed, crosscheck_frac=0.0, prior_flow=flow)
+        if fld.n_valid:
+            dense = dense_flow(fld, refs[lvl].shape, smooth_sigma=2.0)
+        else:
+            dense = np.zeros(refs[lvl].shape + (2,), np.float32)
+        h, w = refs[lvl - 1].shape
+        flow = cv2.resize(dense, (w, h), interpolation=cv2.INTER_LINEAR) * 2.0
+    out = compute_field(refs[0], curs[0], grid, mask, seed, crosscheck_frac, crosscheck_tol, prior_flow=flow)
+    out.meta["pyramid_levels"] = L
+    return out
 
 
 @dataclass

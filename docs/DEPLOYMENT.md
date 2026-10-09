@@ -38,8 +38,10 @@ epoch (`upload_epoch.py --site-config site.json`).
 - Stable polygons: at least two, in different parts of the frame, each with visible texture.
 - Target zones: bare soil or rock face; keep dense vegetation out or let the variance mask
   (`mask_window` in site.json) exclude it after a few epochs.
-- Reference mode: `fixed` for scenes that keep their texture for months (rock, built
-  structures); `chained` for vegetated or eroding slopes where the scene decorrelates.
+- Reference mode: `fixed` with `grid.pyramid_levels: 3` for scenes that keep their texture
+  for months (rock, built structures); it follows motions of tens of pixels without
+  accumulating error (E3b: 0.007 px against 0.079 px for chaining on a 28 px collapse).
+  `chained` for vegetated or eroding slopes where the scene decorrelates.
 
 ## Cadence
 
