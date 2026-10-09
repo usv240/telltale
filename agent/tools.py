@@ -67,7 +67,16 @@ class Toolbox:
     def _epoch_image(self, t: float, kind: str = "stabilized"):
         return _load_npy(self.store.get(f"{self.priv}/{kind}/{t:g}.npy"))
 
-    def _reference(self):
+    def _reference(self, t: float | None = None):
+        """The image the worker compared epoch t against: the site reference in fixed mode, the
+        previous epoch's stacked image in chained mode (a months-old reference would be
+        decorrelated on a chained site and every re-check would fail for the wrong reason)."""
+        if self.cfg.reference_mode == "chained" and t is not None:
+            prev = [r["t"] for r in self._series() if r["t"] < t and r.get("reason") not in ("BLIND", "BLURRED")]
+            if prev:
+                img = self._epoch_image(prev[-1], "stacked")
+                if img is not None:
+                    return img
         return _load_npy(self.store.get(f"{self.priv}/reference.npy"))
 
     def _usable_before(self, t: float, n: int = 1) -> list[float]:
@@ -105,15 +114,18 @@ class Toolbox:
             return self._record("remeasure", {"t": t, "reference": reference},
                                 {"error": f"no stored image for epoch {t:g}"})
         if reference == "reference":
-            ref, ref_t = self._reference(), None
+            ref, ref_t = self._reference(t), None
         elif reference.startswith("t="):
             ref_t = float(reference[2:])
             ref = self._epoch_image(ref_t)
         else:
             prev = self._usable_before(t, 1)
             ref_t = prev[0] if prev else None
-            ref = self._epoch_image(ref_t) if ref_t is not None else None
-        if ref is None:
+            kind = "stacked" if self.cfg.reference_mode == "chained" else "stabilized"
+            ref = self._epoch_image(ref_t, kind) if ref_t is not None else None
+        if self.cfg.reference_mode == "chained":
+            cur = self._epoch_image(t, "stacked")   # chained increments are raw-to-raw, as in the worker
+        if ref is None or cur is None:
             return self._record("remeasure", {"t": t, "reference": reference},
                                 {"error": "reference image unavailable"})
         grid = self.cfg.grid
@@ -138,7 +150,7 @@ class Toolbox:
         means the camera model does not explain the stable regions: suspect the camera, not
         the slope."""
         stacked = self._epoch_image(t, "stacked")
-        ref = self._reference()
+        ref = self._reference(t)
         if stacked is None or ref is None:
             return self._record("check_stabilization", {"t": t}, {"error": "images unavailable"})
         mask = polygon_mask(ref.shape, self.cfg.stable_polys) if self.cfg.stable_polys else None

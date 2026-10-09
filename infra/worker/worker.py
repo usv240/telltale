@@ -237,6 +237,7 @@ def process_epoch(store, site_name: str, t: float, frames: list[np.ndarray],
     # Keep the stacked epoch so the supervising agent can re-run stabilization and DIC later.
     store.put(f"{priv}/stacked/{t:g}.npy", _npy(stack.image))
 
+
     chained = site.reference_mode == "chained"
     ref_key = f"{priv}/previous.npy" if chained else f"{priv}/reference.npy"
     ref_raw = store.get(ref_key)
@@ -258,6 +259,19 @@ def process_epoch(store, site_name: str, t: float, frames: list[np.ndarray],
         record["overlay"] = f"epochs/{t:g}/overlay.png"
         return _finish(store, site, site_name, record, None, t0)
     ref = np.load(io.BytesIO(ref_raw))
+
+    if chained:
+        # Chained mode advances the comparison image every non-blind epoch, usable or not, so
+        # one bad day cannot strand the chain on a stale image. The motion during an unusable
+        # epoch is not measured; the next usable increment is relative to that epoch's image
+        # and the record carries chain_gap so the series is honest about it.
+        prev_rec = None
+        raw_series = store.get(f"{pub}/series.json")
+        if raw_series:
+            recs = json.loads(raw_series)["records"]
+            prev_rec = recs[-1] if recs else None
+        record["chain_gap"] = bool(prev_rec and not prev_rec.get("usable"))
+        store.put(f"{priv}/previous.npy", _npy(stack.image))
 
     stable_mask = polygon_mask(ref.shape, site.stable_polys) if site.stable_polys else None
     st_t = time.perf_counter()
@@ -281,8 +295,6 @@ def process_epoch(store, site_name: str, t: float, frames: list[np.ndarray],
     record["timing"]["dic_s"] = time.perf_counter() - st_t
     if site.mask_window > 0:
         _push_recent(store, priv, t, st.image, site.mask_window)
-    if chained:
-        store.put(f"{priv}/previous.npy", _npy(st.image))
     record["field"] = {"n_subsets": int(len(fld.xs)), "n_valid": fld.n_valid,
                        "coverage": fld.coverage, "status_counts": fld.status_counts(),
                        "crosscheck_px": fld.crosscheck_px, "review": fld.review}
