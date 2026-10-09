@@ -351,5 +351,14 @@
   "epoch_t": 47.0,
   "status": "pending",
   "links": {}
+ },
+ "agent": {
+  "t": 47.0,
+  "event": "E_ANOMALY",
+  "policy": "rules",
+  "verdict": "CONFIRMED",
+  "paged_human": true,
+  "n_tool_calls": 9,
+  "summary": "Rule policy: acceleration confirmed; human paged."
  }
 }

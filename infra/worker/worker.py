@@ -469,6 +469,8 @@ def _finish(store, site: SiteConfig, site_name: str, record: dict, fld, t0: floa
                "n_unusable": n_unusable, "zones": fcs, "runtime": record["runtime"],
                "mm_per_px": site.mm_per_px, "approval": approval}
     store.put(f"{pub}/forecast.json", _json(payload), "application/json")
+    # Snapshot of the forecast as it stood after this epoch, for the dashboard's replay scrubber.
+    store.put(f"{pub}/epochs/{record['t']:g}/forecast.json", _json(payload), "application/json")
 
     # ---- supervising agent: investigates events; may page a human, never alerts the public
     agent_mode = os.environ.get("TELLTALE_AGENT", "llm" if hasattr(store, "s3") else "rules").lower()

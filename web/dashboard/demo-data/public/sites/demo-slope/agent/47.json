@@ -1,0 +1,373 @@
+{
+ "site": "demo-slope",
+ "t": 47.0,
+ "event": "E_ANOMALY",
+ "policy": "rules",
+ "model": null,
+ "started": "2026-10-08T23:37:56Z",
+ "verdict": "CONFIRMED",
+ "paged_human": true,
+ "cadence_changed": true,
+ "n_tool_calls": 9,
+ "calls": [
+  {
+   "n": 1,
+   "tool": "get_site_status",
+   "args": {},
+   "result": {
+    "site": "demo-slope",
+    "state": "CRITICAL",
+    "zones": {
+     "slope": {
+      "state": "CRITICAL",
+      "tf": 50.27266425679729,
+      "t_lo": 48.96743755758268,
+      "t_hi": 61.849415665001544,
+      "r2": 0.9810256864972957,
+      "ooa_time": 4.862068965517241,
+      "horizon": 3.2726642567972917
+     }
+    },
+    "recent_epochs": [
+     {
+      "t": 38.89655172413793,
+      "usable": true,
+      "reason": "OK",
+      "state": "ACCELERATING",
+      "coverage": 1.0,
+      "stabilize": {
+       "verdict": "OK",
+       "refine_model": "translation",
+       "residual": [
+        0.003978326451033354,
+        -0.017360897734761238
+       ],
+       "scatter": 0.013146853596576146,
+       "n_inliers": 1311
+      },
+      "zones": {
+       "slope": {
+        "magnitude": 3.066886983222112,
+        "sigma": 0.019157528282328088,
+        "n_valid": 108,
+        "n_total": 108
+       }
+      }
+     },
+     {
+      "t": 40.51724137931034,
+      "usable": true,
+      "reason": "OK",
+      "state": "ACCELERATING",
+      "coverage": 1.0,
+      "stabilize": {
+       "verdict": "OK",
+       "refine_model": "translation",
+       "residual": [
+        0.0074987392872571945,
+        0.013819947838783264
+       ],
+       "scatter": 0.013627920642984116,
+       "n_inliers": 1344
+      },
+      "zones": {
+       "slope": {
+        "magnitude": 3.3663322021098763,
+        "sigma": 0.021062872717692083,
+        "n_valid": 108,
+        "n_total": 108
+       }
+      }
+     },
+     {
+      "t": 42.137931034482754,
+      "usable": true,
+      "reason": "OK",
+      "state": "ACCELERATING",
+      "coverage": 1.0,
+      "stabilize": {
+       "verdict": "OK",
+       "refine_model": "translation",
+       "residual": [
+        -0.0018049250356853008,
+        0.014248428866267204
+       ],
+       "scatter": 0.014402149082038823,
+       "n_inliers": 1240
+      },
+      "zones": {
+       "slope": {
+        "magnitude": 3.6360367490686314,
+        "sigma": 0.019258255755153792,
+        "n_valid": 108,
+        "n_total": 108
+       }
+      }
+     },
+     {
+      "t": 43.75862068965517,
+      "usable": true,
+      "reason": "OK",
+      "state": "ACCELERATING",
+      "coverage": 1.0,
+      "stabilize": {
+       "verdict": "OK",
+       "refine_model": "translation",
+       "residual": [
+        0.00017958547687157989,
+        0.015194177627563477
+       ],
+       "scatter": 0.013003645543202727,
+       "n_inliers": 1248
+      },
+      "zones": {
+       "slope": {
+        "magnitude": 4.203125298924255,
+        "sigma": 0.020010668045274627,
+        "n_valid": 108,
+        "n_total": 108
+       }
+      }
+     },
+     {
+      "t": 45.37931034482759,
+      "usable": true,
+      "reason": "OK",
+      "state": "ACCELERATING",
+      "coverage": 1.0,
+      "stabilize": {
+       "verdict": "OK",
+       "refine_model": "translation",
+       "residual": [
+        -0.0013122307136654854,
+        0.013981092721223831
+       ],
+       "scatter": 0.013289364678001504,
+       "n_inliers": 1439
+      },
+      "zones": {
+       "slope": {
+        "magnitude": 4.751557232849836,
+        "sigma": 0.019991109778669205,
+        "n_valid": 108,
+        "n_total": 108
+       }
+      }
+     },
+     {
+      "t": 47.0,
+      "usable": true,
+      "reason": "OK",
+      "state": "CRITICAL",
+      "coverage": 1.0,
+      "stabilize": {
+       "verdict": "OK",
+       "refine_model": "translation",
+       "residual": [
+        0.0005399395013228059,
+        0.014421716332435608
+       ],
+       "scatter": 0.013023655049733015,
+       "n_inliers": 1378
+      },
+      "zones": {
+       "slope": {
+        "magnitude": 5.599508826871372,
+        "sigma": 0.01632910378385863,
+        "n_valid": 108,
+        "n_total": 108
+       }
+      }
+     }
+    ],
+    "mm_per_px": 0.8
+   },
+   "at": "2026-10-08T23:37:56Z"
+  },
+  {
+   "n": 2,
+   "tool": "inspect_quality",
+   "args": {
+    "t": 47.0
+   },
+   "result": {
+    "t": 47.0,
+    "sharpness": 0.0277311559766531,
+    "contrast": 0.07944576442241669,
+    "stack": {
+     "status": "OK",
+     "n_frames": 5,
+     "max_shift": 0.5057429075241089,
+     "contrast": 0.08158843219280243
+    },
+    "field": {
+     "n_subsets": 256,
+     "n_valid": 256,
+     "coverage": 1.0,
+     "status_counts": {
+      "OK": 256,
+      "LOW_TEXTURE": 0,
+      "LOW_CORR": 0,
+      "LOW_MARGIN": 0,
+      "OUT_OF_BOUND": 0,
+      "EDGE_PEAK": 0
+     },
+     "crosscheck_px": 0.76621013879776,
+     "review": false
+    },
+    "reason": "OK"
+   },
+   "at": "2026-10-08T23:37:56Z"
+  },
+  {
+   "n": 3,
+   "tool": "check_stabilization",
+   "args": {
+    "t": 47.0
+   },
+   "result": {
+    "t": 47.0,
+    "verdict": "OK",
+    "camera_model": "translation",
+    "coarse_method": "orb",
+    "n_inliers": 1378,
+    "residual_px": [
+     0.0005625099292956293,
+     0.015837637707591057
+    ],
+    "scatter_px": 0.01440106708154276,
+    "translation_px": [
+     0.1855754852294922,
+     -0.2614784240722656
+    ],
+    "rotation_deg": 0.0,
+    "scale": 1.0,
+    "mount_moved": false
+   },
+   "at": "2026-10-08T23:37:56Z"
+  },
+  {
+   "n": 4,
+   "tool": "remeasure",
+   "args": {
+    "t": 47.0,
+    "reference": "previous"
+   },
+   "result": {
+    "t": 47.0,
+    "reference": "previous",
+    "reference_t": 45.37931034482759,
+    "coverage": 1.0,
+    "review": false,
+    "zones": {
+     "slope": {
+      "u": 0.7480490207672119,
+      "v": 0.3714035153388977,
+      "magnitude": 0.8351753760000803,
+      "sigma": 0.023684605016779225,
+      "n_valid": 108,
+      "n_total": 108,
+      "coherence": 1.0
+     }
+    }
+   },
+   "at": "2026-10-08T23:37:56Z"
+  },
+  {
+   "n": 5,
+   "tool": "remeasure",
+   "args": {
+    "t": 47.0,
+    "reference": "reference"
+   },
+   "result": {
+    "t": 47.0,
+    "reference": "reference",
+    "reference_t": null,
+    "coverage": 1.0,
+    "review": false,
+    "zones": {
+     "slope": {
+      "u": 5.002213954925537,
+      "v": 2.5164170265197754,
+      "magnitude": 5.599508826871372,
+      "sigma": 0.01632910378385863,
+      "n_valid": 108,
+      "n_total": 108,
+      "coherence": 1.0
+     }
+    },
+    "worker_recorded": {
+     "slope": 5.599508826871372
+    }
+   },
+   "at": "2026-10-08T23:37:57Z"
+  },
+  {
+   "n": 6,
+   "tool": "motion_coherence",
+   "args": {
+    "t": 47.0
+   },
+   "result": {
+    "t": 47.0,
+    "zones": {
+     "slope": {
+      "coherence": 1.0,
+      "n": 108,
+      "n_moving": 107,
+      "median_direction_deg": 26.713956832885742,
+      "median_magnitude_px": 5.598512649536133
+     }
+    }
+   },
+   "at": "2026-10-08T23:37:57Z"
+  },
+  {
+   "n": 7,
+   "tool": "set_capture_cadence",
+   "args": {
+    "epochs_per_day": 24,
+    "reason": "confirmed acceleration; tighten forecast"
+   },
+   "result": {
+    "epochs_per_day": 24,
+    "reason": "confirmed acceleration; tighten forecast",
+    "set_at": "2026-10-08T23:37:57Z",
+    "by": "agent"
+   },
+   "at": "2026-10-08T23:37:57Z"
+  },
+  {
+   "n": 8,
+   "tool": "request_human_approval",
+   "args": {
+    "t": 47.0,
+    "summary": "remeasure vs reference {\"slope\": 5.6}, coherence {\"slope\": 1.0}"
+   },
+   "result": {
+    "t": 47.0,
+    "paged": false,
+    "links_issued": false
+   },
+   "at": "2026-10-08T23:37:57Z"
+  },
+  {
+   "n": 9,
+   "tool": "close_event",
+   "args": {
+    "t": 47.0,
+    "verdict": "CONFIRMED",
+    "reason": "consistent across references and coherent"
+   },
+   "result": {
+    "t": 47.0,
+    "verdict": "CONFIRMED",
+    "reason": "consistent across references and coherent"
+   },
+   "at": "2026-10-08T23:37:57Z"
+  }
+ ],
+ "summary": "Rule policy: acceleration confirmed; human paged.",
+ "seconds": 0.61
+}

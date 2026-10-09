@@ -49,7 +49,8 @@
   "min_margin": 0.01,
   "min_texture": 0.0001,
   "max_disp": 15.0,
-  "refine_iters": 1
+  "refine_iters": 1,
+  "threads": 0
  },
  "forecast": {
   "sma_window": 3,
@@ -67,5 +68,7 @@
   ]
  },
  "burst_size": 7,
+ "reference_mode": "fixed",
+ "mask_window": 0,
  "notes": "Synthetic collapse: Voight alpha=2 creep, true failure at t=50; 0.8 mm per pixel; left strip stable, right block moves."
 }

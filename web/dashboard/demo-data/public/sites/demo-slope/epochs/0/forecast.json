@@ -1,0 +1,59 @@
+{
+ "site": "demo-slope",
+ "state": "QUIET",
+ "state_display": "QUIET",
+ "updated_t": 0.0,
+ "n_epochs": 1,
+ "n_unusable": 0,
+ "zones": {
+  "slope": {
+   "state": "QUIET",
+   "t_now": 0.0,
+   "n_points": 1,
+   "ooa_index": null,
+   "ooa_time": null,
+   "tf": null,
+   "t_lo": null,
+   "t_hi": null,
+   "r2": null,
+   "n_fit": 0,
+   "horizon": null,
+   "methods": {},
+   "note": "need at least two epochs",
+   "series": {
+    "t": [
+     0.0
+    ],
+    "disp_px": [
+     0.0
+    ],
+    "disp_mm": [
+     0.0
+    ],
+    "sigma_px": [
+     0.0
+    ],
+    "v_sma": [],
+    "v_lma": [],
+    "t_sma": []
+   }
+  }
+ },
+ "runtime": {
+  "cv2_file": "C:\\Hackathons\\OpenCV AI Competition 2026, powered by AWS\\telltale\\.venv\\Lib\\site-packages\\cv2\\__init__.py",
+  "opencv_version": "5.0.0",
+  "build_hash": "f71df2f163323276",
+  "cool": false,
+  "machine": "AMD64",
+  "python": "3.12.7",
+  "threads": 22,
+  "instance_type": null,
+  "ami_id": null,
+  "instance_id": null
+ },
+ "mm_per_px": 0.8,
+ "approval": {
+  "required": false,
+  "status": "none"
+ }
+}

@@ -29,7 +29,14 @@
   <section class="panel status" aria-labelledby="h-status">
     <h2 id="h-status">Status</h2>
     <p id="status-line" class="lead">Loading the latest epoch.</p>
-    <details class="help"><summary>How to read this</summary><p>One sentence answers "is this slope okay". The image is the latest usable epoch: colour is how far each patch of ground has moved since the reference epoch (blue none, red most), arrows show direction. The facts on the right are the zone's displacement with its robust uncertainty, the current velocity, when acceleration began, and the forecast window if there is one. If the last epoch was unusable, the reason is stated here.</p></details>
+    <div class="replay" id="replay" hidden>
+      <label for="scrub">Replay</label>
+      <input id="scrub" type="range" min="0" max="0" value="0" aria-label="Replay epochs">
+      <span id="scrub-label" class="hint"></span>
+      <button id="scrub-play" class="btn" type="button">Play</button>
+      <button id="scrub-live" class="btn" type="button">Live</button>
+    </div>
+    <details class="help"><summary>How to read this</summary><p>One sentence answers "is this slope okay". Drag the replay slider to see the instrument as it stood after any earlier epoch: the overlay, the facts, the charts and the forecast all rewind together. The image is the latest usable epoch: colour is how far each patch of ground has moved since the reference epoch (blue none, red most), arrows show direction. The facts on the right are the zone's displacement with its robust uncertainty, the current velocity, when acceleration began, and the forecast window if there is one. If the last epoch was unusable, the reason is stated here.</p></details>
     <div class="status-grid">
       <figure>
         <img id="overlay" alt="Latest displacement overlay: colour shows how far each patch of ground moved since the reference epoch, arrows show direction" src="">

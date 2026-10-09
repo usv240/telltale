@@ -26,13 +26,69 @@
 
   let lastData = null;
 
+  let replayIndex = null;   // null = live; otherwise index into series.records
+  let playTimer = null;
+
   async function loadSite(site) {
     const base = `${ROOT}/${site}`;
     const [cfg, series, fc] = await Promise.all([
       getJSON(`${base}/site.json`), getJSON(`${base}/series.json`), getJSON(`${base}/forecast.json`)]);
     lastData = { site, base, cfg, series, fc };
-    render(lastData);
+    setupReplay(lastData);
+    if (replayIndex === null) render(lastData);
   }
+
+  function setupReplay(d) {
+    const box = $("replay"), s = $("scrub");
+    const n = d.series.records.length;
+    if (n < 2) { box.hidden = true; return; }
+    box.hidden = false;
+    s.max = String(n - 1);
+    if (replayIndex === null) { s.value = String(n - 1); $("scrub-label").textContent = `live · ${n} epochs`; }
+  }
+
+  async function showEpoch(i) {
+    const d = lastData;
+    if (!d) return;
+    const recs = d.series.records;
+    i = Math.max(0, Math.min(recs.length - 1, i));
+    const r = recs[i];
+    let fc;
+    try { fc = await getJSON(`${d.base}/epochs/${Number(r.t)}/forecast.json`); }
+    catch (e) { fc = d.fc; }
+    const series = { records: recs.slice(0, i + 1) };
+    $("scrub-label").textContent = `epoch ${i + 1} of ${recs.length} · t = ${fmt(r.t, 2)} · ${fc.state}`;
+    render({ ...d, series, fc });
+  }
+
+  $("scrub").addEventListener("input", (ev) => {
+    const i = Number(ev.target.value);
+    const live = i === lastData.series.records.length - 1;
+    replayIndex = live ? null : i;
+    if (live) { $("scrub-label").textContent = `live · ${lastData.series.records.length} epochs`; render(lastData); }
+    else showEpoch(i);
+  });
+  $("scrub-live").addEventListener("click", () => {
+    if (playTimer) { clearInterval(playTimer); playTimer = null; $("scrub-play").textContent = "Play"; }
+    replayIndex = null;
+    $("scrub").value = String(lastData.series.records.length - 1);
+    $("scrub-label").textContent = `live · ${lastData.series.records.length} epochs`;
+    render(lastData);
+  });
+  $("scrub-play").addEventListener("click", () => {
+    if (playTimer) { clearInterval(playTimer); playTimer = null; $("scrub-play").textContent = "Play"; return; }
+    let i = 0;
+    replayIndex = 0;
+    $("scrub-play").textContent = "Pause";
+    playTimer = setInterval(async () => {
+      const n = lastData.series.records.length;
+      if (i >= n) { clearInterval(playTimer); playTimer = null; $("scrub-play").textContent = "Play"; replayIndex = null; return; }
+      $("scrub").value = String(i);
+      replayIndex = i === n - 1 ? null : i;
+      await showEpoch(i);
+      i += 1;
+    }, 700);
+  });
 
   function render({ site, base, cfg, series, fc }) {
     const zoneName = Object.keys(fc.zones)[0];
