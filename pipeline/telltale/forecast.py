@@ -61,6 +61,42 @@ def detect_ooa(times, disp, cfg: ForecastConfig) -> int | None:
     acc = np.gradient(sma, times) if len(times) > 1 else np.zeros_like(sma)
     moving = (disp - disp[0]) > cfg.noise_floor
     cond = (sma > lma) & (acc > 0) & moving
+    if cfg.ooa_min_snr > 0:
+        # Gate 1: the smoothed difference q = SMA - LMA must stand out from its own
+        # epoch-to-epoch jitter. Smooth creep makes q grow smoothly (tiny jitter, early onset);
+        # a random-walk series, such as chained real imagery, makes q flicker and the gate holds.
+        q = sma - lma
+        dq = np.diff(q, prepend=q[0]) / np.sqrt(2.0)
+        sig = np.full_like(sma, np.nan)
+        for i in range(len(sma)):
+            lo = max(1, i + 1 - cfg.noise_window)
+            r = dq[lo:i + 1]
+            sig[i] = 1.4826 * np.median(np.abs(r - np.median(r))) if len(r) >= 4 else np.nan
+        sig = np.where(np.isfinite(sig) & (sig > 0), sig, np.nan)
+        cond = cond & np.where(np.isnan(sig), True, q > cfg.ooa_min_snr * np.nan_to_num(sig))
+    if cfg.ooa_min_tstat > 0:
+        # Gate 2: over the trailing window, the quadratic coefficient of d(t) must be
+        # statistically significant (t = a / SE(a)); positive but insignificant curvature is
+        # what noise produces.
+        tstat = np.zeros(len(times))
+        for i in range(len(times)):
+            lo = max(0, i + 1 - cfg.noise_window)
+            tt, dd = times[lo:i + 1], disp[lo:i + 1]
+            n = len(tt)
+            if n < 6:
+                tstat[i] = np.inf
+                continue
+            tc = tt - tt.mean()
+            A = np.vstack([tc ** 2, tc, np.ones(n)]).T
+            coef = np.linalg.lstsq(A, dd, rcond=None)[0]
+            dof = n - 3
+            rss = float(np.sum((dd - A @ coef) ** 2))
+            if rss <= 0:
+                tstat[i] = np.inf if coef[0] > 0 else 0.0
+                continue
+            cov = np.linalg.pinv(A.T @ A) * (rss / dof)
+            tstat[i] = coef[0] / np.sqrt(max(cov[0, 0], 1e-18))
+        cond = cond & (tstat > cfg.ooa_min_tstat)
     run = 0
     for i, ok in enumerate(cond):
         run = run + 1 if ok else 0

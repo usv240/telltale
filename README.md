@@ -1,8 +1,11 @@
 # TellTale
 
-**See the ground move before it fails.** TellTale turns any fixed camera into a sub-pixel
-displacement instrument that measures slope creep and forecasts the time of failure, using
-classical OpenCV 5 computer vision, established geotechnical physics, and AWS.
+**TellTale stacks bursts from any fixed camera, removes the camera's own motion, measures ground creep to a hundredth of a pixel, forecasts the failure window, re-measures to verify it, and pages a person.**
+
+On the public USGS time-lapse of an active coastal bluff, TellTale flagged 2 of 2 documented movement periods the camera could see and raised 0 false acceleration alarms across 147 quiet days in each of three zones; on the controlled sweep it measures displacement to 0.008 px, and on the public SEM DIC Challenge images to 0.005 px.
+
+Classical OpenCV 5 computer vision, established geotechnical physics, and AWS. No neural
+network anywhere; a person approves every public alert.
 
 Team Ground Truth, OpenCV AI Competition 2026, powered by AWS.
 Live dashboard: https://d30le2uwgaimao.cloudfront.net/
@@ -79,8 +82,11 @@ Motion-magnified video of the demo creep: `python -m telltale magnify --site-dir
 | E3 tabletop physical collapses | pending | rig and capture script ready |
 | E2 physical metrology | harness ready, photos pending | synthetic self-test at 20, 50, 100 m: slope 1.00, RMS 0.01 to 0.05 mm; printable target in `evaluation/e2/` |
 | E4 real landslide imagery (USGS Mukilteo) | done | documented Dec 9 2015 movement measured at 4 to 7x the quiet baseline with coherent downslope vectors; wet-lens period from Feb 10 correctly rejected |
+| E4b negative control on real data | done | 0 false acceleration alarms on 147 quiet days x 3 zones (was 371 before the onset gates); 2 of 2 observable movement periods flagged by the jump detector |
+| E1 public benchmark (SEM 2D DIC Challenge 1.0) | done | MAE 0.0047 px on Sample 1, best of TellTale, Farneback and pyramidal LK; within 0.01 px of the best on the noisier sets |
+| E1 named baselines | done | TellTale 0.004 px median vs Farneback 0.010, pyramidal LK 0.034, phase correlation 0.67 on the synthetic sweep |
 | E5 confounders (thresholds only) | done | zero false alarms under camera bump, lighting step, fog; non-rigid lens distortion partially caught |
-| E5 agent ablation (off / rules / Claude on Bedrock) | done | zero false pages in every arm; agent closes all four camera-distortion events as false alarms and pages a person at confirmed acceleration, 39 time units earlier than thresholds alone |
+| E5 agent ablation (off / rules / Claude on Bedrock) | done | zero false pages in every arm; agent closes all seven camera-distortion events as false alarms and pages a person at confirmed acceleration, 42 time units before failure against 3 for thresholds alone |
 | E6 Graviton vs x86 | done | c8g.large 1.72 s per epoch vs c7i.large 2.73 s; 44 percent cheaper per 1,000 epochs; COOL cell pending subscription |
 
 ## Scope and responsible use

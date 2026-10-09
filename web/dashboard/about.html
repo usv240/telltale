@@ -29,8 +29,8 @@
 </header>
 <main>
   <section class="panel">
-    <h2>See the ground move before it fails</h2>
-    <p class="lead">TellTale turns any fixed camera into an instrument that measures slope creep too small to see, and when the creep accelerates, forecasts when the slope will fail.</p>
+    <h2>What it does, in one line</h2>
+    <p class="lead">TellTale stacks bursts from any fixed camera, removes the camera's own motion, measures ground creep to a hundredth of a pixel, forecasts the failure window, re-measures to verify it, and pages a person.</p>
     <p>It uses classical OpenCV 5 computer vision (no neural network anywhere), the inverse-velocity method that mines have used for decades, and a small AWS footprint. A person approves every public alert.</p>
     <a class="cta" href="index.html">Live dashboard</a>
     <a class="cta secondary" href="https://github.com/usv240/telltale">Code and report</a>
@@ -66,6 +66,8 @@
         <tr><td>E1 synthetic sub-pixel accuracy</td><td>Mean absolute error 0.006 to 0.010 px across noise and lighting conditions; bias under 0.003 px</td></tr>
         <tr><td>E3 simulated collapse, full cloud path</td><td>True failure at t = 50; forecast 50.3 with window 48.9 to 61.9 and R² 0.98</td></tr>
         <tr><td>E4 real landslide, USGS Mukilteo bluff</td><td>Documented Dec 9 2015 movement measured at 4 to 7 times the quiet baseline with coherent downslope vectors; wet-lens period correctly rejected</td></tr>
+        <tr><td>Negative control on the same real data</td><td>0 false acceleration alarms across 147 quiet days in each of three zones; 2 of 2 observable movement periods flagged</td></tr>
+        <tr><td>Public benchmark, SEM DIC Challenge</td><td>0.0047 px mean error on Sample 1, best of TellTale, Farneback and Lucas-Kanade; within 0.01 px of the best on the noisier sets</td></tr>
         <tr><td>E5 confounders</td><td>Camera bump, lighting step, fog: zero false alarms. Non-rigid lens distortion: partially caught, documented as a failure case</td></tr>
         <tr><td>E6 cost</td><td>1,438 epochs per hour on one c8g.large; about 0.055 USD per 1,000 epochs</td></tr>
       </tbody>

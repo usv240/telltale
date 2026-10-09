@@ -66,3 +66,20 @@ state, the gap, the risk if left, and the fix. Status: **open**, **in progress**
 | CloudWatch ops dashboard, teardown script | cloud delivery and responsible operation | closed |
 | Worker and agent tests (29 total) | reliability | closed |
 | `docs/JUDGES.md`, `docs/DEPLOYMENT.md`, outreach and social drafts | documentation, impact | closed |
+
+## F. Winner-pattern audit (October 9, 2026)
+
+| Pattern | Status | Evidence |
+|---|---|---|
+| 1 Two numbers | closed | controlled 0.008 px; real data 0 false alarms / 2 of 2 periods |
+| 2 Cases from outside | closed | USGS Mukilteo (public domain), SEM DIC Challenge 1.0 images |
+| 3 Named baseline beaten | closed with caveat | Farneback, pyramidal LK, phase correlation measured on the same pairs and on the public set; TellTale best on two of four tables, within 0.01 px elsewhere, stated plainly |
+| 4 Negative control as headline | closed | first sentence of README, report and submission |
+| 5 Loop closes into the user's system | closed | capture script polls control.json; decisions log; SNS |
+| 6 Depth on one surface | pass | one measurement, built deep |
+| 7 Tagline is verbs | closed | README, about page, submission |
+| 8 Demo cannot break | pass | static replay, rule-policy fallback, offline clone |
+| 9 Practitioner or adoption | open | outreach letters drafted; needs the user to send |
+| 10 Shipped surface | pass | live URL, setup tool, offline demo |
+| 11 Limits as measured properties | closed except E2 photos and COOL cell | every limit has a number; two items still await the user |
+| 12 Inspectable and rerunnable | pass | 29 tests, CI, result JSON, traces |

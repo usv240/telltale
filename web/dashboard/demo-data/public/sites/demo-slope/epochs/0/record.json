@@ -16,8 +16,8 @@
   "instance_id": null
  },
  "timing": {
-  "stack_s": 0.05903889995533973,
-  "total_s": 0.2194251999608241
+  "stack_s": 0.09972430003108457,
+  "total_s": 0.445941399957519
  },
  "overlay": "epochs/0/overlay.png",
  "stack": {

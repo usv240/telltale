@@ -3,6 +3,7 @@
 Invoked by the worker on events, not on every epoch:
 
     E_ANOMALY   a zone's state rose to ACCELERATING or CRITICAL
+    E_JUMP      a single-epoch displacement step far outside the recent increments
     E_CAMERA    the stabilizer returned CAMERA_EVENT
     E_QUALITY   coverage fell sharply or the cross-check flagged REVIEW
 
@@ -47,16 +48,22 @@ Rules:
 - If the acceleration is real or cannot be ruled out, call request_human_approval with a
   short evidence summary (numbers, not adjectives), and raise the capture cadence.
 - If it is an artefact, close it as FALSE_ALARM and say which measurement proves it.
+- An E_JUMP is a sudden step, not a trend: decide whether the step is ground (coherent,
+  present against both references, camera clean) or an artefact. A confirmed step on a slope
+  is worth a page even without acceleration.
 - Always finish with close_event. Never claim a public alert was sent; you cannot send one.
 Reply in plain language, under 120 words, after closing the event."""
 
 
-def _event_from(record: dict, prev_state: str, overall: str, prev_reason: str | None = None) -> str | None:
+def _event_from(record: dict, prev_state: str, overall: str, prev_reason: str | None = None,
+                jump: bool = False) -> str | None:
     """Which event, if any, this epoch raises. Runs of identical camera or quality failures
     raise one event at their start, not one per epoch."""
     rank = {"QUIET": 0, "MOVING": 1, "ACCELERATING": 2, "CRITICAL": 3}
     if rank.get(overall, 0) >= 2 and rank.get(overall, 0) > rank.get(prev_state, 0):
         return "E_ANOMALY"
+    if jump:
+        return "E_JUMP"
     if record.get("reason") == "CAMERA_EVENT":
         return None if prev_reason == "CAMERA_EVENT" else "E_CAMERA"
     if record.get("reason") == "REVIEW":
@@ -161,7 +168,7 @@ class RulePolicy:
         if (q.get("sharpness") or 1.0) < 0.004:
             tb.close_event(t, "FALSE_ALARM", f"sharpness {q.get('sharpness')} below floor")
             return "Rule policy: image too blurred; false alarm."
-        if event == "E_ANOMALY":
+        if event in ("E_ANOMALY", "E_JUMP"):
             a = tb.remeasure(t, "previous")
             b = tb.remeasure(t, "reference")
             coh = tb.motion_coherence(t)

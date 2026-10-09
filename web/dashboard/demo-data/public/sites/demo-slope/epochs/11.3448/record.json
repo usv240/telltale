@@ -16,10 +16,10 @@
   "instance_id": null
  },
  "timing": {
-  "stack_s": 0.04140010004630312,
-  "stabilize_s": 0.14522279996890575,
-  "dic_s": 0.13528849999420345,
-  "total_s": 0.3783683000365272
+  "stack_s": 0.039664799987804145,
+  "stabilize_s": 0.21395440003834665,
+  "dic_s": 0.18045380001422018,
+  "total_s": 0.48661590000847355
  },
  "overlay": "epochs/11.3448/overlay.png",
  "stack": {
@@ -86,5 +86,5 @@
    "sigma_mm": 0.018466289938323128
   }
  },
- "state": "ACCELERATING"
+ "state": "MOVING"
 }

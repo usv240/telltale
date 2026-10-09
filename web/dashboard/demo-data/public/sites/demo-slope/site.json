@@ -65,10 +65,14 @@
    1.5,
    2.2,
    0.05
-  ]
+  ],
+  "ooa_min_snr": 3.0,
+  "ooa_min_tstat": 4.0,
+  "noise_window": 14
  },
  "burst_size": 7,
  "reference_mode": "fixed",
  "mask_window": 0,
+ "plane": null,
  "notes": "Synthetic collapse: Voight alpha=2 creep, true failure at t=50; 0.8 mm per pixel; left strip stable, right block moves."
 }

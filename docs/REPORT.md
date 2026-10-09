@@ -1,4 +1,6 @@
-# TellTale: technical report (draft, October 8, 2026)
+# TellTale: technical report (draft, October 9, 2026)
+
+TellTale stacks bursts from any fixed camera, removes the camera's own motion, measures ground creep to a hundredth of a pixel, forecasts the failure window, re-measures to verify it, and pages a person.
 
 Team Ground Truth: Ujwal Suresh Vanjare, Arpita Madhukar Kalburgi.
 OpenCV AI Competition 2026, powered by AWS. Featured paths: Best Use of COOL (pending
@@ -57,7 +59,7 @@ All vision is classical `core` and `imgproc`; there is no neural network in the 
 | D Mask | Temporal-variance mask for vegetation and water, applied from a trailing window of epochs when `mask_window` is set. | `GaussianBlur`, `morphologyEx`, `findContours` |
 | Scale | Metric conversion across an oblique slope: a homography from image to the ground plane (least squares or RANSAC on surveyed point pairs) whose local Jacobian converts each subset's pixel displacement to millimetres; a scalar `mm_per_px` remains the simple default. | `getPerspectiveTransform`, `findHomography`, `perspectiveTransform` |
 | Magnify | Motion magnification for people: the reference is re-sampled by `gain` x the measured dense field (holes filled by normalised convolution), so 0.3 px of creep becomes visible motion. The measurement is the only input; nothing is synthesised. | `blur`, `resize`, `remap` |
-| E Forecast | numpy. Velocity from the series; short (3) and long (7) trailing averages; onset of acceleration when the short average exceeds the long one for three epochs with positive acceleration and displacement above the noise floor; weighted linear fit of 1/v against the window-centred time (Fukuzono alpha = 2); residual bootstrap (500 draws) for a 10 to 90 percent window; Theil-Sen and Voight (alpha free in 1.5 to 2.2) fits form the ensemble; the reported window is the union of bootstrap and ensemble spread. Alarm ladder QUIET, MOVING, ACCELERATING, CRITICAL (horizon below threshold with R squared above 0.5). | |
+| E Forecast | numpy. Velocity from the series; short (3) and long (7) trailing averages; onset of acceleration when the short average exceeds the long one for three epochs with positive acceleration, displacement above the noise floor, the smoothed difference above three robust sigmas of its own jitter, and a significant quadratic term (t above 4) over the trailing fourteen epochs (gates added after the real-data negative control, E4b); a causal jump detector raises single-epoch steps to the agent; weighted linear fit of 1/v against the window-centred time (Fukuzono alpha = 2); residual bootstrap (500 draws) for a 10 to 90 percent window; Theil-Sen and Voight (alpha free in 1.5 to 2.2) fits form the ensemble; the reported window is the union of bootstrap and ensemble spread. Alarm ladder QUIET, MOVING, ACCELERATING, CRITICAL (horizon below threshold with R squared above 0.5). | |
 
 Why these choices. ZNCC is invariant to affine illumination change, which is why sunlight does
 not read as motion (E5 lighting scenario: 0.024 px false displacement). The paraboloid peak fit
@@ -101,6 +103,63 @@ tokens) costs a few cents and happens only on events, not on every epoch.
 
 ## 6. Evaluation
 
+**Headline.** On the public USGS time-lapse of an active coastal bluff, TellTale flagged 2 of 2 documented movement periods the camera could see and raised 0 false acceleration alarms across 147 quiet days in each of three zones; on the controlled sweep it measures displacement to 0.008 px, and on the public SEM DIC Challenge images to 0.005 px.
+
+### E4b negative control on real data (measured)
+
+`python evaluation/e4_forecast_eval.py`. The chained daily series from E4 (three zones,
+August 20 2015 to February 9 2016, 147 quiet days each) replayed causally through the same
+forecaster the worker runs, scored against the USGS-documented movement windows.
+
+| Onset rule | False acceleration epochs, 3 zones | False CRITICAL epochs | Observable periods flagged (jump detector) |
+|---|---|---|---|
+| original (SMA above LMA for 3 epochs) | 371 | 10 | 2 of 2 |
+| with onset gates (default) | 0 | 0 | 2 of 2 |
+
+The original rule sat in ACCELERATING on most quiet days of a real slope: a chained series is a
+random walk whose short average crosses its long average constantly. Two gates fixed it without
+touching the synthetic results: the smoothed difference must exceed three robust sigmas of its
+own jitter, and the quadratic coefficient of displacement over the trailing fourteen epochs must
+be significant (t above 4). Both documented periods the camera could see are two-day steps, not
+multi-week accelerations, so the alarm ladder (built for creep) does not fire on them; a causal
+jump detector (today's increment against the median plus four robust sigmas of the last twenty)
+flags both, at the cost of 10, 12 and 11 quiet-day
+jumps per zone out of 147, each of which the supervising agent now investigates (E_JUMP)
+rather than paging anyone. The three periods lost to the wet lens are reported as not
+observable, not as misses.
+
+### E1 named baselines (measured)
+
+`python evaluation/e1_baselines.py`. Same synthetic pairs, same median-over-frame estimate.
+
+| Method | clean (median / p95 px) | noise 1 %, gain 0.85 | noise 2 %, gain 0.85 | ms per pair |
+|---|---|---|---|---|
+| telltale | 0.0040 / 0.0077 | 0.0033 / 0.0070 | 0.0032 / 0.0066 | 22.0 |
+| farneback | 0.0096 / 0.0129 | 0.0096 / 0.0161 | 0.0088 / 0.0142 | 24.4 |
+| pyrlk | 0.0342 / 0.0479 | 0.0393 / 0.0487 | 0.0373 / 0.0467 | 4.6 |
+| phasecorr | 0.6687 / 0.8703 | 0.7167 / 0.9169 | 0.6521 / 0.8156 | 2.2 |
+
+### E1 on a public benchmark: SEM 2D DIC Challenge 1.0 (measured)
+
+`python evaluation/e1_dic_challenge.py`. Image sets published by the Society for Experimental
+Mechanics DIC Challenge (Reu et al., Experimental Mechanics 58, 2018), 512 x 512 px, rigid
+shifts of 0.05 px per image (Samples 1 and 2 at 1.5 and 8 grey levels of noise) and
+file-named shifts (Sample 3). Mean absolute error in pixels, each method's sign convention
+resolved per set:
+
+| Set | TellTale | Farneback | Pyramidal LK |
+|---|---|---|---|
+| Sample1 (0.05 px steps, noise 1.5 GL) | 0.0047 | 0.0064 | 0.0112 |
+| Sample2 (0.05 px steps, noise 8 GL) | 0.0154 | 0.0206 | 0.0121 |
+| Sample3 (FFT shifts, noise 2 GL) | 0.0102 | 0.0031 | 0.0045 |
+
+Read it straight: on the low-noise set TellTale's estimator is the best of the three; on the
+noisy set pyramidal LK is 0.003 px better and on the FFT-shifted set Farneback is 0.007 px
+better. At this noise level the three estimators are within hundredths of a pixel of each other
+and of the imposed shifts. The project's advantage is not a magic estimator; it is the
+per-subset quality control, the stabilizer, the forecasting physics and the human control
+built around a sound one, measured on real imagery.
+
 ### E1 sub-pixel accuracy (measured)
 
 `python -m telltale e1`. 256 px synthetic speckle, exact shifts of 0.125 to 2.0 px via 8x
@@ -143,25 +202,25 @@ jitter per epoch, run through stack, stabilize, DIC and forecast. 36 epochs to t
 | quiet + non-rigid lens distortion | 12/30 | CAMERA_EVENT: 18 | 2 (MOVING) | 0.632 px | partial failure, see section 8 |
 | creep + camera bump at epoch 20 | 30/30 | none | 0 | | CRITICAL, 50.29, window [48.8, 70.9] contains truth |
 
-### E5 agent ablation (measured)
+### E5 agent ablation (measured, re-run after the onset gates)
 
 `python evaluation/e5_agent.py --arms off rules llm`. The same six scenarios through the full
 worker (`process_epoch`, local store) with the supervising agent off (thresholds only), the
 deterministic rule policy, and Claude Sonnet 4.5 on Amazon Bedrock. Pages are counted through a
 stand-in for SNS.
 
-| Arm | False pages (5 quiet scenarios) | Events investigated | OpenCV tool calls | First human page in the creep scenario | Lead time before true failure (t = 50) |
-|---|---|---|---|---|---|
-| off (thresholds) | 0 | 0 | 0 | t = 47.0 (CRITICAL transition) | 3.0 |
-| rules | 0 | 7 | 43 | t = 8.1 (acceleration confirmed) | 41.9 |
-| Claude on Bedrock | 0 | 7 | 52 | t = 8.1 (acceleration confirmed) | 41.9 |
+| Arm | False pages (5 quiet scenarios) | Events investigated | OpenCV tool calls | Lens-distortion events | First human page in the creep scenario | Lead time before true failure (t = 50) |
+|---|---|---|---|---|---|---|
+| off (thresholds) | 0 | 0 | 0 | 0 events, all - | t = 47.0 | 3.0 |
+| rules | 0 | 10 | 55 | 7 events, all {'FALSE_ALARM'} | t = 8.1 | 41.9 |
+| Claude on Bedrock | 0 | 10 | 66 | 7 events, all {'FALSE_ALARM'} | t = 8.1 | 41.9 |
 
 What the agent changed. In the non-rigid lens scenario the stabilizer raised four camera events;
 both agent arms re-ran stabilization and DIC and closed all four as FALSE_ALARM without paging
 anyone, with the named measurement in the verdict ("1.20 px stabilization scatter, 0.64 px
 residual, affine model required"). In the creep scenario both arms confirmed the acceleration at
 its onset by re-measuring against two independent references and checking direction coherence,
-and paged a person 39 time units before the thresholds-only system would have. The thresholds-only
+and paged a person 42 time units before failure, against 3 for the thresholds-only system. The thresholds-only
 arm also had zero false pages here, because the synthetic confounders are the ones the stabilizer
 and the BLIND / BLURRED logic already catch; the agent's measurable value in this suite is earlier,
 evidence-backed escalation and a verdict log for every event. Each Claude investigation used 8 to 9

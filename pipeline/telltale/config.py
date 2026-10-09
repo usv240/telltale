@@ -46,6 +46,9 @@ class ForecastConfig:
     min_r2: float = 0.5         # fit quality floor to report a forecast
     critical_horizon: float = 5.0   # forecast horizon (time units) for CRITICAL
     alpha_grid: tuple = (1.5, 2.2, 0.05)  # Voight alpha search: lo, hi, step
+    ooa_min_snr: float = 3.0    # SMA - LMA must exceed this many robust sigmas of its own jitter; 0 disables
+    ooa_min_tstat: float = 4.0  # quadratic-fit acceleration must be this significant (t statistic); 0 disables
+    noise_window: int = 14      # trailing epochs used for both onset gates
 
 
 @dataclass

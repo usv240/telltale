@@ -1,0 +1,197 @@
+{
+ "ooa_min_snr": 0.0,
+ "zones": {
+  "left_face": {
+   "usable_epochs": 159,
+   "quiet_epochs": 147,
+   "quiet_p90_increment_px": 0.38818117190535073,
+   "false_alarm_epochs": 120,
+   "false_alarm_episodes": 3,
+   "false_critical_epochs": 2,
+   "first_false_epochs": [
+    [
+     "2015-09-22",
+     "CRITICAL"
+    ],
+    [
+     "2015-09-23",
+     "CRITICAL"
+    ],
+    [
+     "2015-09-24",
+     "ACCELERATING"
+    ],
+    [
+     "2015-09-25",
+     "ACCELERATING"
+    ],
+    [
+     "2015-09-26",
+     "ACCELERATING"
+    ],
+    [
+     "2015-09-27",
+     "ACCELERATING"
+    ]
+   ],
+   "periods": {
+    "Dec 8-9 2015": {
+     "observable": true,
+     "usable_epochs": 4,
+     "state_detected": true,
+     "increment_detected": true,
+     "max_increment_px": 0.9239760155600533,
+     "max_state": "ACCELERATING"
+    },
+    "Jan 21-30 2016": {
+     "observable": true,
+     "usable_epochs": 8,
+     "state_detected": true,
+     "increment_detected": true,
+     "max_increment_px": 1.2153310459051965,
+     "max_state": "ACCELERATING"
+    },
+    "Mar 9-14 2016": {
+     "observable": false
+    },
+    "Mar 23 2016 (night)": {
+     "observable": false
+    },
+    "Mar 26 2016 (night)": {
+     "observable": false
+    }
+   },
+   "observable_periods": 2,
+   "detected_by_state": 2,
+   "detected_by_increment": 2
+  },
+  "right_face": {
+   "usable_epochs": 159,
+   "quiet_epochs": 147,
+   "quiet_p90_increment_px": 0.25025337170123885,
+   "false_alarm_epochs": 122,
+   "false_alarm_episodes": 3,
+   "false_critical_epochs": 2,
+   "first_false_epochs": [
+    [
+     "2015-09-20",
+     "ACCELERATING"
+    ],
+    [
+     "2015-09-21",
+     "CRITICAL"
+    ],
+    [
+     "2015-09-22",
+     "CRITICAL"
+    ],
+    [
+     "2015-09-23",
+     "ACCELERATING"
+    ],
+    [
+     "2015-09-24",
+     "ACCELERATING"
+    ],
+    [
+     "2015-09-25",
+     "ACCELERATING"
+    ]
+   ],
+   "periods": {
+    "Dec 8-9 2015": {
+     "observable": true,
+     "usable_epochs": 4,
+     "state_detected": true,
+     "increment_detected": true,
+     "max_increment_px": 0.818467288248454,
+     "max_state": "ACCELERATING"
+    },
+    "Jan 21-30 2016": {
+     "observable": true,
+     "usable_epochs": 8,
+     "state_detected": true,
+     "increment_detected": true,
+     "max_increment_px": 0.2856016618118857,
+     "max_state": "ACCELERATING"
+    },
+    "Mar 9-14 2016": {
+     "observable": false
+    },
+    "Mar 23 2016 (night)": {
+     "observable": false
+    },
+    "Mar 26 2016 (night)": {
+     "observable": false
+    }
+   },
+   "observable_periods": 2,
+   "detected_by_state": 2,
+   "detected_by_increment": 2
+  },
+  "lower_body": {
+   "usable_epochs": 159,
+   "quiet_epochs": 147,
+   "quiet_p90_increment_px": 0.39506199424426564,
+   "false_alarm_epochs": 129,
+   "false_alarm_episodes": 3,
+   "false_critical_epochs": 6,
+   "first_false_epochs": [
+    [
+     "2015-09-12",
+     "ACCELERATING"
+    ],
+    [
+     "2015-09-13",
+     "ACCELERATING"
+    ],
+    [
+     "2015-09-14",
+     "ACCELERATING"
+    ],
+    [
+     "2015-09-15",
+     "ACCELERATING"
+    ],
+    [
+     "2015-09-16",
+     "ACCELERATING"
+    ],
+    [
+     "2015-09-18",
+     "ACCELERATING"
+    ]
+   ],
+   "periods": {
+    "Dec 8-9 2015": {
+     "observable": true,
+     "usable_epochs": 4,
+     "state_detected": true,
+     "increment_detected": true,
+     "max_increment_px": 0.48521314660445575,
+     "max_state": "ACCELERATING"
+    },
+    "Jan 21-30 2016": {
+     "observable": true,
+     "usable_epochs": 8,
+     "state_detected": true,
+     "increment_detected": true,
+     "max_increment_px": 0.6388258699100822,
+     "max_state": "ACCELERATING"
+    },
+    "Mar 9-14 2016": {
+     "observable": false
+    },
+    "Mar 23 2016 (night)": {
+     "observable": false
+    },
+    "Mar 26 2016 (night)": {
+     "observable": false
+    }
+   },
+   "observable_periods": 2,
+   "detected_by_state": 2,
+   "detected_by_increment": 2
+  }
+ }
+}

@@ -441,6 +441,30 @@ def approval_status(store, site_name: str, records: list[dict], overall: str) ->
     return out
 
 
+def _jump_detected(records: list[dict], record: dict, site: SiteConfig, k: float = 4.0, window: int = 20) -> bool:
+    """A single-epoch displacement step well outside the recent increments (a short event the
+    acceleration ladder is not built for; on the Mukilteo record this is what catches the
+    documented two-day movements). Causal and robust: median + k x MAD of the last ``window``
+    increments, with a floor at the forecast noise floor."""
+    if not record.get("usable") or not record.get("zones"):
+        return False
+    usable = [r for r in records if r.get("usable") and r.get("zones") and r["t"] < record["t"]]
+    if len(usable) < 7:
+        return False
+    for name, z in record["zones"].items():
+        mags = [r["zones"].get(name, {}).get("magnitude") for r in usable[-(window + 1):]]
+        mags = [m for m in mags if m is not None]
+        if len(mags) < 7 or z.get("magnitude") is None:
+            continue
+        incs = np.abs(np.diff(np.array(mags, dtype=float)))
+        inc_now = abs(float(z["magnitude"]) - float(mags[-1]))
+        med = float(np.median(incs))
+        sig = 1.4826 * float(np.median(np.abs(incs - med)))
+        if inc_now > med + k * max(sig, site.forecast.noise_floor / 4):
+            return True
+    return False
+
+
 def _finish(store, site: SiteConfig, site_name: str, record: dict, fld, t0: float) -> dict:
     pub = f"public/sites/{site_name}"
     record["timing"]["total_s"] = time.perf_counter() - t0
@@ -495,7 +519,9 @@ def _finish(store, site: SiteConfig, site_name: str, record: dict, fld, t0: floa
         prev_reason = prev_recs[-1].get("reason") if prev_recs else None
         if prev_recs and (prev_recs[-1].get("field") or {}).get("coverage", 1.0) < 0.4:
             prev_reason = "LOW_COVERAGE"
-        event = _event_from(record, prev_state, overall, prev_reason)
+        jump = _jump_detected(series["records"], record, site)
+        record["jump"] = jump
+        event = _event_from(record, prev_state, overall, prev_reason, jump=jump)
         if event:
             trace = investigate(store, site_name, record["t"], event, alerting(),
                                 use_llm=(agent_mode == "llm"))

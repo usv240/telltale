@@ -9,14 +9,14 @@
   "rules": {
    "false_pages": 0,
    "correct_pages": 1,
-   "events": 7,
-   "tool_calls": 43
+   "events": 10,
+   "tool_calls": 55
   },
   "llm": {
    "false_pages": 0,
    "correct_pages": 1,
-   "events": 7,
-   "tool_calls": 52
+   "events": 10,
+   "tool_calls": 66
   }
  },
  "arms": {
@@ -196,7 +196,15 @@
       "verdict": "FALSE_ALARM",
       "n_tool_calls": 4,
       "paged_human": false,
-      "seconds": 0.15
+      "seconds": 0.12
+     },
+     {
+      "t": 24.310344827586206,
+      "event": "E_JUMP",
+      "verdict": "FALSE_ALARM",
+      "n_tool_calls": 4,
+      "paged_human": false,
+      "seconds": 0.13
      },
      {
       "t": 25.93103448275862,
@@ -204,11 +212,27 @@
       "verdict": "FALSE_ALARM",
       "n_tool_calls": 4,
       "paged_human": false,
-      "seconds": 0.15
+      "seconds": 0.11
+     },
+     {
+      "t": 34.03448275862069,
+      "event": "E_JUMP",
+      "verdict": "FALSE_ALARM",
+      "n_tool_calls": 4,
+      "paged_human": false,
+      "seconds": 0.16
      },
      {
       "t": 35.6551724137931,
       "event": "E_CAMERA",
+      "verdict": "FALSE_ALARM",
+      "n_tool_calls": 4,
+      "paged_human": false,
+      "seconds": 0.12
+     },
+     {
+      "t": 40.51724137931034,
+      "event": "E_JUMP",
       "verdict": "FALSE_ALARM",
       "n_tool_calls": 4,
       "paged_human": false,
@@ -220,16 +244,19 @@
       "verdict": "FALSE_ALARM",
       "n_tool_calls": 4,
       "paged_human": false,
-      "seconds": 0.16
+      "seconds": 0.1
      }
     ],
     "verdicts": [
      "FALSE_ALARM",
      "FALSE_ALARM",
      "FALSE_ALARM",
+     "FALSE_ALARM",
+     "FALSE_ALARM",
+     "FALSE_ALARM",
      "FALSE_ALARM"
     ],
-    "tool_calls": 16,
+    "tool_calls": 28,
     "forecast": {
      "tf": null,
      "t_lo": null,
@@ -250,7 +277,7 @@
       "verdict": "CONFIRMED",
       "n_tool_calls": 9,
       "paged_human": true,
-      "seconds": 0.8
+      "seconds": 0.37
      },
      {
       "t": 11.344827586206897,
@@ -258,7 +285,7 @@
       "verdict": "CONFIRMED",
       "n_tool_calls": 9,
       "paged_human": true,
-      "seconds": 0.7
+      "seconds": 0.42
      },
      {
       "t": 47.0,
@@ -266,7 +293,7 @@
       "verdict": "CONFIRMED",
       "n_tool_calls": 9,
       "paged_human": true,
-      "seconds": 0.4
+      "seconds": 0.44
      }
     ],
     "verdicts": [
@@ -359,42 +386,69 @@
       "t": 16.206896551724135,
       "event": "E_CAMERA",
       "verdict": "FALSE_ALARM",
-      "n_tool_calls": 5,
+      "n_tool_calls": 4,
       "paged_human": false,
-      "seconds": 31.16
+      "seconds": 25.71
+     },
+     {
+      "t": 24.310344827586206,
+      "event": "E_JUMP",
+      "verdict": "FALSE_ALARM",
+      "n_tool_calls": 7,
+      "paged_human": false,
+      "seconds": 27.37
      },
      {
       "t": 25.93103448275862,
       "event": "E_CAMERA",
       "verdict": "FALSE_ALARM",
-      "n_tool_calls": 7,
+      "n_tool_calls": 5,
       "paged_human": false,
-      "seconds": 25.36
+      "seconds": 17.1
+     },
+     {
+      "t": 34.03448275862069,
+      "event": "E_JUMP",
+      "verdict": "FALSE_ALARM",
+      "n_tool_calls": 6,
+      "paged_human": false,
+      "seconds": 23.52
      },
      {
       "t": 35.6551724137931,
       "event": "E_CAMERA",
       "verdict": "FALSE_ALARM",
-      "n_tool_calls": 8,
+      "n_tool_calls": 4,
       "paged_human": false,
-      "seconds": 24.86
+      "seconds": 15.97
+     },
+     {
+      "t": 40.51724137931034,
+      "event": "E_JUMP",
+      "verdict": "FALSE_ALARM",
+      "n_tool_calls": 7,
+      "paged_human": false,
+      "seconds": 24.84
      },
      {
       "t": 42.137931034482754,
       "event": "E_CAMERA",
       "verdict": "FALSE_ALARM",
-      "n_tool_calls": 6,
+      "n_tool_calls": 5,
       "paged_human": false,
-      "seconds": 26.19
+      "seconds": 20.77
      }
     ],
     "verdicts": [
      "FALSE_ALARM",
      "FALSE_ALARM",
      "FALSE_ALARM",
+     "FALSE_ALARM",
+     "FALSE_ALARM",
+     "FALSE_ALARM",
      "FALSE_ALARM"
     ],
-    "tool_calls": 26,
+    "tool_calls": 38,
     "forecast": {
      "tf": null,
      "t_lo": null,
@@ -413,9 +467,9 @@
       "t": 8.103448275862068,
       "event": "E_ANOMALY",
       "verdict": "CONFIRMED",
-      "n_tool_calls": 9,
+      "n_tool_calls": 10,
       "paged_human": true,
-      "seconds": 32.25
+      "seconds": 28.86
      },
      {
       "t": 11.344827586206897,
@@ -423,15 +477,15 @@
       "verdict": "CONFIRMED",
       "n_tool_calls": 9,
       "paged_human": true,
-      "seconds": 35.17
+      "seconds": 28.2
      },
      {
       "t": 47.0,
       "event": "E_ANOMALY",
       "verdict": "CONFIRMED",
-      "n_tool_calls": 8,
+      "n_tool_calls": 9,
       "paged_human": true,
-      "seconds": 30.34
+      "seconds": 33.85
      }
     ],
     "verdicts": [
@@ -439,7 +493,7 @@
      "CONFIRMED",
      "CONFIRMED"
     ],
-    "tool_calls": 26,
+    "tool_calls": 28,
     "forecast": {
      "tf": 50.50246008126937,
      "t_lo": 49.39504927059025,

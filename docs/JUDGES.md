@@ -33,8 +33,10 @@ supervisor instead of Claude.
 | Sub-pixel accuracy 0.01 px | `evaluation/results/e1-*` from CI artifacts, or run `telltale e1` |
 | Forecast recovers a known failure time | `pipeline/tests/test_end_to_end.py`, `telltale simulate` |
 | Real landslide: documented movement days stand out 4 to 7x | `evaluation/results/e4_mukilteo.json`, `docs/figures/e4_*` |
+| 0 false acceleration alarms on 147 real quiet days x 3 zones; 2 of 2 observable periods flagged | `evaluation/results/e4_forecast_snr3_t4.json` (and `_snr0_t0` for the rule before the fix) |
+| Public benchmark and named baselines | `evaluation/results/e1_dic_challenge.json`, `evaluation/results/e1_baselines.json` |
 | Zero false alarms under bump, lighting, fog; lens distortion partly caught | `evaluation/results/e5_confounders.json` |
-| Agent closes camera artefacts, pages a person 39 units earlier | `evaluation/results/e5_agent.json`, agent panel traces |
+| Agent closes all camera-artefact events as false alarms, pages a person 42 time units before failure (thresholds alone: 3) | `evaluation/results/e5_agent.json`, agent panel traces |
 | Graviton vs x86 cost and speed | `evaluation/results/e6_*.json` |
 | COOL executes the core workload | `runtime.cv2_file` in every record, instrument-health panel |
 | Human control works | approval links in `forecast.json`, `decisions.json`, section 9 of the report |

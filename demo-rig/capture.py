@@ -5,7 +5,9 @@ optionally uploaded straight to the deployed stack.
     python demo-rig/capture.py --run run01 --every 20 --upload telltale-123 --site rig-run01 \
         --site-config demo-rig/site_rig.json
 
-Epoch time t is minutes since the run started (so forecasts read in minutes). Frames are saved
+Epoch time t is minutes since the run started (so forecasts read in minutes). When uploading,
+the script polls the site's control.json after every epoch, so a cadence change made by the
+supervising agent (set_capture_cadence) takes effect on the camera within one epoch. Frames are saved
 as PNG (lossless) under demo-rig/captures/<run>/<t>/frame_XX.png. Exposure and focus are
 locked where the camera driver allows it; shadow drift from windows is a confounder to test
 deliberately, not accidentally, so use fixed LED lighting.
@@ -99,7 +101,19 @@ def main(argv=None) -> int:
             k += 1
             if a.max_epochs and k >= a.max_epochs:
                 break
-            time.sleep(max(0.0, a.every - a.burst * a.gap))
+            # Close the loop: the supervising agent may have changed the cadence (control.json).
+            every = a.every
+            if a.upload:
+                try:
+                    import boto3
+                    body = boto3.client("s3").get_object(Bucket=a.upload, Key=f"public/sites/{a.site or a.run}/control.json")["Body"].read()
+                    ctrl = json.loads(body)
+                    every = 86400.0 / max(1, int(ctrl.get("epochs_per_day", 86400 / a.every)))
+                    if abs(every - a.every) > 1:
+                        print(f"cadence set by {ctrl.get('by')}: {ctrl.get('epochs_per_day')} per day ({ctrl.get('reason')})")
+                except Exception:
+                    pass
+            time.sleep(max(0.0, every - a.burst * a.gap))
     except KeyboardInterrupt:
         print("stopped")
     finally:
