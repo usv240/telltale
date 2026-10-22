@@ -4,16 +4,23 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>TellTale site setup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="dashboard.css">
+<script>(function(){var q=new URLSearchParams(location.search).get("theme");var t=q||localStorage.getItem("telltale-theme")||"";if(t)document.documentElement.dataset.theme=t;})();</script>
+
 <style>
   .setup { display: grid; gap: 16px; grid-template-columns: 1fr; }
   @media (min-width: 900px) { .setup { grid-template-columns: 2fr 1fr; } }
   canvas { width: 100%; height: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); cursor: crosshair; touch-action: none; }
   .tools { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
-  .tools .btn.active { outline: 2px solid var(--accent); }
-  textarea { width: 100%; min-height: 220px; font: 12px/1.4 ui-monospace, Consolas, monospace; background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 8px; }
+  .tools .btn.active { background: var(--primary); color: var(--on-primary); }
+  /* taste-skill-ignore: the textarea shows literal JSON output */
+  textarea { width: 100%; min-height: 220px; font: 12px/1.4 ui-monospace, Consolas, monospace; background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 8px; } /* taste-skill-ignore: literal JSON output */
   label.row { display: flex; gap: 8px; align-items: center; margin: 6px 0; font-size: 0.9rem; }
   label.row input { font: inherit; padding: 4px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); width: 9em; }
+  ol.setup-steps { margin: 12px 0 6px; padding-left: 20px; max-width: 72ch; }
+  ol.setup-steps li { margin: 3px 0; }
   ul.polys { list-style: none; padding: 0; margin: 6px 0; font-size: 0.85rem; }
   ul.polys li { display: flex; justify-content: space-between; gap: 8px; padding: 4px 0; border-bottom: 1px solid var(--line); }
 </style>
@@ -21,13 +28,20 @@
 <body>
 <a class="skip" href="#main">Skip to content</a>
 <header class="top">
-  <div class="brand"><span class="mark" aria-hidden="true"></span><span class="name">TellTale</span><span class="sub">site setup</span></div>
+  <a class="brand" href="index.html"><span class="mark"><svg viewBox="0 0 28 28" width="26" height="26" aria-hidden="true"><rect x="0.75" y="0.75" width="26.5" height="26.5" rx="7" fill="var(--text)"/><path d="M5 21 L13 13 L23 9" fill="none" stroke="var(--surface)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="13" cy="13" r="2.6" fill="var(--chart-3-on-dark)"/></svg></span><span class="name">TellTale</span><span class="sub">site setup</span></a>
   <div class="controls"><a class="btn" href="about.html">How it works</a><a class="btn" href="index.html">Dashboard</a></div>
 </header>
 <main id="main">
   <section class="panel">
-    <h2>Configure a site from one reference photo</h2>
-    <p class="hint">1. Load a frame from the camera. 2. Draw STABLE polygons on ground that cannot move (bedrock, buildings, road off the slide). 3. Draw TARGET zones on the slope you care about. 4. Set the scale from two points of known separation or from an E2 figure. 5. Export site.json and send it with the first epoch. Click to add vertices, double-click to close a polygon, Escape to cancel.</p>
+    <h1>Configure a site from one reference photo</h1>
+    <ol class="setup-steps">
+      <li>Load one frame from the camera.</li>
+      <li>Draw stable regions on ground that cannot move: bedrock, buildings, a road off the slide.</li>
+      <li>Draw target zones on the slope you care about.</li>
+      <li>Set the scale from two points of known separation, or enter the figure from the E2 target test.</li>
+      <li>Download site.json and send it with the first epoch.</li>
+    </ol>
+    <p class="hint">Click to add a vertex, double-click to close a polygon, Escape to cancel the one you are drawing.</p>
     <div class="setup">
       <div>
         <div class="tools">
@@ -110,7 +124,7 @@
   function draw() {
     ctx.clearRect(0, 0, c.width, c.height);
     if (img) ctx.drawImage(img, 0, 0, c.width, c.height);
-    else { ctx.fillStyle = "#888"; ctx.font = "20px system-ui"; ctx.fillText("Load a reference frame to begin", 30, 50); }
+    else { const fs = Math.round(c.width / 36); ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--muted") || "#5f5f5c"; ctx.font = `500 ${fs}px Geist, system-ui`; ctx.fillText("Load a camera frame to begin", fs * 1.5, fs * 2.4); ctx.font = `400 ${Math.round(fs * 0.7)}px Geist, system-ui`; ctx.fillText("Use Load image above. Nothing leaves this browser.", fs * 1.5, fs * 3.6); }
     const lw = Math.max(2, c.width / 640);
     for (const p of polys) {
       ctx.strokeStyle = colors[p.kind]; ctx.lineWidth = lw; ctx.fillStyle = colors[p.kind] + "33";

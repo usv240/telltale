@@ -1,6 +1,6 @@
 {
  "epochs_per_day": 24,
- "reason": "confirmed acceleration; tighten forecast",
- "set_at": "2026-10-09T04:38:27Z",
+ "reason": "confirmed motion; tighten forecast",
+ "set_at": "2026-10-22T04:53:19Z",
  "by": "agent"
 }

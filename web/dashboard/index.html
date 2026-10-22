@@ -3,108 +3,163 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TellTale dashboard</title>
+<title>TellTale · slope instrument</title>
 <meta name="description" content="TellTale stacks bursts from any fixed camera, removes the camera's own motion, measures ground creep to a hundredth of a pixel, forecasts the failure window, re-measures to verify it, and pages a person.">
+<meta name="color-scheme" content="light dark">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="dashboard.css">
 </head>
-<body>
-<a class="skip" href="#h-status">Skip to status</a>
-<header class="top">
-  <div class="brand">
-    <span class="mark" aria-hidden="true"></span>
-    <span class="name">TellTale</span>
-    <span class="sub">slope instrument</span>
-  </div>
-  <div class="controls">
-    <label class="sel">Site
-      <select id="site" aria-label="Site"></select>
-    </label>
-    <span id="state-chip" class="chip chip-quiet" aria-live="polite">loading</span>
-    <span id="cool-badge" class="badge" hidden title="OpenCV was imported from /opt/cool on this worker">COOL on Graviton</span>
-    <a class="btn" href="about.html">How it works</a>
-    <button id="theme" class="btn" type="button" aria-label="Toggle colour theme">Theme</button>
-  </div>
-</header>
+<body class="app">
+<a class="skip" href="#main">Skip to the instrument</a>
 
-<main id="main">
-  <section class="panel status" aria-labelledby="h-status">
-    <h2 id="h-status">Status</h2>
-    <p id="status-line" class="lead">Loading the latest epoch.</p>
-    <div class="replay" id="replay" hidden>
-      <label for="scrub">Replay</label>
-      <input id="scrub" type="range" min="0" max="0" value="0" aria-label="Replay epochs">
-      <span id="scrub-label" class="hint"></span>
-      <button id="scrub-play" class="btn" type="button">Play</button>
-      <button id="scrub-live" class="btn" type="button">Live</button>
+<!-- Shell: icon rail (56px) + fluid canvas. Grid arithmetic at 1440px: 1440 - 56 rail - 2 x 24 gutter
+     = 1336px canvas; 12 columns with a 12px gap: (1336 - 11 x 12) / 12 = 100.33px per column. -->
+<nav class="rail" aria-label="TellTale">
+  <a class="mark" href="index.html" aria-label="TellTale dashboard">
+    <svg viewBox="0 0 28 28" width="28" height="28" aria-hidden="true">
+      <rect x="0.75" y="0.75" width="26.5" height="26.5" rx="7" fill="var(--text)"/>
+      <path d="M5 21 L13 13 L23 9" fill="none" stroke="var(--surface)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="13" cy="13" r="2.6" fill="var(--chart-3-on-dark)"/>
+    </svg>
+  </a>
+  <a class="rail-item" href="index.html" aria-current="page" aria-label="Dashboard" data-tip="Dashboard">
+    <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 15 L8 10 L11 13 L17 6"/><path d="M3 3 V17 H17"/></svg>
+    <span>Dashboard</span>
+  </a>
+  <a class="rail-item" href="setup.html" aria-label="Site setup" data-tip="Site setup">
+    <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 15 L7 5 L15 7 L16 14 Z"/><circle cx="7" cy="5" r="1.4"/><circle cx="16" cy="14" r="1.4"/></svg>
+    <span>Setup</span>
+  </a>
+  <a class="rail-item" href="about.html" aria-label="How it works" data-tip="How it works">
+    <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7"/><path d="M10 9 V14"/><path d="M10 6.2 V6.3"/></svg>
+    <span>How it works</span>
+  </a>
+  <span class="rail-spacer"></span>
+  <button id="theme" class="rail-item" type="button" aria-label="Colour theme: system" data-tip="Theme">
+    <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="M10 3.5 A6.5 6.5 0 0 1 10 16.5 Z" class="fill"/></svg>
+    <span>Theme</span>
+  </button>
+  <a class="rail-item" href="https://github.com/usv240/telltale" aria-label="Source code" data-tip="Source code">
+    <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 6 L3 10 L7 14"/><path d="M13 6 L17 10 L13 14"/></svg>
+    <span>Code</span>
+  </a>
+</nav>
+
+<main id="main" class="canvas">
+  <header class="title-row">
+    <div class="title-text">
+      <div class="title-line">
+        <h1 id="site-title">TellTale</h1>
+        <span id="state-pill" class="pill pill-neutral" aria-live="polite">Loading</span>
+        <span id="cool-badge" class="pill pill-neutral" hidden title="OpenCV was imported from /opt/cool on this worker">COOL on Graviton</span>
+      </div>
+      <p id="status-line" class="finding">Loading the latest epoch.</p>
+      <p id="scope-line" class="scope"></p>
     </div>
-    <details class="help"><summary>How to read this</summary><p>One sentence answers "is this slope okay". Drag the replay slider to see the instrument as it stood after any earlier epoch: the overlay, the facts, the charts and the forecast all rewind together. The image is the latest usable epoch: colour is how far each patch of ground has moved since the reference epoch (blue none, red most), arrows show direction. The facts on the right are the zone's displacement with its robust uncertainty, the current velocity, when acceleration began, and the forecast window if there is one. If the last epoch was unusable, the reason is stated here.</p></details>
-    <div class="status-grid">
-      <figure>
-        <img id="overlay" alt="Latest displacement overlay: colour shows how far each patch of ground moved since the reference epoch, arrows show direction" src="">
-        <figcaption id="overlay-cap">Displacement overlay of the latest usable epoch.</figcaption>
-      </figure>
-      <dl class="facts">
-        <div><dt>Zone displacement</dt><dd id="f-disp">–</dd></div>
-        <div><dt>Velocity (short average)</dt><dd id="f-vel">–</dd></div>
-        <div><dt>Onset of acceleration</dt><dd id="f-ooa">–</dd></div>
-        <div><dt>Forecast failure window</dt><dd id="f-window">–</dd></div>
-        <div><dt>Fit quality (R²)</dt><dd id="f-r2">–</dd></div>
-        <div><dt>Epochs (unusable)</dt><dd id="f-epochs">–</dd></div>
-      </dl>
-    </div>
-    <div id="approval" class="approval" hidden>
-      <p id="approval-text" class="lead"></p>
+    <div class="title-actions">
+      <label class="field"><span>Site</span>
+        <select id="site" aria-label="Site"></select>
+      </label>
       <div id="approval-actions" class="actions"></div>
-      <ul id="decisions" class="decisions"></ul>
     </div>
+  </header>
+  <p id="decision-note" class="decision-note" hidden></p>
+
+  <section class="kpis" aria-label="Key measurements">
+    <div class="kpi kpi-lead"><span class="kpi-label">Forecast failure window</span><span class="kpi-value" id="k-window">–</span><span class="kpi-sub" id="k-window-sub"></span></div>
+    <div class="kpi"><span class="kpi-label">Time to median forecast</span><span class="kpi-value" id="k-horizon">–</span><span class="kpi-sub" id="k-horizon-sub"></span></div>
+    <div class="kpi"><span class="kpi-label">Zone displacement</span><span class="kpi-value" id="k-disp">–</span><span class="kpi-sub" id="k-disp-sub"></span></div>
+    <div class="kpi"><span class="kpi-label">Velocity, short average</span><span class="kpi-value" id="k-vel">–</span><span class="kpi-sub" id="k-vel-sub"></span></div>
+    <div class="kpi"><span class="kpi-label">Onset of acceleration</span><span class="kpi-value" id="k-ooa">–</span><span class="kpi-sub" id="k-ooa-sub"></span></div>
+    <div class="kpi"><span class="kpi-label">Epochs usable</span><span class="kpi-value" id="k-epochs">–</span><span class="kpi-sub" id="k-epochs-sub"></span></div>
   </section>
 
-  <section class="panel" aria-labelledby="h-series">
-    <h2 id="h-series">Displacement series</h2>
-    <p class="hint">Median displacement of valid subsets in the zone, with ±1σ (robust) band. Nothing is interpolated across unusable epochs.</p>
-    <details class="help"><summary>How to read this</summary><p>Each dot is one epoch. A flat line is a quiet slope; a straight slope is steady creep; a curve bending upward is acceleration. The red vertical line marks the onset of acceleration. Gaps are unusable epochs (blind, blurred, camera event): they widen the uncertainty and are never filled in.</p></details>
-    <svg id="chart-disp" class="chart" viewBox="0 0 640 260" role="img" aria-label="Displacement versus time"></svg>
-  </section>
+  <div class="grid">
+    <section class="panel span-5" aria-labelledby="h-iv">
+      <header class="panel-head">
+        <h2 id="h-iv">Failure forecast</h2>
+        <span class="panel-meta" id="iv-meta"></span>
+      </header>
+      <svg id="chart-iv" class="chart" viewBox="0 0 560 300" role="img" aria-label="Inverse velocity against time, with the fitted line, its time-axis intercept and the forecast window"></svg>
+      <p id="iv-empty" class="empty" hidden>No sustained acceleration yet. The forecast appears once the short-average velocity has stayed above the long-average velocity for three epochs and the acceleration is statistically significant.</p>
+      <details class="help"><summary>How to read this</summary><p>When there is no forecast, this panel shows each epoch's step in the zone, with the steps the supervising agent confirmed as ground motion in blue. For creep-type failures, one divided by velocity falls along a straight line and reaches zero at failure (Fukuzono 1985). Dots are the measured epochs after the onset of acceleration, the dashed line is the fit, the vertical line is its intercept, and the shaded band is the forecast window from a bootstrap of the fit plus the spread of three fitting methods. The forecast is always a window, never a single time.</p></details>
+    </section>
 
-  <section class="panel" aria-labelledby="h-iv">
-    <h2 id="h-iv">Inverse velocity</h2>
-    <p class="hint">After the onset of acceleration, 1 / velocity falls toward zero. The line's time-axis intercept is the forecast failure time; the shaded band is the bootstrap and ensemble window.</p>
-    <details class="help"><summary>How to read this</summary><p>This is the physics. For creep-type failures, one divided by velocity falls along a straight line and reaches zero at failure (Fukuzono 1985). The dashed line is the fit from the onset of acceleration, the red marker is its time-axis intercept, and the shaded band is the forecast window from a bootstrap of the fit plus the disagreement between three fitting methods. The forecast is always a window, never a single time.</p></details>
-    <svg id="chart-iv" class="chart" viewBox="0 0 640 260" role="img" aria-label="Inverse velocity versus time with forecast intercept"></svg>
-    <p id="iv-empty" class="empty" hidden>No acceleration detected yet. This chart fills in once the short-average velocity stays above the long-average velocity for three epochs.</p>
-  </section>
+    <section class="panel span-4" aria-labelledby="h-disp">
+      <header class="panel-head">
+        <h2 id="h-disp">Displacement</h2>
+        <span class="panel-meta" id="disp-meta"></span>
+      </header>
+      <svg id="chart-disp" class="chart" viewBox="0 0 440 300" role="img" aria-label="Zone displacement against time with its uncertainty band"></svg>
+      <details class="help"><summary>How to read this</summary><p>Each dot is one epoch: the median displacement of the zone's valid subsets, with a band of one standard deviation estimated from the median absolute deviation (1.4826 times the MAD). A flat line is a quiet slope, a straight rise is steady creep, a curve bending upward is acceleration. Unusable epochs (blind, blurred, camera event) leave gaps; nothing is filled in.</p></details>
+    </section>
 
-  <section class="panel" aria-labelledby="h-agent">
-    <h2 id="h-agent">Supervising agent</h2>
-    <details class="help"><summary>How to read this</summary><p>When the instrument raises an event (acceleration, camera event, quality drop), a bounded agent investigates by calling OpenCV 5 again: re-measuring against alternate references, re-estimating camera motion, checking sharpness and direction coherence. Each result changes what it calls next. It can page a person or close the event as a false alarm; it can never send a public alert. Every tool call is logged here.</p></details>
-    <p id="agent-empty" class="empty">No events investigated yet.</p>
-    <div id="agent-events"></div>
-  </section>
+    <section class="panel span-3 camera" aria-labelledby="h-cam">
+      <header class="panel-head">
+        <h2 id="h-cam">Camera</h2>
+        <span class="panel-meta" id="cam-meta"></span>
+      </header>
+      <figure>
+        <img id="overlay" alt="The latest usable camera epoch with measured displacement: grey is no motion, deeper blue is more, arrows show direction" src="" width="320" height="320">
+        <figcaption id="overlay-cap"></figcaption>
+      </figure>
+      <div class="replay" id="replay" hidden>
+        <input id="scrub" type="range" min="0" max="0" value="0" aria-label="Replay epochs">
+        <div class="replay-row">
+          <span id="scrub-label" class="replay-label"></span>
+          <span class="replay-buttons">
+            <button id="scrub-play" class="btn btn-secondary btn-sm" type="button">Play</button>
+            <button id="scrub-live" class="btn btn-secondary btn-sm" type="button">Live</button>
+          </span>
+        </div>
+      </div>
+    </section>
 
-  <section class="panel" aria-labelledby="h-health">
-    <h2 id="h-health">Instrument health</h2>
-    <details class="help"><summary>How to read this</summary><p>The honesty panel. Coverage is the share of patches that passed quality checks; stabilisation inliers and the chosen camera model show how well camera motion was explained; the OpenCV build and worker identity prove which code ran where. The epoch log lists every epoch, including the unusable ones and why.</p></details>
-    <dl class="facts cols">
-      <div><dt>Valid subset coverage</dt><dd id="h-cov">–</dd></div>
-      <div><dt>Stabilisation inliers</dt><dd id="h-inl">–</dd></div>
-      <div><dt>Camera model (last epoch)</dt><dd id="h-model">–</dd></div>
-      <div><dt>Epoch processing time</dt><dd id="h-time">–</dd></div>
-      <div><dt>OpenCV build</dt><dd id="h-cv"><code>–</code></dd></div>
-      <div><dt>Worker</dt><dd id="h-inst">–</dd></div>
-    </dl>
-    <h3>Epoch log</h3>
-    <div class="tablewrap">
-      <table id="epochs">
-        <thead><tr><th>t</th><th>usable</th><th>reason</th><th>|d| px</th><th>σ px</th><th>coverage</th><th>stabilise</th><th>seconds</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </section>
+    <section class="panel span-7" aria-labelledby="h-agent">
+      <header class="panel-head">
+        <h2 id="h-agent">Agent investigations</h2>
+        <span class="panel-meta" id="agent-meta"></span>
+      </header>
+      <ul id="agent-events" class="event-list"></ul>
+      <p id="agent-empty" class="empty">No events yet. When the instrument raises one (acceleration, a jump, a camera event, a quality drop), the agent re-runs OpenCV on the stored images and records each call here.</p>
+      <button id="agent-more" class="btn btn-ghost btn-sm" type="button" hidden>Show all</button>
+    </section>
+
+    <section class="panel span-5" aria-labelledby="h-health">
+      <header class="panel-head">
+        <h2 id="h-health">Instrument health</h2>
+        <span class="panel-meta" id="health-meta"></span>
+      </header>
+      <dl class="health">
+        <div><dt>Valid subsets</dt><dd id="h-cov">–</dd></div>
+        <div><dt>Seconds per epoch</dt><dd id="h-time">–</dd></div>
+        <div><dt>Stabilisation, last epoch</dt><dd id="h-model">–</dd></div>
+        <div><dt>Worker</dt><dd id="h-inst">–</dd></div>
+        <div class="wide"><dt>OpenCV build that ran</dt><dd><code id="h-cv">–</code></dd></div>
+      </dl>
+    </section>
+
+    <section class="panel span-12" aria-labelledby="h-log">
+      <header class="panel-head">
+        <h2 id="h-log">Epoch log</h2>
+        <span class="panel-meta">Newest first. Unusable epochs stay in the record with their reason.</span>
+      </header>
+      <div class="table-wrap">
+        <table id="epochs">
+          <caption class="sr-only">Epoch log, newest first</caption>
+          <thead><tr><th scope="col">t</th><th scope="col">Result</th><th scope="col" class="num">Displacement</th><th scope="col" class="num">±σ</th><th scope="col" class="num">Coverage</th><th scope="col">Camera model</th><th scope="col" class="num">Seconds</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <button id="epochs-more" class="btn btn-ghost btn-sm" type="button" hidden>Show all epochs</button>
+    </section>
+  </div>
+
+  <footer class="foot">
+    <p>TellTale · Team Ground Truth · OpenCV AI Competition 2026, powered by AWS. Classical OpenCV 5 vision and the inverse-velocity method (Fukuzono 1985; Carlà et al. 2017). Creep-type failures only. Cameras look at ground, never at people. A person approves every public alert.</p>
+  </footer>
 </main>
-
-<footer>
-  <p>TellTale · Team Ground Truth · OpenCV AI Competition 2026, powered by AWS. Classical OpenCV 5 vision and the inverse-velocity method (Fukuzono 1985; Carlà et al. 2017). Scope: creep-type failures. Cameras look at ground, never at people.</p>
-</footer>
 <script src="dashboard.js"></script>
 </body>
 </html>

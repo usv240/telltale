@@ -8,9 +8,9 @@
    "paged_human": true,
    "cadence_changed": true,
    "n_tool_calls": 9,
-   "seconds": 0.68,
-   "started": "2026-10-09T04:38:22Z",
-   "summary": "Rule policy: acceleration confirmed; human paged."
+   "seconds": 0.54,
+   "started": "2026-10-22T04:53:14Z",
+   "summary": "Rule policy: motion confirmed; human paged."
   },
   {
    "t": 43.75862068965517,
@@ -20,9 +20,9 @@
    "paged_human": true,
    "cadence_changed": true,
    "n_tool_calls": 9,
-   "seconds": 0.68,
-   "started": "2026-10-09T04:38:24Z",
-   "summary": "Rule policy: acceleration confirmed; human paged."
+   "seconds": 0.74,
+   "started": "2026-10-22T04:53:15Z",
+   "summary": "Rule policy: motion confirmed; human paged."
   },
   {
    "t": 45.37931034482759,
@@ -32,9 +32,9 @@
    "paged_human": true,
    "cadence_changed": true,
    "n_tool_calls": 9,
-   "seconds": 0.7,
-   "started": "2026-10-09T04:38:25Z",
-   "summary": "Rule policy: acceleration confirmed; human paged."
+   "seconds": 0.65,
+   "started": "2026-10-22T04:53:17Z",
+   "summary": "Rule policy: motion confirmed; human paged."
   },
   {
    "t": 47.0,
@@ -44,9 +44,9 @@
    "paged_human": true,
    "cadence_changed": true,
    "n_tool_calls": 9,
-   "seconds": 0.53,
-   "started": "2026-10-09T04:38:26Z",
-   "summary": "Rule policy: acceleration confirmed; human paged."
+   "seconds": 0.6,
+   "started": "2026-10-22T04:53:18Z",
+   "summary": "Rule policy: motion confirmed; human paged."
   }
  ]
 }

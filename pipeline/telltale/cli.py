@@ -223,11 +223,16 @@ def cmd_magnify(args) -> int:
         frames.append(bgr)
     if args.video and frames:
         h, w = frames[0].shape[:2]
-        vw = cv2.VideoWriter(str(out / "magnified.mp4"), cv2.VideoWriter_fourcc(*"mp4v"), args.fps, (w, h))
-        for f in frames:
-            vw.write(f)
-        vw.release()
-        print(f"wrote {out / 'magnified.mp4'} ({len(frames)} frames at {args.fps} fps)")
+        # Browser-playable codecs: VP9 in WebM, H.264 in MP4 as the fallback source.
+        for name, fourcc in (("magnified.webm", "VP90"), ("magnified.mp4", "avc1")):
+            vw = cv2.VideoWriter(str(out / name), cv2.VideoWriter_fourcc(*fourcc), args.fps, (w, h))
+            if not vw.isOpened():
+                print(f"codec {fourcc} unavailable; skipped {name}")
+                continue
+            for f in frames + frames[-1:] * args.fps:      # hold the last frame for a second
+                vw.write(f)
+            vw.release()
+            print(f"wrote {out / name} ({len(frames)} frames at {args.fps} fps)")
     print(f"wrote {len(frames)} magnified frames to {out}")
     return 0
 

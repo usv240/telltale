@@ -1,4 +1,4 @@
-"""Displacement overlays rendered with OpenCV only: magnitude heatmap plus vectors."""
+"""Displacement overlays rendered with OpenCV only: a single-hue magnitude ramp plus vectors."""
 
 from __future__ import annotations
 
@@ -9,13 +9,23 @@ from .dic import DisplacementField
 from .stabilize import to_u8
 
 
+# The one data hue of the dashboard (#1d5fbf), in BGR.
+DATA_HUE_BGR = (191, 95, 29)
+
+
 def render_overlay(gray: np.ndarray, fld: DisplacementField, vmax: float | None = None,
-                   alpha: float = 0.55, arrow_every: int = 2, arrow_scale: float = 8.0,
-                   label: str | None = None) -> np.ndarray:
-    """BGR uint8 image: epoch in gray, valid displacement magnitude as a heatmap, arrows on top."""
-    base = cv2.cvtColor(to_u8(gray), cv2.COLOR_GRAY2BGR)
+                   alpha: float = 0.72, arrow_every: int = 2, arrow_scale: float = 8.0,
+                   label: str | None = None, burn_label: bool = False,
+                   hue_bgr: tuple = DATA_HUE_BGR) -> np.ndarray:
+    """BGR uint8 image: the epoch in grey, displacement magnitude as a single-hue ramp from the
+    photograph (no motion) to the data hue (the largest motion), arrows for direction.
+
+    A single hue keeps the picture readable as a photograph and carries magnitude in one
+    ordered dimension; a rainbow map (JET) invents boundaries where the colour bands change.
+    Labels are not burned into the pixels by default; the dashboard captions the image."""
+    base = cv2.cvtColor(to_u8(gray), cv2.COLOR_GRAY2BGR).astype(np.float32)
     if len(fld.xs) == 0:
-        return base
+        return base.astype(np.uint8)
     xs_u, ys_u = np.unique(fld.xs), np.unique(fld.ys)
     gi = np.searchsorted(xs_u, fld.xs)
     gj = np.searchsorted(ys_u, fld.ys)
@@ -32,17 +42,21 @@ def render_overlay(gray: np.ndarray, fld: DisplacementField, vmax: float | None 
     h, w = gray.shape[:2]
     mag_full = cv2.resize(mag_grid, (w, h), interpolation=cv2.INTER_CUBIC)
     wgt_full = cv2.resize(wgt_grid, (w, h), interpolation=cv2.INTER_LINEAR)
-    heat = cv2.applyColorMap(np.clip(mag_full / vmax * 255, 0, 255).astype(np.uint8),
-                             cv2.COLORMAP_JET)
-    a = (np.clip(wgt_full, 0, 1) * alpha)[..., None]
-    out = (base * (1 - a) + heat * a).astype(np.uint8)
+    strength = np.clip(mag_full / vmax, 0.0, 1.0) * np.clip(wgt_full, 0.0, 1.0) * alpha
+    # lift the photograph slightly so the ramp reads against it
+    base = base * 0.82 + 255 * 0.18
+    hue = np.array(hue_bgr, np.float32)[None, None, :]
+    out = (base * (1 - strength[..., None]) + hue * strength[..., None]).astype(np.uint8)
 
     for k in np.nonzero(valid)[0][::arrow_every]:
+        if mag[k] < 0.15 * vmax or mag[k] * arrow_scale < 3:
+            continue        # still ground: no arrow, or it renders as a dot
         x, y = int(fld.xs[k]), int(fld.ys[k])
         x2 = int(round(x + fld.u[k] * arrow_scale))
         y2 = int(round(y + fld.v[k] * arrow_scale))
+        cv2.arrowedLine(out, (x, y), (x2, y2), (20, 20, 20), 3, cv2.LINE_AA, tipLength=0.3)
         cv2.arrowedLine(out, (x, y), (x2, y2), (255, 255, 255), 1, cv2.LINE_AA, tipLength=0.3)
-    if label:
+    if label and burn_label:
         cv2.putText(out, label, (8, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (0, 0, 0), 3, cv2.LINE_AA)
         cv2.putText(out, label, (8, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (255, 255, 255), 1,
                     cv2.LINE_AA)

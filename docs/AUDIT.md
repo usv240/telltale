@@ -64,7 +64,7 @@ state, the gap, the risk if left, and the fix. Status: **open**, **in progress**
 | Motion magnification (`telltale magnify`) | "seeing the invisible" clip for the video; innovation | closed |
 | E2 kit: printable target, harness, synthetic self-test | physical metrology becomes a half-day task | closed, photos pending |
 | CloudWatch ops dashboard, teardown script | cloud delivery and responsible operation | closed |
-| Worker and agent tests (29 total) | reliability | closed |
+| Worker and agent tests (31 total) | reliability | closed |
 | `docs/JUDGES.md`, `docs/DEPLOYMENT.md`, outreach and social drafts | documentation, impact | closed |
 
 ## F. Winner-pattern audit (October 9, 2026)
@@ -82,8 +82,10 @@ state, the gap, the risk if left, and the fix. Status: **open**, **in progress**
 | 9 Practitioner or adoption | open | outreach letters drafted; needs the user to send |
 | 10 Shipped surface | pass | live URL, setup tool, offline demo |
 | 11 Limits as measured properties | closed except E2 photos and COOL cell | every limit has a number; two items still await the user |
-| 12 Inspectable and rerunnable | pass | 29 tests, CI, result JSON, traces |
+| 12 Inspectable and rerunnable | pass | 31 tests, CI, result JSON, traces, MCP smoke test |
 
 | Coarse-to-fine DIC (`compute_field_pyramid`) | fixed reference follows 28 px of motion at 0.007 px MAE; removes the random-walk cost of chaining on textured scenes | closed |
 | Real landslide inside the product (`mukilteo-usgs` live site, Claude traces) | judges scrub a real slide and read the agent on a documented day | closed |
+| MCP server for the agent's OpenCV tools (`agent/mcp_server.py`, `.mcp.json`) | any MCP client can investigate a site; second transport and backup to the worker's tool runner | closed |
+| Interface redesign, measured (dashboard, setup, about) | browser inspector at three widths: 2 FAIL / 4 WARN before, 0 / 0 after; single-hue overlay; daily-motion fallback | closed |
 | Second public landslide record (USGS Barry Arm) | no public time-lapse data release exists (InSAR and maps only); not pursued | closed as not available |

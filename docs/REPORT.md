@@ -302,6 +302,14 @@ logged with time and source in `decisions.json`. On the live demo site the agent
 acceleration at t = 8.1 and again at the CRITICAL transition at t = 47, each with nine tool calls,
 and the human page carried its evidence summary.
 
+**Second transport: MCP.** `agent/mcp_server.py` exposes the same nine tools (plus `list_sites`)
+as a Model Context Protocol server (stdio, `mcp` 2.3), backed by the bucket or by a local
+store. The worker's tool runner is the production path and the MCP server is the open one;
+each is the other's backup, and neither can send a public alert. `agent/mcp_smoke.py` starts
+the server, lists its tools and re-measures the demo's CRITICAL epoch (0.835 px against the
+previous epoch, 5.600 px against the reference, coherence 1.0, stabilization OK); `.mcp.json`
+registers it for Claude Code in the repository.
+
 ### E6 COOL benchmark (baseline measured, COOL pending)
 
 `evaluation/e6_cool_benchmark.py`, 1080p synthetic workload, 7-frame burst, 3,234 subsets,
@@ -375,8 +383,8 @@ masked out. Daily increments were taken per zone: `left_face` (the landslide bod
 
 On December 9 the landslide body moved at seven times its quiet-day median, above the 90th
 percentile of every quiet day in all three zones, and the displacement field shows coherent
-downslope vectors across the body (figure `docs/figures/e4_mukilteo_2015-12-09_movement.png`;
-compare `..._2015-11-20_quiet.png`). The January period shows the body moving on Jan 21, 23,
+downslope vectors across the body (figure `docs/figures/e4_mukilteo_2015-12-09_movement.jpg`;
+compare `..._2015-11-20_quiet.jpg`). The January period shows the body moving on Jan 21, 23,
 25 and 26 while the stabilizer rejected Jan 22 and 28 to 30 as CAMERA_EVENT: the camera is
 mounted in the landslide crown, so when the slide moves the camera's own ground moves, which is
 precisely the condition the verdict exists for.
@@ -424,6 +432,19 @@ inverse-velocity chart with the forecast intercept and window, then the instrume
 panel (coverage, stabilization inliers and model, epoch time, OpenCV build and worker identity)
 and the full epoch log with unusable epochs in red and their reasons. The same page runs
 offline from bundled demo data.
+
+The interface was redesigned in October against three published design disciplines and
+measured in a real browser at 1440, 768 and 390 px with a layout inspector (font-size count,
+text contrast, focal point, empty screens, lopsided sections, small text): 2 failures and 4
+warnings before, 0 and 0 after, on the dashboard, the setup page and the about page, live.
+Colour is spent only on data and state: a neutral stone ground, one data blue, and status
+colours on pills. The failure window is the largest figure on the screen. The camera overlay
+uses that single blue, with a lightness ramp for magnitude (a rainbow map invents boundaries
+that are not in the ground), and drops arrows below 15% of the peak so noise does not read as
+motion. Where a site never builds an inverse-velocity trend (the Mukilteo bluff moves in steps),
+the forecast panel shows daily motion with the agent-confirmed steps highlighted instead of an
+empty chart. Buttons respond on press, hover effects only run on devices that hover, motion
+respects reduced-motion settings, and on phones the navigation becomes a bottom bar.
 
 ## 8. Limitations and failure cases
 

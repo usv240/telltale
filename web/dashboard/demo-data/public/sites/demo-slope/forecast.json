@@ -321,6 +321,6 @@
   "verdict": "CONFIRMED",
   "paged_human": true,
   "n_tool_calls": 9,
-  "summary": "Rule policy: acceleration confirmed; human paged."
+  "summary": "Rule policy: motion confirmed; human paged."
  }
 }

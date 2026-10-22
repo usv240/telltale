@@ -6,7 +6,8 @@ Everything below works without contacting us. Times are what it took us on a lap
 
 Open https://d30le2uwgaimao.cloudfront.net/ . Switch the site selector to `mukilteo-usgs`:
 that is the USGS coastal-bluff landslide record (public domain) processed by the unmodified
-worker, with the Claude agent's trace on December 9, 2015, a documented movement day. Then
+worker (its forecast panel shows daily motion, with the steps the agent confirmed in blue,
+because a bluff that moves in steps never builds an inverse-velocity trend), with the Claude agent's trace on December 9, 2015, a documented movement day. Then
 switch back to `demo-slope` and press **Play** on the replay slider: the demo slope
 creeps, accelerates, the forecast window appears and narrows, the state climbs to CRITICAL, and
 the supervising agent's investigations appear in the agent panel with every OpenCV tool call.
@@ -19,7 +20,7 @@ The instrument-health panel shows which OpenCV build ran on which instance.
 git clone https://github.com/usv240/telltale && cd telltale/pipeline
 python -m venv ../.venv && ../.venv/Scripts/activate      # or source ../.venv/bin/activate
 pip install -r requirements.txt                           # pinned
-python -m pytest -q                                       # 24 tests, ~8 s
+python -m pytest -q                                       # 31 tests, ~15 s
 python -m telltale e1                                     # sub-pixel accuracy sweep, prints the gate
 python -m telltale simulate --jitter 1.0 --out ../out/sim # collapse through the full pipeline
 cd .. && python infra/scripts/seed_demo.py --local web/dashboard/demo-data   # the worker path, no AWS
@@ -28,6 +29,12 @@ python -m http.server 8765 -d web/dashboard               # open http://127.0.0.
 
 The offline run exercises the same `process_epoch` the cloud worker runs, with the rule-based
 supervisor instead of Claude.
+
+To question the instrument yourself, the agent's nine OpenCV tools are an MCP server. From the
+repository root, `pip install -r agent/requirements-mcp.txt`, then `python -m agent.mcp_smoke`
+(prints the tools and re-measures the demo's CRITICAL epoch), or open Claude Code in the repo:
+`.mcp.json` registers the server against the bundled demo data, so you can ask it to investigate
+t = 47 and watch it call `remeasure`, `motion_coherence` and `check_stabilization`.
 
 ## 3. The evidence (3 minutes)
 

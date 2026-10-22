@@ -4,7 +4,7 @@
  "event": "E_JUMP",
  "policy": "rules",
  "model": null,
- "started": "2026-10-09T04:38:24Z",
+ "started": "2026-10-22T04:53:15Z",
  "verdict": "CONFIRMED",
  "paged_human": true,
  "cadence_changed": true,
@@ -180,9 +180,18 @@
       }
      }
     ],
-    "mm_per_px": 0.8
+    "recent_increment_baseline": {
+     "slope": {
+      "median_increment_px": 0.16322810737368243,
+      "p90_increment_px": 0.28087410056305295,
+      "n": 20
+     }
+    },
+    "mm_per_px": 0.8,
+    "reference_mode": "fixed",
+    "note": "fixed site: magnitudes are displacement since the site reference"
    },
-   "at": "2026-10-09T04:38:24Z"
+   "at": "2026-10-22T04:53:15Z"
   },
   {
    "n": 2,
@@ -217,7 +226,7 @@
     },
     "reason": "OK"
    },
-   "at": "2026-10-09T04:38:24Z"
+   "at": "2026-10-22T04:53:15Z"
   },
   {
    "n": 3,
@@ -244,7 +253,7 @@
     "scale": 1.0,
     "mount_moved": true
    },
-   "at": "2026-10-09T04:38:24Z"
+   "at": "2026-10-22T04:53:16Z"
   },
   {
    "n": 4,
@@ -269,9 +278,12 @@
       "n_total": 108,
       "coherence": 1.0
      }
+    },
+    "worker_recorded": {
+     "slope": 4.203125298924255
     }
    },
-   "at": "2026-10-09T04:38:24Z"
+   "at": "2026-10-22T04:53:16Z"
   },
   {
    "n": 5,
@@ -301,7 +313,7 @@
      "slope": 4.203125298924255
     }
    },
-   "at": "2026-10-09T04:38:25Z"
+   "at": "2026-10-22T04:53:16Z"
   },
   {
    "n": 6,
@@ -321,22 +333,22 @@
      }
     }
    },
-   "at": "2026-10-09T04:38:25Z"
+   "at": "2026-10-22T04:53:16Z"
   },
   {
    "n": 7,
    "tool": "set_capture_cadence",
    "args": {
     "epochs_per_day": 24,
-    "reason": "confirmed acceleration; tighten forecast"
+    "reason": "confirmed motion; tighten forecast"
    },
    "result": {
     "epochs_per_day": 24,
-    "reason": "confirmed acceleration; tighten forecast",
-    "set_at": "2026-10-09T04:38:25Z",
+    "reason": "confirmed motion; tighten forecast",
+    "set_at": "2026-10-22T04:53:16Z",
     "by": "agent"
    },
-   "at": "2026-10-09T04:38:25Z"
+   "at": "2026-10-22T04:53:16Z"
   },
   {
    "n": 8,
@@ -350,7 +362,7 @@
     "paged": false,
     "links_issued": false
    },
-   "at": "2026-10-09T04:38:25Z"
+   "at": "2026-10-22T04:53:16Z"
   },
   {
    "n": 9,
@@ -365,9 +377,9 @@
     "verdict": "CONFIRMED",
     "reason": "consistent across references and coherent"
    },
-   "at": "2026-10-09T04:38:25Z"
+   "at": "2026-10-22T04:53:16Z"
   }
  ],
- "summary": "Rule policy: acceleration confirmed; human paged.",
- "seconds": 0.68
+ "summary": "Rule policy: motion confirmed; human paged.",
+ "seconds": 0.74
 }

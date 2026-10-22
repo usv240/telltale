@@ -45,7 +45,7 @@ Everything the cloud worker does, the laptop does too, from the same package.
 cd pipeline
 python -m venv ../.venv && ../.venv/Scripts/activate        # or source ../.venv/bin/activate
 pip install -r requirements.txt
-python -m pytest -q                                          # 21 tests, ~7 s
+python -m pytest -q                                          # 31 tests, ~15 s
 python -m telltale e1                                        # sub-pixel accuracy sweep
 python -m telltale simulate --jitter 1.0 --out ../out/sim    # synthetic collapse, forecast
 cd ..
@@ -61,6 +61,14 @@ Deploy to AWS with `infra/scripts/deploy.sh` (see `infra/README.md`), then
 Operators: `docs/DEPLOYMENT.md` and the setup page on the dashboard.
 Motion-magnified video of the demo creep: `python -m telltale magnify --site-dir ... --video`.
 
+The agent's OpenCV tools are also an MCP server, so any MCP client can investigate a site:
+
+```bash
+pip install -r agent/requirements-mcp.txt
+python -m agent.mcp_smoke                       # lists 9 tools, investigates the demo site over stdio
+claude mcp add telltale -- python -m agent.mcp_server   # or use the repo's .mcp.json
+```
+
 ## Repository map
 
 | Folder | What | Doc |
@@ -71,7 +79,7 @@ Motion-magnified video of the demo creep: `python -m telltale magnify --site-dir
 | `docs/` | Report, audit, judges' path, deployment guide, video shot list, outreach, diagrams, figures | `docs/JUDGES.md` first |
 | `evaluation/` | E1 to E6 harnesses and results | `evaluation/DESIGN.md` |
 | `demo-rig/` | Tabletop collapse rig: build, capture script, run log | `demo-rig/DESIGN.md` |
-| `agent/` | Supervising agent: OpenCV tools, Claude-on-Bedrock loop, rule policy | `agent/DESIGN.md`, `docs/agent_workflow.svg` |
+| `agent/` | Supervising agent: OpenCV tools, Claude-on-Bedrock loop, rule policy, MCP server | `agent/DESIGN.md`, `docs/agent_workflow.svg` |
 
 ## Evidence status
 

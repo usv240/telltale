@@ -35,6 +35,10 @@ Then seed the demo site so the dashboard has data without a camera:
 python infra/scripts/seed_demo.py --s3 telltale-<account-id> --wait
 ```
 
+After a change to the overlay style, `python infra/scripts/rerender_overlays.py --store <local
+store> --site <site>` redraws each epoch's `overlay.png` from its stored field without re-running
+the pipeline or the agent, so published traces and verdicts stay as measured.
+
 Real cameras use `infra/scripts/upload_epoch.py` (frames first, manifest last, so a partial
 upload never triggers processing). The first epoch of a site must include `--site-config`.
 

@@ -50,7 +50,8 @@
   "min_texture": 0.0001,
   "max_disp": 15.0,
   "refine_iters": 1,
-  "threads": 0
+  "threads": 0,
+  "pyramid_levels": 0
  },
  "forecast": {
   "sma_window": 3,

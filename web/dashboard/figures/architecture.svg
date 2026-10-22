@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 560" width="1180" height="560" font-family="system-ui, Segoe UI, Roboto, sans-serif" font-size="13">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#5b6470"/>
+    </marker>
+  </defs>
+  <style>
+    .box{fill:#ffffff;stroke:#5b6470;stroke-width:1.2;rx:8}
+    .cv{fill:#fff3ea;stroke:#c2541b;stroke-width:1.6}
+    .aws{fill:#eef4fb;stroke:#2563a8;stroke-width:1.4}
+    .human{fill:#f1f5ec;stroke:#4e7d2c;stroke-width:1.4}
+    .t{fill:#1d2126}
+    .s{fill:#5b6470;font-size:11px}
+    .h{font-weight:700;font-size:14px}
+    .lane{fill:none;stroke:#d9d6cf;stroke-dasharray:4 4}
+    .arrow{fill:none;stroke:#5b6470;stroke-width:1.4;marker-end:url(#a)}
+  </style>
+  <rect width="1180" height="560" fill="#f6f5f2"/>
+  <text x="20" y="28" class="h t">TellTale architecture: field camera to human-approved alert</text>
+  <text x="20" y="46" class="s">Orange = OpenCV 5 classical vision (runs on Graviton, COOL where subscribed). Blue = AWS managed services. Green = people.</text>
+
+  <!-- lanes -->
+  <rect x="20" y="60" width="220" height="480" class="lane"/>
+  <text x="30" y="78" class="s">FIELD</text>
+  <rect x="260" y="60" width="300" height="480" class="lane"/>
+  <text x="270" y="78" class="s">INGEST AND QUEUE</text>
+  <rect x="580" y="60" width="360" height="480" class="lane"/>
+  <text x="590" y="78" class="s">GRAVITON WORKER (EC2 c8g, arm64)</text>
+  <rect x="960" y="60" width="200" height="480" class="lane"/>
+  <text x="970" y="78" class="s">PEOPLE</text>
+
+  <!-- field -->
+  <rect x="40" y="110" width="180" height="70" class="box"/>
+  <text x="50" y="132" class="t h" font-size="13">Fixed camera</text>
+  <text x="50" y="150" class="s">phone, RPi, CCTV</text>
+  <text x="50" y="166" class="s">burst of 7 frames per epoch</text>
+  <rect x="40" y="210" width="180" height="56" class="box"/>
+  <text x="50" y="232" class="t">upload_epoch.py</text>
+  <text x="50" y="250" class="s">frames first, manifest last</text>
+
+  <!-- ingest -->
+  <rect x="280" y="110" width="260" height="70" class="box aws"/>
+  <text x="290" y="132" class="t h" font-size="13">S3  telltale-&lt;account&gt;</text>
+  <text x="290" y="150" class="s">ingest/&lt;site&gt;/&lt;t&gt;/  (private, expires 30 d)</text>
+  <text x="290" y="166" class="s">public/sites/&lt;site&gt;/  (dashboard artifacts)</text>
+  <rect x="280" y="210" width="260" height="56" class="box aws"/>
+  <text x="290" y="232" class="t h" font-size="13">SQS epoch queue</text>
+  <text x="290" y="250" class="s">S3 event on manifest.json; DLQ after 3 failures</text>
+  <rect x="280" y="296" width="260" height="56" class="box aws"/>
+  <text x="290" y="318" class="t h" font-size="13">CloudWatch</text>
+  <text x="290" y="336" class="s">TellTale/* metrics; queue-age and DLQ alarms</text>
+  <rect x="280" y="382" width="260" height="56" class="box aws"/>
+  <text x="290" y="404" class="t h" font-size="13">CloudFront</text>
+  <text x="290" y="422" class="s">serves public/ via origin access control</text>
+
+  <!-- worker pipeline -->
+  <rect x="600" y="100" width="320" height="52" class="box cv"/>
+  <text x="610" y="120" class="t h" font-size="13">A  Stack</text>
+  <text x="610" y="138" class="s">phaseCorrelate + ZNCC register, median stack; BLIND / UNSTABLE</text>
+  <rect x="600" y="166" width="320" height="64" class="box cv"/>
+  <text x="610" y="186" class="t h" font-size="13">B  Stabilize</text>
+  <text x="610" y="204" class="s">ORB + USAC_MAGSAC coarse, DIC-refined, simplest camera model</text>
+  <text x="610" y="220" class="s">stable ground still moves?  ->  CAMERA_EVENT, epoch rejected</text>
+  <rect x="600" y="244" width="320" height="64" class="box cv"/>
+  <text x="610" y="264" class="t h" font-size="13">C  Measure (DIC)</text>
+  <text x="610" y="282" class="s">matchTemplate ZNCC on 3,000+ subsets, Gaussian sub-pixel peak,</text>
+  <text x="610" y="298" class="s">re-sampling pass, quality codes, phaseCorrelate cross-check</text>
+  <rect x="600" y="322" width="320" height="64" class="box cv"/>
+  <text x="610" y="342" class="t h" font-size="13">E  Forecast (physics)</text>
+  <text x="610" y="360" class="s">SMA/LMA velocity, onset of acceleration, inverse velocity,</text>
+  <text x="610" y="376" class="s">bootstrap + ensemble window;  QUIET . MOVING . ACCELERATING . CRITICAL</text>
+  <rect x="600" y="400" width="320" height="52" class="box"/>
+  <text x="610" y="420" class="t h" font-size="13">Publish</text>
+  <text x="610" y="438" class="s">series.json, forecast.json, overlay.png, record.json with runtime proof</text>
+  <rect x="600" y="466" width="320" height="56" class="box"/>
+  <text x="610" y="486" class="t h" font-size="13">Supervising agent (Claude on Amazon Bedrock)</text>
+  <text x="610" y="504" class="s">on event: re-measure vs alternate references, re-check camera model, coherence,</text>
+  <text x="610" y="518" class="s">then raise cadence and page a person, or close as false alarm; see agent_workflow.svg</text>
+
+  <!-- people -->
+  <rect x="980" y="110" width="160" height="70" class="box human"/>
+  <text x="990" y="132" class="t h" font-size="13">Dashboard</text>
+  <text x="990" y="150" class="s">duty officer, expert, judge</text>
+  <text x="990" y="166" class="s">static HTML, no framework</text>
+  <rect x="980" y="210" width="160" height="70" class="box human"/>
+  <text x="990" y="232" class="t h" font-size="13">Human approval</text>
+  <text x="990" y="250" class="s">CRITICAL never alerts</text>
+  <text x="990" y="266" class="s">the public on its own</text>
+  <rect x="980" y="310" width="160" height="56" class="box human"/>
+  <text x="990" y="332" class="t h" font-size="13">Operator</text>
+  <text x="990" y="350" class="s">marks stable regions and zones</text>
+
+  <!-- arrows -->
+  <path d="M130,180 L130,210" class="arrow"/>
+  <path d="M220,238 L280,160" class="arrow"/>
+  <path d="M410,180 L410,210" class="arrow"/>
+  <path d="M540,238 L600,130" class="arrow"/>
+  <path d="M760,152 L760,166" class="arrow"/>
+  <path d="M760,230 L760,244" class="arrow"/>
+  <path d="M760,308 L760,322" class="arrow"/>
+  <path d="M760,386 L760,400" class="arrow"/>
+  <path d="M600,426 L540,180" class="arrow"/>
+  <path d="M600,440 L540,320" class="arrow"/>
+  <path d="M540,410 L980,150" class="arrow"/>
+  <path d="M920,490 L980,250" class="arrow"/>
+  <path d="M980,338 L540,150" class="arrow"/>
+</svg>
