@@ -33,6 +33,11 @@ Parameters:
     Default: llm
     AllowedValues: [llm, rules, off]
     Description: Supervising agent policy on the worker. llm = Claude on Amazon Bedrock; rules = deterministic; off = thresholds only.
+  IdleStopMinutes:
+    Type: Number
+    Default: 20
+    MinValue: 0
+    Description: Scale to zero. The worker stops its instance after this many minutes with an empty queue, and a scheduled function starts it when epochs are waiting. 0 keeps it running.
   ApprovalSecret:
     Type: String
     NoEcho: true
@@ -43,6 +48,8 @@ Conditions:
   UseCool: !Not [!Equals [!Ref CoolAmiId, ""]]
   DefaultBucketName: !Equals [!Ref BucketName, ""]
   HasEmail: !Not [!Equals [!Ref AlertEmail, ""]]
+  AlwaysOn: !Equals [!Ref IdleStopMinutes, 0]
+  ScaleToZero: !Not [!Condition AlwaysOn]
 
 Resources:
   # ---------------------------------------------------------------- alerting and human approval
@@ -325,9 +332,12 @@ Resources:
       InstanceType: !Ref InstanceType
       IamInstanceProfile: !Ref WorkerInstanceProfile
       SecurityGroupIds: [!Ref WorkerSecurityGroup]
+      # The worker's idle shutdown stops (never terminates) the instance; WakeFunction restarts it.
+      InstanceInitiatedShutdownBehavior: stop
       BlockDeviceMappings:
         - DeviceName: /dev/sda1
-          Ebs: { VolumeSize: 20, VolumeType: gp3, DeleteOnTermination: true }
+          # The COOL AMI ships a 50 GB root snapshot; a smaller volume fails the launch.
+          Ebs: { VolumeSize: !If [UseCool, 50, 20], VolumeType: gp3, DeleteOnTermination: true }
       Tags:
         - { Key: Name, Value: !Sub "${AWS::StackName}-worker" }
         - { Key: Project, Value: telltale }
@@ -342,6 +352,7 @@ Resources:
           export TELLTALE_APPROVAL_URL=${ApprovalUrl.FunctionUrl}
           export TELLTALE_SECRET_PARAM=/${AWS::StackName}/approval-secret
           export TELLTALE_AGENT=${AgentMode}
+          export TELLTALE_IDLE_STOP_MIN=${IdleStopMinutes}
           mkdir -p /opt/telltale && cd /opt/telltale
           apt-get update -y
           apt-get install -y python3-venv python3-pip unzip curl
@@ -354,6 +365,81 @@ Resources:
           done
           tar xzf pipeline.tar.gz
           bash infra/worker/bootstrap.sh
+
+  # ---------------------------------------------------------------- scale to zero
+  # The worker stops its own instance after IdleStopMinutes with an empty queue. Every five
+  # minutes this function starts it again if epochs are waiting. A stopped worker costs only
+  # its disk; the dashboard is static on CloudFront and stays live throughout. If the start
+  # fails, epochs age in the queue and QueueAgeAlarm pages the duty contact.
+  WakeRole:
+    Type: AWS::IAM::Role
+    Condition: ScaleToZero
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal: { Service: lambda.amazonaws.com }
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: telltale-wake
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action: [sqs:GetQueueAttributes]
+                Resource: !GetAtt EpochQueue.Arn
+              - Effect: Allow
+                Action: [ec2:StartInstances]
+                Resource: !Sub arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:instance/${Worker}
+              - Effect: Allow
+                Action: [ec2:DescribeInstances]
+                Resource: "*"
+
+  WakeFunction:
+    Type: AWS::Lambda::Function
+    Condition: ScaleToZero
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-wake
+      Runtime: python3.12
+      Architectures: [arm64]
+      Handler: index.handler
+      Timeout: 15
+      Role: !GetAtt WakeRole.Arn
+      Environment:
+        Variables:
+          QUEUE: !Ref EpochQueue
+          INSTANCE: !Ref Worker
+      Code:
+        ZipFile: |
+          import os, boto3
+          sqs = boto3.client("sqs"); ec2 = boto3.client("ec2")
+          def handler(event, ctx):
+              a = sqs.get_queue_attributes(QueueUrl=os.environ["QUEUE"], AttributeNames=["ApproximateNumberOfMessages"])["Attributes"]
+              waiting = int(a["ApproximateNumberOfMessages"])
+              inst = os.environ["INSTANCE"]
+              state = ec2.describe_instances(InstanceIds=[inst])["Reservations"][0]["Instances"][0]["State"]["Name"]
+              if waiting and state == "stopped":
+                  ec2.start_instances(InstanceIds=[inst])
+                  print(f"started {inst}: {waiting} epochs waiting")
+              return {"waiting": waiting, "state": state}
+
+  WakeSchedule:
+    Type: AWS::Events::Rule
+    Condition: ScaleToZero
+    Properties:
+      Description: Start the TellTale worker when epochs are waiting
+      ScheduleExpression: rate(5 minutes)
+      Targets: [{ Id: wake, Arn: !GetAtt WakeFunction.Arn }]
+
+  WakePermission:
+    Type: AWS::Lambda::Permission
+    Condition: ScaleToZero
+    Properties:
+      FunctionName: !Ref WakeFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt WakeSchedule.Arn
 
   # ---------------------------------------------------------------- liveness alarms
   QueueAgeAlarm:
@@ -389,6 +475,7 @@ Resources:
 
   WorkerStoppedAlarm:
     Type: AWS::CloudWatch::Alarm
+    Condition: AlwaysOn   # with scale to zero a stopped worker is normal; QueueAgeAlarm covers it
     Properties:
       AlarmDescription: Worker instance stopped reporting CPU for 15 minutes (stopped or crashed)
       Namespace: AWS/EC2

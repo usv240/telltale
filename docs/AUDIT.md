@@ -65,7 +65,7 @@ state, the gap, the risk if left, and the fix. Status: **open**, **in progress**
 | E2 kit: printable target, harness, synthetic self-test | physical metrology becomes a half-day task | closed, photos pending |
 | CloudWatch ops dashboard, teardown script | cloud delivery and responsible operation | closed |
 | Worker and agent tests (31 total) | reliability | closed |
-| `docs/JUDGES.md`, `docs/DEPLOYMENT.md`, outreach and social drafts | documentation, impact | closed |
+| `docs/JUDGES.md`, `docs/DEPLOYMENT.md`, `docs/PUBLISHED-RECORD.md`, social drafts | documentation, impact | closed |
 
 ## F. Winner-pattern audit (October 9, 2026)
 
@@ -79,7 +79,7 @@ state, the gap, the risk if left, and the fix. Status: **open**, **in progress**
 | 6 Depth on one surface | pass | one measurement, built deep |
 | 7 Tagline is verbs | closed | README, about page, submission |
 | 8 Demo cannot break | pass | static replay, rule-policy fallback, offline clone |
-| 9 Practitioner or adoption | open | outreach letters drafted; needs the user to send |
+| 9 Practitioner or adoption | closed by published record | `docs/PUBLISHED-RECORD.md`: 30 opened sources mapping each stated need (Sendai 33(b) low-cost equipment, NDMA slope-scale timing gap, ISO 22327 district users, Brienz window plus political decision) to a TellTale feature; states plainly that no practitioner has evaluated TellTale |
 | 10 Shipped surface | pass | live URL, setup tool, offline demo |
 | 11 Limits as measured properties | closed except E2 photos and COOL cell | every limit has a number; two items still await the user |
 | 12 Inspectable and rerunnable | pass | 31 tests, CI, result JSON, traces, MCP smoke test |

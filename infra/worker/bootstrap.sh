@@ -6,9 +6,13 @@
 set -euo pipefail
 cd /opt/telltale
 
-if [ -x /opt/cool/venvs/python_3.12/bin/python ]; then
+COOLPY=""
+for c in /opt/cool/venvs/python_3.12/bin/python /opt/cool/venvs/*/bin/python; do
+  if [ -x "$c" ] && "$c" -c "import cv2" 2>/dev/null; then COOLPY="$c"; break; fi
+done
+if [ -n "$COOLPY" ]; then
   # COOL AMI: use the COOL-built OpenCV 5 environment as-is (this is the award's core claim).
-  PY=/opt/cool/venvs/python_3.12/bin/python
+  PY="$COOLPY"
   MODE=cool
   "$PY" -m pip install --quiet boto3==1.40.0 "anthropic[bedrock]==1.12.1"
 else
@@ -31,6 +35,7 @@ TELLTALE_ALERT_TOPIC=${TELLTALE_ALERT_TOPIC:-}
 TELLTALE_APPROVAL_URL=${TELLTALE_APPROVAL_URL:-}
 TELLTALE_SECRET_PARAM=${TELLTALE_SECRET_PARAM:-}
 TELLTALE_AGENT=${TELLTALE_AGENT:-llm}
+TELLTALE_IDLE_STOP_MIN=${TELLTALE_IDLE_STOP_MIN:-0}
 EOF
 
 cat > /etc/systemd/system/telltale-worker.service <<EOF

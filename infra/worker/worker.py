@@ -30,6 +30,7 @@ import logging
 import os
 import platform
 import sys
+import subprocess
 import time
 import urllib.parse
 import urllib.request
@@ -641,6 +642,12 @@ class CloudWatchLogHandler(logging.Handler):
             pass  # logging must never break processing
 
 
+def queue_empty(sqs, queue: str) -> bool:
+    a = sqs.get_queue_attributes(QueueUrl=queue, AttributeNames=[
+        "ApproximateNumberOfMessages", "ApproximateNumberOfMessagesNotVisible"])["Attributes"]
+    return int(a["ApproximateNumberOfMessages"]) == 0 and int(a["ApproximateNumberOfMessagesNotVisible"]) == 0
+
+
 def main() -> int:
     import boto3
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s",
@@ -658,9 +665,19 @@ def main() -> int:
     sqs = boto3.client("sqs", region_name=region)
     cw = boto3.client("cloudwatch", region_name=region)
     log.info("worker up: bucket=%s runtime=%s", bucket, json.dumps(runtime_info()))
+    idle_stop = float(os.environ.get("TELLTALE_IDLE_STOP_MIN") or 0) * 60
+    last_work = time.monotonic()
     while True:
         resp = sqs.receive_message(QueueUrl=queue, MaxNumberOfMessages=1, WaitTimeSeconds=20,
                                    VisibilityTimeout=600)
+        if resp.get("Messages"):
+            last_work = time.monotonic()
+        elif idle_stop and time.monotonic() - last_work > idle_stop and queue_empty(sqs, queue):
+            # Scale to zero: the instance's shutdown behaviour is "stop", and the stack's wake
+            # function starts it again when epochs are waiting.
+            log.info("idle for %.0f min with an empty queue; stopping the instance", idle_stop / 60)
+            subprocess.run(["shutdown", "-h", "now"], check=False)
+            return 0
         for msg in resp.get("Messages", []):
             body = json.loads(msg["Body"])
             ok = True

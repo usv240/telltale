@@ -7,7 +7,7 @@ camera at 1080p, voice-over after the cut. No music under speech.
 | Time | Shot | Voice (plain language) | On screen |
 |---|---|---|---|
 | 0:00 | Both team members to camera, one line each | "We are Ground Truth. TellTale turns any camera into an instrument that says when the ground will fail." | Names, roles |
-| 0:12 | Three stills: Bingham Canyon, Brienz, Wayanad | "When slopes are watched, nobody dies. Watching costs half a million dollars a site. Wayanad was not watched. Four hundred people died." | Dates, outcomes, sources |
+| 0:12 | Three stills: Bingham Canyon, Brienz, Wayanad | "When slopes are watched, nobody dies. Watching takes radar, and most sites can afford one unit at best. Wayanad was not watched. Hundreds of people died." | Dates, outcomes, sources |
 | 0:40 | Tabletop rig, wide shot, quiet phase | "This is a slope in a tank. Nothing is moving that you can see." | Rig, camera, drip line |
 | 0:55 | Dashboard, Status panel, QUIET | "TellTale compares bursts of photos and measures movement a hundredth of a pixel wide." | Overlay flat blue |
 | 1:10 | Split screen: rig video and dashboard overlay blooming red | "Water goes in. The surface starts to creep, millimetres, invisible to the eye, obvious to the instrument." | Overlay colour spreading, arrows |

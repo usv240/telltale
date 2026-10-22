@@ -11,7 +11,8 @@ On the public USGS time-lapse of an active coastal bluff, TellTale flagged 2 of 
 ## Inspiration
 
 Creep-type landslides give warning for days or weeks: the surface moves millimetres a day and
-accelerates. Mines read that warning with radar costing 100k to 500k USD per site and evacuate
+accelerates. Mines read that warning with ground-based radar, costly enough that
+most sites run one unit, and evacuate
 in time. The communities where most landslide deaths happen cannot afford an instrument. We
 wanted the physics the mines use, on a camera a village can buy.
 

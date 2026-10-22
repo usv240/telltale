@@ -18,9 +18,13 @@ Repository: https://github.com/usv240/telltale (CI on x86 and arm64)
 Fatal landslides kill more than 4,000 people in a typical year, concentrated where nobody can
 afford monitoring. Creep-type slope failures give days to weeks of warning: the surface moves
 millimetres per day and accelerates. The inverse-velocity method turns that acceleration into a
-failure-time forecast, and mines have relied on it with 100k to 500k USD radar for decades
-(Bingham Canyon 2013: evacuated the morning of a 165-million-tonne collapse, no casualties).
-Communities without instruments do not get the warning (Wayanad 2024, about 400 deaths).
+failure-time forecast, and mines rely on it with ground-based radar whose cost limits most sites
+to a single unit (CSIRO; Muhammad et al. 2022) for decades
+(Bingham Canyon 2013: failure timing predicted from monitoring, area evacuated beforehand, about
+65 million m³ deposited, no injuries; Pankow et al. 2014).
+Communities without instruments do not get the warning: half of the people who lived through a
+landslide in the last five years received none (World Risk Poll 2023, in UNDRR and WMO 2024), and
+in Wayanad in 2024 about 290 to 400 people died, depending on the count.
 
 TellTale applies the radar's physics to a 30 to 50 USD camera, for creep-type failures in
 daylight: measure sub-pixel surface displacement, reject everything that merely looks like
@@ -34,6 +38,20 @@ District disaster-management offices and hill-town municipalities; small mines a
 that cannot justify radar; construction sites with deep excavations and retaining walls; road
 and rail authorities in mountain corridors. Operators mark stable regions and target zones once;
 duty officers read one sentence on the dashboard; experts drill into the series and fit.
+
+**What these users have said they need, from the published record** (`docs/PUBLISHED-RECORD.md`,
+30 sources opened and quoted; no practitioner has evaluated TellTale itself). The Sendai
+Framework asks states to "promote the application of simple and low-cost early warning
+equipment" (para 33(b)). India's national strategy finds slope-scale timing information
+mostly lacking, notes hardly any successful real-time monitoring, and plans a pilot on
+low-cost monitoring (NDMA 2019); ISO 22327 writes for district, subdistrict and village
+operators. Warning systems "have only rarely been implemented in informal settlements due to
+their high costs and complex operation" (Gamperl et al. 2021). Fixed-camera correlation has
+measured real landslides against GPS and InSAR (Travelletti et al. 2012; Muhammad et al. 2022)
+and reported precursor motion before a road-blocking failure (Khan et al. 2021). At Brienz the
+forecast went to politicians as a window, May 15 to June 1, and they evacuated (Loew et al.
+2025); false alarms erode trust and uncertainty estimates improve decisions (Sawada et al. 2022;
+LeClerc and Joslyn 2015). Those are TellTale's design choices: a camera, a window, a person.
 
 ## 3. Architecture
 
@@ -100,6 +118,16 @@ One c8g.large processes about 50,000 epochs a day, so a district fleet of 50 sit
 after 30 days), SQS, CloudFront, Lambda and CloudWatch stay in free-tier territory at this
 scale. Each agent investigation on Bedrock (Claude Sonnet 4.5, about 25k input and 1.3k output
 tokens) costs a few cents and happens only on events, not on every epoch.
+
+**Scale to zero.** The always-on column is the cost of a worker that waits. With
+`IdleStopMinutes` (default 20) the worker stops its own instance once the queue has been empty
+that long, and a scheduled Lambda starts it again within five minutes of an epoch arriving; if
+the start fails, the queue-age alarm pages the duty contact. A stopped worker costs only its
+disk (20 GB stock, 0.0022 USD per hour; 50 GB on the COOL AMI, 0.0055 USD per hour), and a
+site at 6 epochs a day keeps it running about 2 hours a day (each wake is one epoch plus the
+20-minute idle window), roughly 5.7 USD a month of compute and COOL fee plus 4 USD of disk,
+instead of 58.2 USD for compute alone. The dashboard is static on CloudFront and
+stays live while the worker sleeps.
 
 ## 6. Evaluation
 
@@ -496,4 +524,6 @@ E. et al. (2017) Guidelines on the use of the inverse velocity method, Landslide
 M.J., Petley D.N. (2018) Global fatal landslide occurrence 2004 to 2016, NHESS 18:2161.
 Geosciences 13:371 (2023) DIC performance for landslide monitoring. Remote Sensing 13:893 (2021)
 Low-cost slope monitoring from time-lapse imagery. Zhu, Zhang, Puzrin (2023) Brumadinho delayed
-failure, Commun. Earth Environ. 4. Full bibliography in `RESEARCH.md`.
+failure, Commun. Earth Environ. 4. The need, with 30 sources opened and quoted (Sendai Framework,
+NDMA 2019, ISO 22327, Gamperl et al. 2021, Travelletti et al. 2012, Khan et al. 2021, Loew et al.
+2017 and 2025, Stähli et al. 2015, Sawada et al. 2022 and others): `docs/PUBLISHED-RECORD.md`.

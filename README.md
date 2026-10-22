@@ -13,9 +13,10 @@ Live dashboard: https://d30le2uwgaimao.cloudfront.net/
 ## Why
 
 Creep-type slope failures give warning: for days or weeks the surface moves a few millimetres
-per day and keeps accelerating. Mines watch for this with radar that costs 100k to 500k USD per
-site, and evacuate in time (Bingham Canyon 2013, Brienz 2023). Communities that cannot afford
-monitoring do not get the warning (Wayanad 2024, about 400 deaths). TellTale applies the same
+per day and keeps accelerating. Mines watch for this with ground-based radar, which costs enough that most sites run a single unit
+(CSIRO), and evacuate in time (Bingham Canyon 2013, Brienz 2023). Communities that cannot afford
+monitoring do not get the warning: half the people hit by landslides in the last five years had
+none (World Risk Poll 2023), and in Wayanad in 2024 about 290 to 400 people died. TellTale applies the same
 physics to a 30 to 50 USD camera and cents of cloud compute per day. It is not a radar: it
 measures what a camera can see, in daylight, on creep-type failures, and it says so when it
 cannot see.
@@ -76,7 +77,7 @@ claude mcp add telltale -- python -m agent.mcp_server   # or use the repo's .mcp
 | `pipeline/` | OpenCV 5 pipeline and physics, CLI, tests | `pipeline/README.md`, `pipeline/DESIGN.md` |
 | `infra/` | CloudFormation stack, Graviton worker, deploy and camera scripts | `infra/README.md`, `infra/DESIGN.md` |
 | `web/dashboard/` | Static dashboard, about page, site setup tool, bundled demo data | `web/DESIGN.md` |
-| `docs/` | Report, audit, judges' path, deployment guide, video shot list, outreach, diagrams, figures | `docs/JUDGES.md` first |
+| `docs/` | Report, audit, judges' path, deployment guide, video shot list, published evidence of need, diagrams, figures | `docs/JUDGES.md` first |
 | `evaluation/` | E1 to E6 harnesses and results | `evaluation/DESIGN.md` |
 | `demo-rig/` | Tabletop collapse rig: build, capture script, run log | `demo-rig/DESIGN.md` |
 | `agent/` | Supervising agent: OpenCV tools, Claude-on-Bedrock loop, rule policy, MCP server | `agent/DESIGN.md`, `docs/agent_workflow.svg` |
@@ -114,4 +115,6 @@ claude mcp add telltale -- python -m agent.mcp_server   # or use the repo's .mcp
 Fukuzono (1985) inverse-velocity method; Carlà, Intrieri et al., Landslides 14:517 (2017)
 alarm-threshold guidelines; Geosciences 13:371 (2023) DIC for landslide monitoring;
 Remote Sensing 13:893 (2021) low-cost time-lapse slope monitoring; Froude and Petley, NHESS
-18:2161 (2018) global fatal landslides. Full bibliography in `RESEARCH.md`.
+18:2161 (2018) global fatal landslides. Who needs this, with 30 opened sources (UN Sendai
+Framework, India's NDMA strategy, field camera studies, Brienz and Preonzo forecasts):
+`docs/PUBLISHED-RECORD.md`.

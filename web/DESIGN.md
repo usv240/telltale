@@ -36,7 +36,7 @@ Single page with anchored sections plus the dashboard as a second page.
    actions: "Open the live dashboard" and "How it works". A line acknowledging the competition
    context (OpenCV AI Competition 2026, powered by AWS).
 2. **Three stories** (the case for the problem): Bingham Canyon 2013 (watched, evacuated, zero
-   deaths), Brienz 2023 (watched, evacuated, zero deaths), Wayanad 2024 (unwatched, about 400
+   deaths), Brienz 2023 (watched, evacuated, zero deaths), Wayanad 2024 (unwatched, about 290 to 400
    deaths). Cards with dates, one-line outcomes, info buttons carrying sources.
 3. **What TellTale does**: five-step walkthrough with simple inline SVG illustrations:
    capture bursts, stack, stabilize, measure sub-pixel motion, forecast. Each step has an info

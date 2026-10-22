@@ -60,7 +60,13 @@ Audit of our own gaps: `docs/AUDIT.md`.
 template and prints the dashboard URL; `--cool <ami>` switches the worker to the COOL AMI.
 `infra/scripts/teardown.sh` removes it. Details in `infra/README.md`.
 
-## 5. What we do not claim
+## 5. Why it matters, from the published record
+
+`docs/PUBLISHED-RECORD.md`: 30 opened, quoted sources. The first table maps each stated need
+(UN Sendai Framework, India's NDMA strategy, ISO 22327, camera field studies, the Brienz
+evacuation) to the part of TellTale that answers it.
+
+## 6. What we do not claim
 
 Creep-type failures only; daylight; a camera on stable ground. Night, fog, wet lens and a
 camera inside the slide are detected and reported, not solved. Every number in the report comes
