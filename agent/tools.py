@@ -41,9 +41,10 @@ class Toolbox:
 
     MAX_CALLS = 10
 
-    def __init__(self, store, site_name: str, alerting=None):
+    def __init__(self, store, site_name: str, alerting=None, event_t: float | None = None):
         self.store = store
         self.site = site_name
+        self.event_t = event_t  # the investigation's epoch; evidence images are filed under it
         self.pub = f"public/sites/{site_name}"
         self.priv = f"private/sites/{site_name}"
         self.alerting = alerting
@@ -59,6 +60,22 @@ class Toolbox:
             result = dict(result, budget_exhausted=True,
                           note="tool budget exhausted; close the event now")
         return result
+
+    def _save_evidence(self, img, fld, n: int) -> str | None:
+        """Render a measured field over its image, store it beside the trace, return its key
+        relative to the site folder (None if rendering or storage fails; evidence is optional)."""
+        if self.event_t is None:
+            return None
+        try:
+            from telltale.overlay import render_overlay
+            ok, buf = cv2.imencode(".png", render_overlay(img, fld))
+            rel = f"agent/{self.event_t:g}/call-{n}.png"
+            if ok:
+                self.store.put(f"{self.pub}/{rel}", buf.tobytes(), "image/png")
+                return rel
+        except Exception:
+            pass
+        return None
 
     def _series(self) -> list[dict]:
         raw = self.store.get(f"{self.pub}/series.json")
@@ -188,6 +205,9 @@ class Toolbox:
                "review": fld.review, "zones": _clean(zones)}
         if stab_note:
             out["stabilization"] = _clean(stab_note)
+        # The field this call measured, as the picture a reviewer reads: the dashboard shows it
+        # in the investigation, so the visual evidence behind each verdict is on screen.
+        out["evidence_png"] = self._save_evidence(cur, fld, len(self.calls) + 1)
         # Compare with what the worker recorded for the same epoch
         rec = next((r for r in self._series() if r["t"] == t), None)
         if rec and rec.get("zones") and reference in ("reference", "previous"):

@@ -281,7 +281,8 @@
     },
     "worker_recorded": {
      "slope": 4.203125298924255
-    }
+    },
+    "evidence_png": "agent/43.7586/call-4.png"
    },
    "at": "2026-10-22T04:53:16Z"
   },
@@ -311,7 +312,8 @@
     },
     "worker_recorded": {
      "slope": 4.203125298924255
-    }
+    },
+    "evidence_png": "agent/43.7586/call-5.png"
    },
    "at": "2026-10-22T04:53:16Z"
   },

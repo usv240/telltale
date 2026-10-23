@@ -69,12 +69,16 @@ def test_local_worker_end_to_end(tmp_path, scene, monkeypatch):
     # A model passes rounded epoch times; "previous" must still mean the epoch before, not
     # the epoch itself (which reads as zero motion and closed real creep as a false alarm).
     from agent.tools import Toolbox
-    tb = Toolbox(store, "t", None)
+    tb = Toolbox(store, "t", None, event_t=recs[-1]["t"])
     t_last = recs[-1]["t"]
     exact = tb.remeasure(t_last, "previous")
     rounded = tb.remeasure(round(t_last - 1e-4, 4) + 4e-5, "previous")
     assert exact["reference_t"] < t_last and rounded["reference_t"] == exact["reference_t"]
     assert rounded["zones"]["slope"]["magnitude"] > 0.05
+    # every re-measurement leaves its field as an image beside the trace
+    assert exact["evidence_png"] and store.get(f"public/sites/t/{exact['evidence_png']}")[1:4] == b"PNG"
+    tr = json.loads(store.get(f"public/sites/t/agent/{recs[-1]['t']:g}.json"))
+    assert any(c["result"].get("evidence_png") for c in tr["calls"] if c["tool"] == "remeasure")
     # unknown site keys from a newer client are tolerated
     assert SiteConfig.from_json_dict({**asdict(cfg), "future": 1}).name == "t"
 

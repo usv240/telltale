@@ -5,7 +5,14 @@
 On the public USGS time-lapse of an active coastal bluff, TellTale flagged 2 of 2 documented movement periods the camera could see and raised 0 false acceleration alarms across 147 quiet days in each of three zones; on the controlled sweep it measures displacement to 0.008 px, and on the public SEM DIC Challenge images to 0.005 px.
 
 Classical OpenCV 5 computer vision, established geotechnical physics, and AWS. No neural
-network anywhere; a person approves every public alert.
+network anywhere; a person approves every public alert. Watching a slope costs about 1.40 USD
+a month in a 50-slope district, or about 10.50 USD for one slope alone (report section 5).
+
+Check every number on this page yourself, in about 20 seconds and without AWS:
+
+```bash
+python evaluation/verify_claims.py      # 10 claims against the result files, plus a live re-run of the accuracy sweep
+```
 
 Team Ground Truth, OpenCV AI Competition 2026, powered by AWS.
 Live dashboard: https://d30le2uwgaimao.cloudfront.net/
@@ -46,7 +53,7 @@ Everything the cloud worker does, the laptop does too, from the same package.
 cd pipeline
 python -m venv ../.venv && ../.venv/Scripts/activate        # or source ../.venv/bin/activate
 pip install -r requirements.txt
-python -m pytest -q                                          # 31 tests, ~15 s
+python -m pytest -q                                          # 32 tests, ~15 s
 python -m telltale e1                                        # sub-pixel accuracy sweep
 python -m telltale simulate --jitter 1.0 --out ../out/sim    # synthetic collapse, forecast
 cd ..
@@ -89,8 +96,8 @@ claude mcp add telltale -- python -m agent.mcp_server   # or use the repo's .mcp
 | E1 synthetic sub-pixel accuracy | done | MAE 0.006 to 0.010 px, bias under 0.003 px, p95 under 0.025 px |
 | E3 synthetic collapse through the full cloud path | done | forecast 50.26, window [48.9, 61.9], truth 50.0, R² 0.98 |
 | E3b large motion (28 px collapse, 16 px search) | done | fixed reference + coarse-to-fine DIC: MAE 0.007 px, forecast t = 49.78; chaining 0.079 px; single-level fixed loses the slope |
-| E3 tabletop physical collapses | pending | rig and capture script ready |
-| E2 physical metrology | harness ready, photos pending | synthetic self-test at 20, 50, 100 m: slope 1.00, RMS 0.01 to 0.05 mm; printable target in `evaluation/e2/` |
+| E3 tabletop physical collapse | not claimed | rig design and capture script shipped in `demo-rig/` |
+| E2 physical metrology | not claimed (harness shipped) | synthetic self-test at 20, 50, 100 m: slope 1.00, RMS 0.01 to 0.05 mm; printable target in `evaluation/e2/` |
 | E4 real landslide imagery (USGS Mukilteo) | done | documented Dec 9 2015 movement measured at 4 to 7x the quiet baseline with coherent downslope vectors; wet-lens period from Feb 10 correctly rejected |
 | E4c real landslide in the product | done | the whole USGS record through the unmodified worker with the Claude agent; December 9 2015 verdict CONFIRMED; live as site `mukilteo-usgs` on the dashboard |
 | E4b negative control on real data | done | 0 false acceleration alarms on 147 quiet days x 3 zones (was 371 before the onset gates); 2 of 2 observable movement periods flagged by the jump detector |

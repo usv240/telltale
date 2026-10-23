@@ -51,6 +51,7 @@
           <button id="mode-scale" class="btn" type="button">Scale: two points</button>
           <button id="undo" class="btn" type="button">Undo vertex</button>
           <button id="clear" class="btn" type="button">Clear all</button>
+          <button id="example" class="btn" type="button" title="Load the USGS Mukilteo camera with the stable region and zones it is monitored with">Load an example site</button>
         </div>
         <canvas id="c" width="1280" height="720" aria-label="Reference image with polygons"></canvas>
       </div>
@@ -169,7 +170,30 @@
     const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "site.json"; a.click();
   };
   $("copy").onclick = () => navigator.clipboard.writeText($("out").value);
+  // An example: a monitored site's own reference frame and polygons, so the tool can be seen
+  // working before an operator has a photo of their own (?example=<site> opens with it).
+  const qs = new URLSearchParams(location.search);
+  const root = (qs.get("root") || "sites").replace(/\/$/, "");
+  async function loadExample(site) {
+    try {
+      const cfg = await (await fetch(`${root}/${site}/site.json`, { cache: "no-store" })).json();
+      const im = new Image();
+      im.onload = () => {
+        img = im; c.width = im.naturalWidth; c.height = im.naturalHeight;
+        polys = cfg.stable_polys.map((pts, i) => ({ kind: "stable", name: `stable_${i + 1}`, pts }));
+        for (const [name, pts] of Object.entries(cfg.target_zones)) polys.push({ kind: "zone", name, pts });
+        zoneCount = Object.keys(cfg.target_zones).length; current = []; scalePts = [];
+        $("name").value = cfg.name; $("mmpp").value = cfg.mm_per_px;
+        $("burst").value = cfg.burst_size || 7; $("refmode").value = cfg.reference_mode || "fixed";
+        $("maskw").value = cfg.mask_window || 0;
+        draw();
+      };
+      im.src = `${root}/${site}/reference.png`;
+    } catch (e) { $("out").value = `Could not load the example site: ${e.message}`; }
+  }
+  $("example").onclick = () => loadExample(qs.get("example") || "mukilteo-usgs");
   draw();
+  if (qs.get("example")) loadExample(qs.get("example"));
 })();
 </script>
 </body>

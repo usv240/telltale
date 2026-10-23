@@ -64,7 +64,7 @@ state, the gap, the risk if left, and the fix. Status: **open**, **in progress**
 | Motion magnification (`telltale magnify`) | "seeing the invisible" clip for the video; innovation | closed |
 | E2 kit: printable target, harness, synthetic self-test | physical metrology becomes a half-day task | closed, photos pending |
 | CloudWatch ops dashboard, teardown script | cloud delivery and responsible operation | closed |
-| Worker and agent tests (31 total) | reliability | closed |
+| Worker and agent tests (32 total) | reliability | closed |
 | `docs/JUDGES.md`, `docs/DEPLOYMENT.md`, `docs/PUBLISHED-RECORD.md`, social drafts | documentation, impact | closed |
 
 ## F. Winner-pattern audit (October 9, 2026)
@@ -82,7 +82,7 @@ state, the gap, the risk if left, and the fix. Status: **open**, **in progress**
 | 9 Practitioner or adoption | closed by published record | `docs/PUBLISHED-RECORD.md`: 30 opened sources mapping each stated need (Sendai 33(b) low-cost equipment, NDMA slope-scale timing gap, ISO 22327 district users, Brienz window plus political decision) to a TellTale feature; states plainly that no practitioner has evaluated TellTale |
 | 10 Shipped surface | pass | live URL, setup tool, offline demo |
 | 11 Limits as measured properties | closed except E2 photos | every limit has a number; COOL measured; E2 photos still await the user |
-| 12 Inspectable and rerunnable | pass | 31 tests, CI, result JSON, traces, MCP smoke test |
+| 12 Inspectable and rerunnable | pass | `evaluation/verify_claims.py` checks 10 headline claims and re-runs E1 live; 32 tests, CI, result JSON, traces with evidence images, MCP smoke test |
 
 | Coarse-to-fine DIC (`compute_field_pyramid`) | fixed reference follows 28 px of motion at 0.007 px MAE; removes the random-walk cost of chaining on textured scenes | closed |
 | Real landslide inside the product (`mukilteo-usgs` live site, Claude traces) | judges scrub a real slide and read the agent on a documented day | closed |
@@ -91,3 +91,15 @@ state, the gap, the risk if left, and the fix. Status: **open**, **in progress**
 | COOL on the live demo site | all 36 demo epochs processed by the COOL worker (OpenCV 5.1.0-dev, /opt/cool), dashboard shows the COOL on Graviton badge and the build in Instrument health | closed |
 | Scale to zero, measured | worker stops itself after 20 idle minutes and the wake function restarts it; backlog drained and processed in time order (bug found and fixed on the live stack) | closed |
 | Second public landslide record (USGS Barry Arm) | no public time-lapse data release exists (InSAR and maps only); not pursued | closed as not available |
+
+## G. Patterns 13 to 18 (October 23, 2026)
+
+| Pattern | Status | Evidence |
+|---|---|---|
+| 13 The model's work is visible | pass | each agent investigation shows the displacement fields it re-measured (`evidence_png`, 6 demo and 24 Mukilteo traces backfilled, numbers reproduced to 1.6e-7 px); the overlay and the forecast window are the visible OpenCV work |
+| 14 Results in money or time | pass | about 1.40 USD per slope per month (50-slope district) or 10.50 USD (one slope); a page 41.9 time units before failure against 3.0 for thresholds; a window, not a date |
+| 15 The partner triggers the system | pass | S3 events queue epochs, an EventBridge schedule wakes the worker, SNS pages a person, a Lambda URL writes the human decision back into the dashboard, the agent writes the camera's capture cadence |
+| 16 Read the rubric weighting | pass | technical execution 30, innovation 20, impact 20, UX 10, documentation 10; rigour scores here, so the submission leads with the measured numbers and the verifier |
+| 17 Gallery shows the product | pass | `docs/gallery/` 01 to 04 are the product: forecast and approve button, the real landslide, the agent's evidence, the real record in the dashboard; architecture is last |
+| 18 Open with a known failure | pass | submission and video open on Bingham Canyon 2013 against Wayanad 2024, both sourced in `docs/PUBLISHED-RECORD.md` |
+| 9 Practitioner (re-checked) | partial, cannot close | the team cannot contact practitioners; `docs/PUBLISHED-RECORD.md` maps each published need to a feature and says plainly that no practitioner has evaluated TellTale |

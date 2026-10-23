@@ -1,27 +1,53 @@
-# Five-minute video: shot list
+# Five-minute video: shot list and script
 
-Rules: at most five minutes; must show the team, the application working, the architecture,
-and the principal results. Target 4:40 so the upload never clips. Record screen at 1080p,
-camera at 1080p, voice-over after the cut. No music under speech.
+Rules: at most five minutes; it must show the team, the application working, the architecture
+and the principal results. Target 4:30 so the upload never clips. Record the screen at 1080p
+and the team on camera at 1080p, and add the voice after the cut. No music under speech.
 
-| Time | Shot | Voice (plain language) | On screen |
-|---|---|---|---|
-| 0:00 | Both team members to camera, one line each | "We are Ground Truth. TellTale turns any camera into an instrument that says when the ground will fail." | Names, roles |
-| 0:12 | Three stills: Bingham Canyon, Brienz, Wayanad | "When slopes are watched, nobody dies. Watching takes radar, and most sites can afford one unit at best. Wayanad was not watched. Hundreds of people died." | Dates, outcomes, sources |
-| 0:40 | Tabletop rig, wide shot, quiet phase | "This is a slope in a tank. Nothing is moving that you can see." | Rig, camera, drip line |
-| 0:55 | Dashboard, Status panel, QUIET | "TellTale compares bursts of photos and measures movement a hundredth of a pixel wide." | Overlay flat blue |
-| 1:10 | Split screen: rig video and dashboard overlay blooming red | "Water goes in. The surface starts to creep, millimetres, invisible to the eye, obvious to the instrument." | Overlay colour spreading, arrows |
-| 1:35 | Displacement chart with onset marker | "When the creep accelerates, physics takes over. Velocity goes up; one over velocity falls in a straight line toward zero." | Series chart, OOA line |
-| 1:55 | Inverse-velocity chart with window | "Where that line hits the axis is the forecast. The band is our honest uncertainty." | Forecast t, window |
-| 2:10 | Rig collapse, timestamped, chart beside it | "The slope failed here, inside the window the system published before it moved visibly." | Collapse frame, forecast chart |
-| 2:35 | Architecture diagram, pan across lanes | "A camera uploads bursts to S3. An SQS queue feeds a Graviton worker running OpenCV 5. Classical vision only: no neural network anywhere. Results go to a static dashboard through CloudFront." | docs/architecture.svg |
-| 3:00 | Instrument health panel | "Every epoch records which OpenCV build ran, on which instance, with which AMI. This is the COOL evidence: the core workload on Graviton." | cv2 path, build hash, c8g.large |
-| 3:15 | E6 table | "Stock OpenCV versus COOL on the same c8g instance, same pixels. Epochs per hour, cost per thousand epochs, nights of monitoring per dollar." | E6 numbers |
-| 3:35 | E1 and E5 tables | "Synthetic accuracy: a hundredth of a pixel. Camera bump, lighting change, fog: zero false alarms. Lens distortion: partially caught, documented as a failure." | Result tables |
-| 4:00 | Mukilteo real imagery with overlay | "On USGS time-lapse of a real coastal bluff, the measured motion lines up with the documented movement periods." (only if E4 holds up; otherwise cut) | Overlay on real frame |
-| 4:20 | Limitations card | "What it cannot do: brittle failures, nights, fog. It never alerts the public on its own; a person approves." | Bullet card |
-| 4:35 | Dashboard URL, repo, both members | "The dashboard is live. The code is pinned and reproducible. Thank you." | URL |
+Three tests the cut must pass:
 
-Assets to capture before editing: rig run with clean collapse (E3 run 1 or best run), screen
-recordings of the dashboard at three states, architecture SVG exported to PNG at 1920 wide,
-result tables rendered from the JSON in `evaluation/results/`.
+- **Mute test.** With the sound off, a viewer should still see the product working:
+  - the overlay turning blue where the ground moves
+  - the forecast window appearing and narrowing
+  - the agent opening its two re-measured fields before it pages a person
+  - the approve button
+- **First four shots are the product,** not infrastructure. The architecture comes after the
+  viewer has seen it work.
+- **Open with a story the viewer already knows,** and put the result in days and dollars,
+  not pixels.
+
+Everything below is on the live site; no tabletop rig is needed. Use
+`https://d30le2uwgaimao.cloudfront.net/`. The `?event=latest` link opens the newest
+investigation directly.
+
+| Time | Shot (screen) | Voice |
+|---|---|---|
+| 0:00 | Black, then the Bingham Canyon pit wall (archival photo, credited), then the date "10 April 2013" | "In April 2013, a copper mine in Utah knew when its pit wall would fall. They cleared the pit. Sixty-five million cubic metres came down, and no one was hurt." |
+| 0:14 | Wayanad, Kerala, July 2024 (news photo, credited), then the number "about 290 to 400 dead" | "In July 2024, nobody was measuring the hills above Wayanad. Hundreds of people died. The slopes gave the same warning. Nobody was watching." |
+| 0:28 | Both team members on camera, one line each | "We're Ground Truth. We built TellTale, which reads that warning with a camera a village can afford." |
+| 0:40 | About page hero: the real Mukilteo bluff, blue where the ground moved | "This is a real landslide, the USGS camera on a coastal bluff in Washington, on a day it moved. The blue is the ground TellTale measured moving, to a hundredth of a pixel." |
+| 0:58 | Dashboard, demo slope. Press Play on the replay. Overlay goes from grey to blue; displacement curve bends upward | "Here's a slope from quiet to failure. TellTale stacks each burst of photos, removes the camera's own shake, and measures the surface at three thousand points." |
+| 1:20 | The failure-forecast chart: dots line up and the window appears and narrows | "When the creep accelerates, one over velocity falls in a straight line toward zero. Where it hits zero is the failure. TellTale publishes a window, not a date, the way the Swiss did at Brienz." |
+| 1:42 | The title row: "Zone slope is forecast to fail between t = 50.0 and 50.7 ... a person decides" and the Approve button | "One sentence for the duty officer. Nothing reaches the public unless a person presses this." |
+| 1:55 | Agent investigations: open the newest. The two evidence images appear side by side with their numbers | "Before anyone is woken, Claude on Amazon Bedrock checks the warning. It re-runs OpenCV against the previous photo and against the reference: 0.75 pixels, then 5.6, same direction, coherence 0.98. Real motion agrees with itself. Only then does it page a person." |
+| 2:25 | Scroll the trace: remeasure, motion_coherence, check_stabilization, request_human_approval | "Every call, argument and result is in the trace. In our tests, this check paged a person 42 time units before failure, against 3 for alarm thresholds alone, with zero false pages." |
+| 2:45 | Mukilteo dashboard: daily motion chart with the confirmed steps in blue; agent list with false alarms | "On the real record it also says no. A hundred and forty-seven quiet days, zero false acceleration alarms. Camera on moving ground, a wet lens: reported as such, never as motion." |
+| 3:10 | Setup page: Load an example site; the stable ground and zones appear on the real frame | "An operator sets up a site once from one photo: stable ground here, the slope they care about there." |
+| 3:22 | Architecture diagram, left to right | "Bursts go to S3. A queue feeds a Graviton worker running COOL, the cloud-optimised OpenCV from AWS Marketplace. When there's nothing to do, the worker switches itself off and a small function wakes it." |
+| 3:45 | Instrument health panel: the COOL build path and the AMI | "Every record names the OpenCV build that ran, on which instance. We measured COOL against stock OpenCV on the same machine and report what we found: faster on features, slightly slower on our warps." |
+| 4:00 | A text card: "about 1.40 USD per slope per month · 0 false alarms in 147 quiet days · 0.005 px on the public DIC Challenge" | "About a dollar forty a slope a month. A single borehole sensor starts at five thousand euros." |
+| 4:12 | Terminal: `python evaluation/verify_claims.py` scrolling PASS lines | "Every number in this video is checked by one command in the repo." |
+| 4:20 | A limits card: "Creep-type failures, in daylight. A person approves every alert." | "It can't warn of brittle collapses, and it can't see at night. It says so." |
+| 4:28 | Both team members, the URL | "TellTale. The dashboard is live. Thank you." |
+
+## Assets to collect
+
+- **Archival photos for 0:00 and 0:14.** Use only images whose licence allows reuse, and credit
+  them on screen. Wikimedia Commons has Bingham Canyon photos; for Wayanad, use a government or
+  agency photo with a credit, or a map.
+- **Screen recordings:** the dashboard replay at 1080p (demo slope, Play from the start), the
+  newest investigation opened (`?event=latest`), the Mukilteo dashboard, the setup page with
+  the example, and the terminal running `verify_claims.py`.
+- **Stills:** `docs/gallery/06-architecture.png` and the about-page hero.
+- **The motion-magnified clip** (`web/dashboard/figures/magnified.webm`) can replace the 0:58
+  overlay shot if it reads better.

@@ -51,6 +51,8 @@
   let replayIndex = null;   // null = live; otherwise index into series.records
   let playTimer = null;
   let showAllAgent = false, showAllEpochs = false;
+  // ?event=<t> (or latest) opens that investigation with its evidence, e.g. from the duty page.
+  let deepEvent = qs.get("event");
 
   // Time context per site: Mukilteo epochs are days since a known date (in site.json notes).
   function timeContext(cfg) {
@@ -284,6 +286,11 @@
     $("agent-meta").textContent = events.length
       ? Object.entries(counts).map(([k, n]) => `${n} ${(VERDICT[k] || [k])[0].toLowerCase()}`).join(" · ")
       : "";
+    let target = null;
+    if (deepEvent && events.length) {
+      target = deepEvent === "latest" ? events[0] : events.find((e) => Math.abs(e.t - Number(deepEvent)) < 1e-3) || null;
+      if (target && events.indexOf(target) >= 4) showAllAgent = true;
+    }
     const shown = showAllAgent ? events : events.slice(0, 4);
     const openKeys = new Set([...list.querySelectorAll("details[open]")].map((x) => x.dataset.t));
     list.innerHTML = "";
@@ -294,13 +301,28 @@
       const when = `t = ${fmt(e.t, 1)}${ctx.date ? " · " + ctx.date(e.t) : ""}`;
       det.innerHTML = `<summary>${pill(VERDICT[e.verdict], e.verdict)}<span class="event-title">${esc(EVENT[e.event] || e.event)} at ${esc(when)}</span>` +
         `<span class="event-meta">${e.n_tool_calls} calls · ${e.paged_human ? "person paged" : "no page"} · ${fmt(e.seconds, 0)} s</span></summary>` +
-        `<div class="event-body"><p class="event-summary">${esc((e.summary || "").replace(/\*\*/g, ""))}</p><ol class="trace"><li>Loading the trace…</li></ol></div>`;
+        `<div class="event-body"><p class="event-summary">${esc((e.summary || "").replace(/\*\*/g, ""))}</p><div class="evidence" hidden></div><details class="calls"><summary>Every tool call, with its arguments and result</summary><ol class="trace"><li>Loading the trace…</li></ol></details></div>`;
       det.addEventListener("toggle", async () => {
         if (!det.open || det.dataset.loaded) return;
         det.dataset.loaded = "1";
         const ol = det.querySelector(".trace");
         try {
           const tr = await getJSON(`${d.base}/agent/${gfmt(e.t)}.json`);
+          // The fields the agent re-measured, as images: the evidence behind the verdict.
+          const ev = tr.calls.filter((c) => c.tool === "remeasure" && c.result && c.result.evidence_png);
+          const box = det.querySelector(".evidence");
+          if (ev.length) {
+            box.innerHTML = `<p class="evidence-title">What the agent measured again</p><div class="evidence-row">` + ev.map((c) => {
+              const r = c.result;
+              const against = r.reference === "previous" ? `the previous epoch (t = ${fmt(r.reference_t, 1)})`
+                : r.reference === "reference" ? "the site reference" : esc(r.reference);
+              const z = Object.values(r.zones || {})[0] || {};
+              const coh = z.coherence != null ? `, coherence ${fmt(z.coherence, 2)}` : "";
+              return `<figure><img src="${d.base}/${esc(r.evidence_png)}" alt="Displacement field of epoch ${fmt(r.t, 1)} measured against ${against}" loading="lazy">` +
+                `<figcaption>Against ${against}: <b>${fmt(z.magnitude, 2)} px</b>${coh}</figcaption></figure>`;
+            }).join("") + `</div>`;
+            box.hidden = false;
+          }
           ol.innerHTML = tr.calls.map((c) => {
             const res = JSON.stringify(c.result);
             const args = Object.entries(c.args).map(([k, v]) => `${k}=${JSON.stringify(v)}`).join(", ");
@@ -308,7 +330,11 @@
           }).join("");
         } catch (err) { ol.innerHTML = "<li>Trace unavailable.</li>"; }
       });
-      if (openKeys.has(String(e.t))) det.open = true;
+      if (openKeys.has(String(e.t)) || e === target) det.open = true;
+      if (e === target) {
+        deepEvent = null;
+        setTimeout(() => list.closest(".panel").scrollIntoView({ block: "start" }), 300);
+      }
       li.appendChild(det);
       list.appendChild(li);
     }

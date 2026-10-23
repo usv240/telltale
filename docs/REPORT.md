@@ -1,17 +1,19 @@
-# TellTale: technical report (draft, October 9, 2026)
+# TellTale: technical report (October 23, 2026)
 
 TellTale stacks bursts from any fixed camera, removes the camera's own motion, measures ground creep to a hundredth of a pixel, forecasts the failure window, re-measures to verify it, and pages a person.
 
 Team Ground Truth: Ujwal Suresh Vanjare, Arpita Madhukar Kalburgi.
-OpenCV AI Competition 2026, powered by AWS. Featured paths: Best Use of COOL (pending
-subscription); Agentic Vision (claimed: supervising agent on Amazon Bedrock, section 6b).
+OpenCV AI Competition 2026, powered by AWS. Featured paths: Best Use of COOL (COOL on the
+production Graviton worker, measured against stock, section 6 E6); Agentic Vision (supervising
+agent on Amazon Bedrock, section 6b).
 
 Live endpoint: https://d30le2uwgaimao.cloudfront.net/ (how it works: /about.html)
 Repository: https://github.com/usv240/telltale (CI on x86 and arm64)
 
-> Status markers: **measured** means the number comes from a script in `evaluation/` or from
-> the deployed system; **pending** means the method exists but the run has not happened.
-> Every pending item is listed in section 9.
+> Every number in this report is **measured**: it comes from a script in `evaluation/` or from
+> the deployed system. `python evaluation/verify_claims.py` checks the headline numbers against
+> the result files and re-runs the accuracy sweep live (nine claims, about 20 seconds).
+> What was not measured is named as not claimed, in section 8.
 
 ## 1. Problem
 
@@ -126,10 +128,21 @@ tokens) costs a few cents and happens only on events, not on every epoch.
 `IdleStopMinutes` (default 20) the worker stops its own instance once the queue has been empty
 that long, and a scheduled Lambda starts it again within five minutes of an epoch arriving; if
 the start fails, the queue-age alarm pages the duty contact. A stopped worker costs only its
-disk (20 GB stock, 0.0022 USD per hour; 50 GB on the COOL AMI, 0.0055 USD per hour), and a
-site at 6 epochs a day keeps it running about 2 hours a day (each wake is one epoch plus the
-20-minute idle window), roughly 5.7 USD a month of compute and COOL fee plus 4 USD of disk,
-instead of 58.2 USD for compute alone. The dashboard is static on CloudFront and
+disk (20 GB stock, 1.60 USD a month; 60 GB on the COOL v3 AMI, 4.80 USD a month), and a
+site at 6 epochs a day keeps it running about 2.1 hours a day (each wake is one epoch plus the
+20-minute idle window), roughly 5.7 USD a month of compute and COOL fee.
+
+**What a slope costs to watch, per month** (us-east-1 on-demand, COOL fee 0.01 USD per hour,
+6 epochs a day, agent calls extra at a few cents per investigation):
+
+| Deployment | Worker | Per slope per month |
+|---|---|---|
+| One slope, scale to zero | awake about 2.1 h a day | about 10.50 USD (5.70 compute and COOL, 4.80 disk) |
+| A district of 50 slopes on one worker | always awake (300 epochs a day, 3 percent of capacity) | about 1.40 USD (70.30 USD shared) |
+
+Hardware is one fixed camera (a phone, a Raspberry Pi camera or existing CCTV). For scale, a
+single chain inclinometer starts at about 5,000 EUR before drilling (Gamperl et al. 2021, in
+`docs/PUBLISHED-RECORD.md`), and monitors one borehole, not a field of view. The dashboard is static on CloudFront and
 stays live while the worker sleeps.
 
 Measured on October 23: with the worker stopped, the 36-epoch demo was uploaded; the wake
@@ -504,19 +517,24 @@ What the data support is that the documented movement days stand out from the qu
 by a factor of four to seven with coherent direction, and that the two failure modes seen
 (camera on moving ground, wet lens) are reported as such and never as ground motion.
 
-### E2 physical metrology (harness verified, photographs pending)
+### E2 physical metrology: what is and is not claimed
 
 `evaluation/e2_target.py` prints a 190 mm random-speckle target with a 100 mm scale bar;
 `evaluation/e2_metrology.py` turns bursts before and after known moves into a measured-versus-
 true regression per distance and lens. The harness was verified on synthetic captures rendered
 from the printed target at 20, 50 and 100 m equivalents (`e2_synthetic_captures.py`): slope
 0.997 to 1.002, intercept under 0.02 mm, RMS 0.009 to 0.048 mm (0.02 px). These are synthetic
-numbers and are labelled as such; the physical run is scheduled before the rig runs.
+numbers and are labelled as such. TellTale therefore claims sub-pixel precision measured in
+pixels (E1, E4) and converts to millimetres through the site's scale; it does not claim a
+measured millimetre accuracy for a physical camera at range. The printed target and harness
+turn that measurement into a half-day task for any operator.
 
-### Pending
+### Not claimed
 
-E2 photographs, E3 tabletop physical collapses (rig design and capture script are ready),
-E6 COOL cell.
+A physical millimetre calibration at range (E2, harness shipped) and a physical tabletop
+collapse (E3, rig design and capture script shipped). The forecast is validated on a simulated
+collapse through the full cloud path (E3), on large motion (E3b) and on a real landslide record
+(E4), not on a physical failure.
 
 ## 7. User experience
 

@@ -1,107 +1,166 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 560" width="1180" height="560" font-family="system-ui, Segoe UI, Roboto, sans-serif" font-size="13">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 640" width="1200" height="640" font-family="Geist, 'Segoe UI', system-ui, sans-serif" role="img" aria-labelledby="t d">
+  <title id="t">TellTale architecture</title>
+  <desc id="d">A fixed camera uploads bursts to S3. An S3 event on the manifest queues the epoch in SQS. A Graviton4 worker running COOL's OpenCV 5.1.0 stacks, stabilises, measures and forecasts, and publishes to S3, which CloudFront serves as the dashboard. A wake Lambda starts the worker when epochs wait; it stops itself when idle. On an event, Claude on Amazon Bedrock re-runs OpenCV tools on the stored images and may change the capture cadence, page the duty officer through SNS with signed links, or close the event. Only a person can send a public alert.</desc>
   <defs>
-    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" fill="#5b6470"/>
-    </marker>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#55534f"/></marker>
+    <style>
+      .lane { fill: none; stroke: #c9c6c0; stroke-dasharray: 4 4; }
+      .hd { font-size: 10.5px; letter-spacing: .08em; fill: #6b6863; font-weight: 600; }
+      .sub { font-size: 11px; fill: #6b6863; }
+      .bt { font-size: 12.5px; font-weight: 600; fill: #1c1b19; }
+      .bl { font-size: 11px; fill: #45433f; }
+      .cv { fill: #fdf1ea; stroke: #c2541b; stroke-width: 1.4; }
+      .aws { fill: #eef3fb; stroke: #1d5fbf; stroke-width: 1.4; }
+      .ag { fill: #f1f0ee; stroke: #3b3a37; stroke-width: 1.4; }
+      .pp { fill: #f0f6ec; stroke: #3f7d32; stroke-width: 1.4; }
+      .pl { fill: #ffffff; stroke: #8e8b85; stroke-width: 1.2; }
+      .ln { fill: none; stroke: #55534f; stroke-width: 1.3; }
+      .dl { fill: none; stroke: #55534f; stroke-width: 1.3; stroke-dasharray: 5 4; }
+      .lb { font-size: 10.5px; fill: #55534f; }
+    </style>
   </defs>
-  <style>
-    .box{fill:#ffffff;stroke:#5b6470;stroke-width:1.2;rx:8}
-    .cv{fill:#fff3ea;stroke:#c2541b;stroke-width:1.6}
-    .aws{fill:#eef4fb;stroke:#2563a8;stroke-width:1.4}
-    .human{fill:#f1f5ec;stroke:#4e7d2c;stroke-width:1.4}
-    .t{fill:#1d2126}
-    .s{fill:#5b6470;font-size:11px}
-    .h{font-weight:700;font-size:14px}
-    .lane{fill:none;stroke:#d9d6cf;stroke-dasharray:4 4}
-    .arrow{fill:none;stroke:#5b6470;stroke-width:1.4;marker-end:url(#a)}
-  </style>
-  <rect width="1180" height="560" fill="#f6f5f2"/>
-  <text x="20" y="28" class="h t">TellTale architecture: field camera to human-approved alert</text>
-  <text x="20" y="46" class="s">Orange = OpenCV 5 classical vision (runs on Graviton, COOL where subscribed). Blue = AWS managed services. Green = people.</text>
+  <rect width="1200" height="640" fill="#fbfaf8"/>
+  <text x="20" y="26" font-size="15" font-weight="700" fill="#1c1b19">TellTale: a fixed camera to a human-approved alert</text>
+  <text x="20" y="44" class="sub">Orange: OpenCV 5 on COOL (Graviton4).  Blue: AWS services.  Dark: the supervising agent.  Green: people.  No component can send a public alert on its own.</text>
 
   <!-- lanes -->
-  <rect x="20" y="60" width="220" height="480" class="lane"/>
-  <text x="30" y="78" class="s">FIELD</text>
-  <rect x="260" y="60" width="300" height="480" class="lane"/>
-  <text x="270" y="78" class="s">INGEST AND QUEUE</text>
-  <rect x="580" y="60" width="360" height="480" class="lane"/>
-  <text x="590" y="78" class="s">GRAVITON WORKER (EC2 c8g, arm64)</text>
-  <rect x="960" y="60" width="200" height="480" class="lane"/>
-  <text x="970" y="78" class="s">PEOPLE</text>
+  <rect class="lane" x="10" y="62" width="190" height="518" rx="8"/>
+  <rect class="lane" x="207" y="62" width="216" height="518" rx="8"/>
+  <rect class="lane" x="432" y="62" width="266" height="518" rx="8"/>
+  <rect class="lane" x="707" y="62" width="256" height="518" rx="8"/>
+  <rect class="lane" x="972" y="62" width="218" height="518" rx="8"/>
+  <text x="22" y="82" class="hd">FIELD</text>
+  <text x="219" y="82" class="hd">AWS: INGEST AND CONTROL</text>
+  <text x="444" y="82" class="hd">GRAVITON4 WORKER, EC2 c8g.large</text>
+  <text x="444" y="98" class="sub">COOL AMI, OpenCV 5.1.0 from /opt/cool</text>
+  <text x="719" y="82" class="hd">SUPERVISING AGENT</text>
+  <text x="984" y="82" class="hd">PEOPLE</text>
 
   <!-- field -->
-  <rect x="40" y="110" width="180" height="70" class="box"/>
-  <text x="50" y="132" class="t h" font-size="13">Fixed camera</text>
-  <text x="50" y="150" class="s">phone, RPi, CCTV</text>
-  <text x="50" y="166" class="s">burst of 7 frames per epoch</text>
-  <rect x="40" y="210" width="180" height="56" class="box"/>
-  <text x="50" y="232" class="t">upload_epoch.py</text>
-  <text x="50" y="250" class="s">frames first, manifest last</text>
+  <rect class="pl" x="20" y="100" width="170" height="64" rx="6"/>
+  <text x="30" y="120" class="bt">Fixed camera</text>
+  <text x="30" y="138" class="bl">phone, Pi camera or CCTV</text>
+  <text x="30" y="153" class="bl">bursts of 5 to 7 frames</text>
+  <rect class="pl" x="20" y="196" width="170" height="64" rx="6"/>
+  <text x="30" y="216" class="bt">upload_epoch.py</text>
+  <text x="30" y="234" class="bl">frames first, manifest last</text>
+  <text x="30" y="249" class="bl">follows control.json cadence</text>
+  <rect class="pp" x="20" y="292" width="170" height="64" rx="6"/>
+  <text x="30" y="312" class="bt">Operator, once</text>
+  <text x="30" y="330" class="bl">setup.html: stable ground</text>
+  <text x="30" y="345" class="bl">and the target zones</text>
+  <path class="ln" d="M105,164 V194" marker-end="url(#a)"/>
+  <path class="ln" d="M105,292 V262" marker-end="url(#a)"/>
+  <text x="112" y="280" class="lb">site.json</text>
+  <path class="ln" d="M190,228 H203 V132 H213" marker-end="url(#a)"/>
 
-  <!-- ingest -->
-  <rect x="280" y="110" width="260" height="70" class="box aws"/>
-  <text x="290" y="132" class="t h" font-size="13">S3  telltale-&lt;account&gt;</text>
-  <text x="290" y="150" class="s">ingest/&lt;site&gt;/&lt;t&gt;/  (private, expires 30 d)</text>
-  <text x="290" y="166" class="s">public/sites/&lt;site&gt;/  (dashboard artifacts)</text>
-  <rect x="280" y="210" width="260" height="56" class="box aws"/>
-  <text x="290" y="232" class="t h" font-size="13">SQS epoch queue</text>
-  <text x="290" y="250" class="s">S3 event on manifest.json; DLQ after 3 failures</text>
-  <rect x="280" y="296" width="260" height="56" class="box aws"/>
-  <text x="290" y="318" class="t h" font-size="13">CloudWatch</text>
-  <text x="290" y="336" class="s">TellTale/* metrics; queue-age and DLQ alarms</text>
-  <rect x="280" y="382" width="260" height="56" class="box aws"/>
-  <text x="290" y="404" class="t h" font-size="13">CloudFront</text>
-  <text x="290" y="422" class="s">serves public/ via origin access control</text>
+  <!-- aws -->
+  <rect class="aws" x="217" y="100" width="196" height="64" rx="6"/>
+  <text x="227" y="120" class="bt">S3 ingest/</text>
+  <text x="227" y="138" class="bl">raw bursts, expire in 30 days</text>
+  <text x="227" y="153" class="bl">event on manifest.json</text>
+  <rect class="aws" x="217" y="180" width="196" height="64" rx="6"/>
+  <text x="227" y="200" class="bt">SQS epoch queue</text>
+  <text x="227" y="218" class="bl">drained in time order</text>
+  <text x="227" y="233" class="bl">dead-letter queue after 3 tries</text>
+  <rect class="aws" x="217" y="260" width="196" height="64" rx="6"/>
+  <text x="227" y="280" class="bt">Wake Lambda, every 5 min</text>
+  <text x="227" y="298" class="bl">epochs waiting, worker stopped:</text>
+  <text x="227" y="313" class="bl">start the worker</text>
+  <rect class="aws" x="217" y="340" width="196" height="64" rx="6"/>
+  <text x="227" y="360" class="bt">CloudWatch</text>
+  <text x="227" y="378" class="bl">worker metrics, ops dashboard</text>
+  <text x="227" y="393" class="bl">queue-age and DLQ alarms</text>
+  <rect class="aws" x="217" y="430" width="196" height="64" rx="6"/>
+  <text x="227" y="450" class="bt">S3 private/ and public/</text>
+  <text x="227" y="468" class="bl">stacked images, fields, overlays</text>
+  <text x="227" y="483" class="bl">series, forecast (versioned)</text>
+  <rect class="aws" x="217" y="510" width="196" height="50" rx="6"/>
+  <text x="227" y="530" class="bt">CloudFront</text>
+  <text x="227" y="547" class="bl">serves public/ to the dashboard</text>
+  <path class="ln" d="M315,164 V178" marker-end="url(#a)"/>
+  <path class="ln" d="M315,494 V508" marker-end="url(#a)"/>
+  <path class="ln" d="M413,212 H443 V134 H453" marker-end="url(#a)"/>
+  <text x="418" y="206" class="lb">epoch</text>
+  <path class="ln" d="M413,292 H440" marker-end="url(#a)"/>
+  <text x="416" y="286" class="lb">start</text>
 
-  <!-- worker pipeline -->
-  <rect x="600" y="100" width="320" height="52" class="box cv"/>
-  <text x="610" y="120" class="t h" font-size="13">A  Stack</text>
-  <text x="610" y="138" class="s">phaseCorrelate + ZNCC register, median stack; BLIND / UNSTABLE</text>
-  <rect x="600" y="166" width="320" height="64" class="box cv"/>
-  <text x="610" y="186" class="t h" font-size="13">B  Stabilize</text>
-  <text x="610" y="204" class="s">ORB + USAC_MAGSAC coarse, DIC-refined, simplest camera model</text>
-  <text x="610" y="220" class="s">stable ground still moves?  ->  CAMERA_EVENT, epoch rejected</text>
-  <rect x="600" y="244" width="320" height="64" class="box cv"/>
-  <text x="610" y="264" class="t h" font-size="13">C  Measure (DIC)</text>
-  <text x="610" y="282" class="s">matchTemplate ZNCC on 3,000+ subsets, Gaussian sub-pixel peak,</text>
-  <text x="610" y="298" class="s">re-sampling pass, quality codes, phaseCorrelate cross-check</text>
-  <rect x="600" y="322" width="320" height="64" class="box cv"/>
-  <text x="610" y="342" class="t h" font-size="13">E  Forecast (physics)</text>
-  <text x="610" y="360" class="s">SMA/LMA velocity, onset of acceleration, inverse velocity,</text>
-  <text x="610" y="376" class="s">bootstrap + ensemble window;  QUIET . MOVING . ACCELERATING . CRITICAL</text>
-  <rect x="600" y="400" width="320" height="52" class="box"/>
-  <text x="610" y="420" class="t h" font-size="13">Publish</text>
-  <text x="610" y="438" class="s">series.json, forecast.json, overlay.png, record.json with runtime proof</text>
-  <rect x="600" y="466" width="320" height="56" class="box"/>
-  <text x="610" y="486" class="t h" font-size="13">Supervising agent (Claude on Amazon Bedrock)</text>
-  <text x="610" y="504" class="s">on event: re-measure vs alternate references, re-check camera model, coherence,</text>
-  <text x="610" y="518" class="s">then raise cadence and page a person, or close as false alarm; see agent_workflow.svg</text>
+  <!-- worker -->
+  <rect class="cv" x="455" y="112" width="228" height="44" rx="6"/>
+  <text x="465" y="130" class="bt">A  Stack</text>
+  <text x="465" y="147" class="bl">phaseCorrelate, ZNCC, median of burst</text>
+  <rect class="cv" x="455" y="167" width="228" height="44" rx="6"/>
+  <text x="465" y="185" class="bt">B  Stabilize</text>
+  <text x="465" y="202" class="bl">ORB + USAC_MAGSAC, DIC-refined model</text>
+  <rect class="cv" x="455" y="222" width="228" height="44" rx="6"/>
+  <text x="465" y="240" class="bt">C  Measure</text>
+  <text x="465" y="257" class="bl">ZNCC matchTemplate, sub-pixel, pyramid</text>
+  <rect class="cv" x="455" y="277" width="228" height="44" rx="6"/>
+  <text x="465" y="295" class="bt">D  Forecast</text>
+  <text x="465" y="312" class="bl">inverse velocity, bootstrap window</text>
+  <rect class="pl" x="455" y="332" width="228" height="44" rx="6"/>
+  <text x="465" y="350" class="bt">Publish</text>
+  <text x="465" y="367" class="bl">each record names the OpenCV build</text>
+  <path class="ln" d="M569,156 V165" marker-end="url(#a)"/>
+  <path class="ln" d="M569,211 V220" marker-end="url(#a)"/>
+  <path class="ln" d="M569,266 V275" marker-end="url(#a)"/>
+  <path class="ln" d="M569,321 V330" marker-end="url(#a)"/>
+  <text x="455" y="404" class="sub">BLIND, BLURRED and CAMERA_EVENT epochs</text>
+  <text x="455" y="419" class="sub">stay in the record with their reason.</text>
+  <text x="455" y="444" class="sub">Stops itself after 20 idle minutes;</text>
+  <text x="455" y="459" class="sub">the wake Lambda restarts it.</text>
+  <path class="ln" d="M455,366 H430 V462 H415" marker-end="url(#a)"/>
+
+  <!-- agent -->
+  <rect class="ag" x="725" y="112" width="226" height="48" rx="6"/>
+  <text x="735" y="131" class="bt">Event</text>
+  <text x="735" y="149" class="bl">acceleration, step, camera, quality</text>
+  <rect class="ag" x="725" y="176" width="226" height="64" rx="6"/>
+  <text x="735" y="196" class="bt">Claude on Amazon Bedrock</text>
+  <text x="735" y="214" class="bl">tool runner, budget of 10 calls</text>
+  <text x="735" y="229" class="bl">rule policy if Bedrock is down</text>
+  <rect class="cv" x="725" y="256" width="226" height="80" rx="6"/>
+  <text x="735" y="276" class="bt">OpenCV 5 tools</text>
+  <text x="735" y="294" class="bl">remeasure, check_stabilization</text>
+  <text x="735" y="309" class="bl">inspect_quality, motion_coherence</text>
+  <text x="735" y="324" class="bl">re-run on stored images, save fields</text>
+  <rect class="ag" x="725" y="362" width="226" height="64" rx="6"/>
+  <text x="735" y="382" class="bt">Actions</text>
+  <text x="735" y="400" class="bl">set the capture cadence</text>
+  <text x="735" y="415" class="bl">page a person, close the event</text>
+  <rect class="ag" x="725" y="446" width="226" height="48" rx="6"/>
+  <text x="735" y="465" class="bt">MCP server</text>
+  <text x="735" y="483" class="bl">the same tools for any MCP client</text>
+  <path class="ln" d="M683,299 H703 V136 H723" marker-end="url(#a)"/>
+  <path class="ln" d="M838,160 V174" marker-end="url(#a)"/>
+  <path class="ln" d="M830,240 V254" marker-end="url(#a)"/>
+  <path class="ln" d="M846,254 V242" marker-end="url(#a)"/>
+  <text x="852" y="251" class="lb">result picks the next call</text>
+  <path class="ln" d="M838,336 V360" marker-end="url(#a)"/>
 
   <!-- people -->
-  <rect x="980" y="110" width="160" height="70" class="box human"/>
-  <text x="990" y="132" class="t h" font-size="13">Dashboard</text>
-  <text x="990" y="150" class="s">duty officer, expert, judge</text>
-  <text x="990" y="166" class="s">static HTML, no framework</text>
-  <rect x="980" y="210" width="160" height="70" class="box human"/>
-  <text x="990" y="232" class="t h" font-size="13">Human approval</text>
-  <text x="990" y="250" class="s">CRITICAL never alerts</text>
-  <text x="990" y="266" class="s">the public on its own</text>
-  <rect x="980" y="310" width="160" height="56" class="box human"/>
-  <text x="990" y="332" class="t h" font-size="13">Operator</text>
-  <text x="990" y="350" class="s">marks stable regions and zones</text>
+  <rect class="pp" x="988" y="112" width="190" height="64" rx="6"/>
+  <text x="998" y="132" class="bt">Duty officer, via SNS</text>
+  <text x="998" y="150" class="bl">evidence, approve or dismiss</text>
+  <text x="998" y="165" class="bl">links signed with HMAC</text>
+  <rect class="aws" x="988" y="198" width="190" height="50" rx="6"/>
+  <text x="998" y="218" class="bt">Approval Lambda</text>
+  <text x="998" y="236" class="bl">decision logged with its time</text>
+  <rect class="pp" x="988" y="270" width="190" height="50" rx="6"/>
+  <text x="998" y="290" class="bt">Public alert</text>
+  <text x="998" y="308" class="bl">only a person sends it</text>
+  <rect class="pp" x="988" y="490" width="190" height="64" rx="6"/>
+  <text x="998" y="510" class="bt">Dashboard</text>
+  <text x="998" y="528" class="bl">live while the worker sleeps</text>
+  <text x="998" y="543" class="bl">evidence behind every verdict</text>
+  <path class="ln" d="M951,394 H969 V144 H986" marker-end="url(#a)"/>
+  <path class="ln" d="M1083,176 V196" marker-end="url(#a)"/>
+  <path class="ln" d="M1083,248 V268" marker-end="url(#a)"/>
+  <text x="988" y="352" class="sub">If the agent is unsure or off,</text>
+  <text x="988" y="367" class="sub">the worker pages the duty</text>
+  <text x="988" y="382" class="sub">officer itself at CRITICAL.</text>
 
-  <!-- arrows -->
-  <path d="M130,180 L130,210" class="arrow"/>
-  <path d="M220,238 L280,160" class="arrow"/>
-  <path d="M410,180 L410,210" class="arrow"/>
-  <path d="M540,238 L600,130" class="arrow"/>
-  <path d="M760,152 L760,166" class="arrow"/>
-  <path d="M760,230 L760,244" class="arrow"/>
-  <path d="M760,308 L760,322" class="arrow"/>
-  <path d="M760,386 L760,400" class="arrow"/>
-  <path d="M600,426 L540,180" class="arrow"/>
-  <path d="M600,440 L540,320" class="arrow"/>
-  <path d="M540,410 L980,150" class="arrow"/>
-  <path d="M920,490 L980,250" class="arrow"/>
-  <path d="M980,338 L540,150" class="arrow"/>
+  <!-- bottom bus: CloudFront to the dashboard -->
+  <path class="ln" d="M315,560 V606 H1083 V556" marker-end="url(#a)"/>
+  <text x="600" y="600" class="lb">static pages and data from public/; the dashboard never needs the worker running</text>
 </svg>

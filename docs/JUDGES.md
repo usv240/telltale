@@ -11,16 +11,21 @@ because a bluff that moves in steps never builds an inverse-velocity trend), wit
 switch back to `demo-slope` and press **Play** on the replay slider: the demo slope
 creeps, accelerates, the forecast window appears and narrows, the state climbs to CRITICAL, and
 the supervising agent's investigations appear in the agent panel with every OpenCV tool call.
+Open one: it shows the displacement fields the agent re-measured before deciding
+(`?event=latest` opens the newest directly).
 The instrument-health panel shows which OpenCV build ran on which instance.
 "How it works" (top right) explains every panel in plain language.
 
 ## 2. Run it yourself, offline (3 minutes)
 
+First, one command checks every headline number against the result files and re-runs the
+accuracy sweep live: `python evaluation/verify_claims.py` (prints PASS or FAIL per claim).
+
 ```bash
 git clone https://github.com/usv240/telltale && cd telltale/pipeline
 python -m venv ../.venv && ../.venv/Scripts/activate      # or source ../.venv/bin/activate
 pip install -r requirements.txt                           # pinned
-python -m pytest -q                                       # 31 tests, ~15 s
+python -m pytest -q                                       # 32 tests, ~15 s
 python -m telltale e1                                     # sub-pixel accuracy sweep, prints the gate
 python -m telltale simulate --jitter 1.0 --out ../out/sim # collapse through the full pipeline
 cd .. && python infra/scripts/seed_demo.py --local web/dashboard/demo-data   # the worker path, no AWS

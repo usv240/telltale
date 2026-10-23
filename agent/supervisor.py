@@ -201,7 +201,7 @@ class RulePolicy:
 def investigate(store, site_name: str, t: float, event: str, alerting=None,
                 use_llm: bool | None = None, model: str = DEFAULT_MODEL) -> dict:
     """Run one investigation and write its trace. Returns the trace dict."""
-    tb = Toolbox(store, site_name, alerting)
+    tb = Toolbox(store, site_name, alerting, event_t=t)
     t0 = time.perf_counter()
     if use_llm is None:
         use_llm = os.environ.get("TELLTALE_AGENT", "llm").lower() != "rules"
