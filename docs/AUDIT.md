@@ -88,4 +88,6 @@ state, the gap, the risk if left, and the fix. Status: **open**, **in progress**
 | Real landslide inside the product (`mukilteo-usgs` live site, Claude traces) | judges scrub a real slide and read the agent on a documented day | closed |
 | MCP server for the agent's OpenCV tools (`agent/mcp_server.py`, `.mcp.json`) | any MCP client can investigate a site; second transport and backup to the worker's tool runner | closed |
 | Interface redesign, measured (dashboard, setup, about) | browser inspector at three widths: 2 FAIL / 4 WARN before, 0 / 0 after; single-hue overlay; daily-motion fallback | closed |
+| COOL on the live demo site | all 36 demo epochs processed by the COOL worker (OpenCV 5.1.0-dev, /opt/cool), dashboard shows the COOL on Graviton badge and the build in Instrument health | closed |
+| Scale to zero, measured | worker stops itself after 20 idle minutes and the wake function restarts it; backlog drained and processed in time order (bug found and fixed on the live stack) | closed |
 | Second public landslide record (USGS Barry Arm) | no public time-lapse data release exists (InSAR and maps only); not pursued | closed as not available |

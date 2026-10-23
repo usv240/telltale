@@ -485,7 +485,10 @@ def _finish(store, site: SiteConfig, site_name: str, record: dict, fld, t0: floa
 
     raw = store.get(f"{pub}/series.json")
     series = json.loads(raw) if raw else {"records": []}
-    prev_state = series["records"][-1].get("state", "QUIET") if series["records"] else "QUIET"
+    # The state before this epoch, by time rather than by arrival, so a late epoch is compared
+    # with the epoch that really preceded it.
+    before = [r for r in series["records"] if r["t"] < record["t"]]
+    prev_state = before[-1].get("state", "QUIET") if before else "QUIET"
 
     fcs, overall = {}, "QUIET"
     rank = {"QUIET": 0, "MOVING": 1, "ACCELERATING": 2, "CRITICAL": 3}
@@ -515,7 +518,7 @@ def _finish(store, site: SiteConfig, site_name: str, record: dict, fld, t0: floa
 
     approval = approval_status(store, site_name, series["records"], overall)
     payload = {"site": site_name, "state": overall, "state_display": overall_display,
-               "updated_t": record["t"], "n_epochs": len(series["records"]),
+               "updated_t": series["records"][-1]["t"], "n_epochs": len(series["records"]),
                "n_unusable": n_unusable, "zones": fcs, "runtime": record["runtime"],
                "mm_per_px": site.mm_per_px, "approval": approval}
     store.put(f"{pub}/forecast.json", _json(payload), "application/json")
@@ -565,7 +568,7 @@ def _finish(store, site: SiteConfig, site_name: str, record: dict, fld, t0: floa
     raw = store.get("public/sites/index.json")
     index = json.loads(raw) if raw else []
     index = [s for s in index if s["site"] != site_name]
-    index.append({"site": site_name, "state": overall, "last_t": record["t"],
+    index.append({"site": site_name, "state": overall, "last_t": series["records"][-1]["t"],
                   "n_epochs": len(series["records"]), "cool": record["runtime"].get("cool")})
     index.sort(key=lambda s: s["site"])
     store.put("public/sites/index.json", _json(index), "application/json")
@@ -648,6 +651,43 @@ def queue_empty(sqs, queue: str) -> bool:
     return int(a["ApproximateNumberOfMessages"]) == 0 and int(a["ApproximateNumberOfMessagesNotVisible"]) == 0
 
 
+def _message_epoch(msg: dict) -> tuple:
+    """(site, t) of an S3-notification message, for ordering; unknown shapes sort first."""
+    try:
+        key = urllib.parse.unquote_plus(json.loads(msg["Body"])["Records"][0]["s3"]["object"]["key"])
+        _, site_name, t_str, _ = key.split("/")
+        return (site_name, float(t_str))
+    except Exception:
+        return ("", float("-inf"))
+
+
+def drain_in_order(sqs, queue: str, msgs: list, limit: int = 100) -> list:
+    """Take every message already waiting (up to ``limit``) and return them in epoch order.
+
+    The queue is SQS standard, which does not keep order, and S3 notifications cannot target a
+    FIFO queue. A backlog (the worker was stopped, or the camera uploaded after an outage)
+    would otherwise be processed shuffled: an early epoch could become the site reference, and
+    each epoch's forecast, state change and agent event would be computed against an
+    incomplete record. The visibility timeout is raised to cover the whole batch.
+    """
+    while len(msgs) < limit:
+        more = sqs.receive_message(QueueUrl=queue, MaxNumberOfMessages=10, WaitTimeSeconds=1,
+                                   VisibilityTimeout=600)
+        if not more.get("Messages"):
+            break
+        msgs.extend(more["Messages"])
+    if len(msgs) > 1:
+        hold = min(43200, 600 + 60 * len(msgs))
+        for m in msgs:
+            try:
+                sqs.change_message_visibility(QueueUrl=queue, ReceiptHandle=m["ReceiptHandle"],
+                                              VisibilityTimeout=hold)
+            except Exception:
+                pass
+        log.info("drained %d waiting epochs; processing them in time order", len(msgs))
+    return sorted(msgs, key=_message_epoch)
+
+
 def main() -> int:
     import boto3
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s",
@@ -668,10 +708,11 @@ def main() -> int:
     idle_stop = float(os.environ.get("TELLTALE_IDLE_STOP_MIN") or 0) * 60
     last_work = time.monotonic()
     while True:
-        resp = sqs.receive_message(QueueUrl=queue, MaxNumberOfMessages=1, WaitTimeSeconds=20,
+        resp = sqs.receive_message(QueueUrl=queue, MaxNumberOfMessages=10, WaitTimeSeconds=20,
                                    VisibilityTimeout=600)
         if resp.get("Messages"):
             last_work = time.monotonic()
+            resp["Messages"] = drain_in_order(sqs, queue, resp["Messages"])
         elif idle_stop and time.monotonic() - last_work > idle_stop and queue_empty(sqs, queue):
             # Scale to zero: the instance's shutdown behaviour is "stop", and the stack's wake
             # function starts it again when epochs are waiting.

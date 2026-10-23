@@ -132,6 +132,20 @@ site at 6 epochs a day keeps it running about 2 hours a day (each wake is one ep
 instead of 58.2 USD for compute alone. The dashboard is static on CloudFront and
 stays live while the worker sleeps.
 
+Measured on October 23: with the worker stopped, the 36-epoch demo was uploaded; the wake
+function started the instance 22 seconds after the last upload (its five-minute schedule
+happened to fire then; the bound is five minutes plus boot), and the epochs were processed.
+That first run exposed an ordering bug. SQS standard queues do not keep order, and S3 event
+notifications cannot target a FIFO queue, so the backlog came out shuffled: each epoch's
+forecast, state change and agent event was computed against an incomplete record, and an early
+epoch could have become the site reference. The worker now drains every waiting message (up to
+100), extends their visibility to cover the batch, and processes them sorted by epoch time;
+the previous state is taken by time, not arrival. Re-run with the service stopped and all 36
+epochs queued: the log reads `drained 36 waiting epochs; processing them in time order`, the
+epochs went through 0.0, 1.3, ..., 47.0 in order, the final forecast is CRITICAL with a window
+of 50.03 to 50.71 (true failure 50), and all six agent investigations are CONFIRMED.
+`test_backlog_is_processed_in_time_order` feeds a shuffled 36-message queue through the drain.
+
 ## 6. Evaluation
 
 **Headline.** On the public USGS time-lapse of an active coastal bluff, TellTale flagged 2 of 2 documented movement periods the camera could see and raised 0 false acceleration alarms across 147 quiet days in each of three zones; on the controlled sweep it measures displacement to 0.008 px, and on the public SEM DIC Challenge images to 0.005 px.

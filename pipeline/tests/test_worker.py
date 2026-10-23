@@ -102,3 +102,31 @@ def test_blind_epoch_is_recorded_not_dropped(tmp_path, monkeypatch):
     assert rec["usable"] is False and rec["reason"] == "BLIND"
     series = json.loads(store.get("public/sites/b/series.json"))
     assert len(series["records"]) == 1 and series["records"][0]["reason"] == "BLIND"
+
+
+class FakeSQS:
+    """Hands out queued messages in a shuffled order, ten at a time, like SQS standard."""
+
+    def __init__(self, ts):
+        rng = np.random.default_rng(3)
+        self.waiting = [{"ReceiptHandle": f"h{t}", "Body": json.dumps(
+            {"Records": [{"s3": {"object": {"key": f"ingest/demo-slope/{t:g}/manifest.json"}}}]})}
+            for t in rng.permutation(ts)]
+        self.hold = []
+
+    def receive_message(self, QueueUrl, MaxNumberOfMessages, WaitTimeSeconds, VisibilityTimeout):
+        out, self.waiting = self.waiting[:MaxNumberOfMessages], self.waiting[MaxNumberOfMessages:]
+        return {"Messages": out} if out else {}
+
+    def change_message_visibility(self, QueueUrl, ReceiptHandle, VisibilityTimeout):
+        self.hold.append(VisibilityTimeout)
+
+
+def test_backlog_is_processed_in_time_order():
+    ts = [i * 1.342857 for i in range(36)]
+    sqs = FakeSQS(ts)
+    first = sqs.receive_message("q", 10, 20, 600)["Messages"]
+    msgs = W.drain_in_order(sqs, "q", first)
+    got = [W._message_epoch(m)[1] for m in msgs]
+    assert len(got) == 36 and got == sorted(got)
+    assert min(sqs.hold) >= 600 + 60 * 36, "the whole batch must stay invisible while it is processed"
