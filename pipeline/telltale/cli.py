@@ -47,7 +47,8 @@ def _load_burst(folder: Path) -> list[np.ndarray]:
 def cmd_e1(args) -> int:
     rng = np.random.default_rng(args.seed)
     tex = make_texture(args.size, args.size, seed=args.seed)
-    grid = GridConfig(template=args.template, stride=args.stride, search=args.search)
+    grid = GridConfig(template=args.template, stride=args.stride, search=args.search,
+                      search_dtype=args.search_dtype)
     shifts = [0.125, 0.25, 0.375, 0.5, 0.75, 1.0, 1.5, 2.0]
     noises = [0.0, 0.01, 0.02]
     gains = [1.0, 0.85]
@@ -263,6 +264,7 @@ def build_parser() -> argparse.ArgumentParser:
     e1.add_argument("--template", type=int, default=41)
     e1.add_argument("--stride", type=int, default=24)
     e1.add_argument("--search", type=int, default=8)
+    e1.add_argument("--search-dtype", default="float32", choices=["float32", "uint8"])
     e1.add_argument("--seed", type=int, default=0)
     e1.add_argument("--out", default=None)
     e1.set_defaults(fn=cmd_e1)

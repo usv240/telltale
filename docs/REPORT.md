@@ -89,9 +89,12 @@ end-to-end test); model selection on the total camera motion fixed that (0.007 p
 ## 5. AWS deployment
 
 Stack `telltale`, us-east-1, created from `infra/cloudformation.yaml` on October 8, 2026.
-Worker: c8g.large (Graviton4, 2 vCPU), stock Ubuntu 24.04 arm64 AMI, pinned
-`opencv-python-headless==5.0.0.93`, `numpy==2.5.2`, `boto3==1.40.0`, installed by
-`infra/worker/bootstrap.sh` from a release tarball in the bucket, run as a systemd service.
+Worker: c8g.large (Graviton4, 2 vCPU). Since October 23 it boots the COOL Marketplace AMI
+`Graviton5-COOL-v3` (ami-033e481a24f94c8cb) and imports COOL's OpenCV 5.1.0-dev build (worker log
+and every epoch record: `runtime.cool = true`, cv2 under `/opt/cool/`); from October 8 to 22 it ran
+stock Ubuntu 24.04 arm64 with the pinned `opencv-python-headless==5.0.0.93`. `numpy==2.5.2` and
+`boto3==1.40.0` are pinned; `infra/worker/bootstrap.sh` installs the release tarball from the
+bucket and runs the worker as a systemd service, with a 20-minute idle stop (scale to zero).
 No inbound ports; operator access through SSM Session Manager. Bucket blocks public access;
 CloudFront reads `public/*` through an origin access control. Raw bursts expire after 30 days.
 Worker IAM: this bucket, this queue, the `TellTale` metrics namespace, SSM core.
@@ -338,28 +341,75 @@ the server, lists its tools and re-measures the demo's CRITICAL epoch (0.835 px 
 previous epoch, 5.600 px against the reference, coherence 1.0, stabilization OK); `.mcp.json`
 registers it for Claude Code in the repository.
 
-### E6 COOL benchmark (baseline measured, COOL pending)
+### E6 COOL benchmark (measured, October 23, 2026)
 
 `evaluation/e6_cool_benchmark.py`, 1080p synthetic workload, 7-frame burst, 3,234 subsets,
-10 warm repetitions.
+10 warm repetitions. The COOL cell and the same-host stock cell ran on one c8g.large booted from
+the COOL Marketplace AMI, one after the other, on the same pixels; the worker service was
+stopped during the runs. All 31 pipeline tests pass on the COOL build.
 
-| Cell | cv2 path | Threads | Epoch p50 | Stack | Stabilize | DIC | Epochs/hour | USD per 1,000 epochs |
-|---|---|---|---|---|---|---|---|---|
-| stock OpenCV 5 wheel, c8g.large (Graviton4, 0.07976 USD/h) | /opt/telltale/venv/... | 2 | 1.719 s | 0.474 | 0.687 | 0.560 | 2,094 | 0.038 |
-| stock OpenCV 5 wheel, c7i.large (x86, 0.08925 USD/h) | /opt/telltale/venv/... | 2 | 2.732 s | 0.688 | 1.147 | 0.902 | 1,318 | 0.068 |
-| COOL, c8g.large | /opt/cool/... | 2 | pending subscription | | | | | |
+| Cell | OpenCV | Epoch p50 | Stack | Stabilize | DIC | Epochs/hour | USD per 1,000 epochs |
+|---|---|---|---|---|---|---|---|
+| **COOL**, c8g.large, `Graviton5-COOL-v3` (ami-033e481a24f94c8cb), cv2 from `/opt/cool/python_3.12/...`, build hash 12740978f31483f2 | 5.1.0-dev | 1.833 s | 0.506 | 0.718 | 0.608 | 1,964 | 0.041 |
+| stock pip wheel, same instance | 5.0.0 | 1.719 s | 0.473 | 0.687 | 0.562 | 2,094 | 0.038 |
+| stock pip wheel, c8g.large, Ubuntu 24.04 (Oct 8) | 5.0.0 | 1.719 s | 0.474 | 0.687 | 0.560 | 2,094 | 0.038 |
+| stock pip wheel, c7i.large (x86, 0.08925 USD/h) | 5.0.0 | 2.732 s | 0.688 | 1.147 | 0.902 | 1,318 | 0.068 |
 
-Same release tarball, same pinned wheel, same synthetic pixels, both with the threaded DIC loop.
-Graviton4 is 1.6x faster per epoch than the matched-vCPU x86 instance and 44 percent cheaper per
-1,000 epochs at on-demand list prices before COOL is applied. An earlier single-threaded run on
-c8g.large measured 2.504 s per epoch; the thread pool over subsets brought the DIC stage from
-1.02 s to 0.56 s on two vCPUs.
+COOL did not speed up TellTale's pipeline as written: it is 6.6 percent slower per epoch, and
+the cost per 1,000 epochs rises from 0.038 to 0.041 USD. The same-host stock cell reproduces
+the October 8 baseline to the millisecond, so the difference is the build, not the machine. The
+operation table says why (p50, ms, stock then COOL):
 
-Op-level microbenchmark on c8g.large (p50, ms): 1,000 x matchTemplate 41-in-81: 152.5;
-warpPerspective Lanczos 1080p: 24.1; cornerMinEigenVal: 10.3; GaussianBlur sigma 3: 4.3;
-ORB 4,000 features: 64.0; median stack of 7: 72.4. The DIC stage is dominated by
-`matchTemplate` and the stabilizer by Lanczos warps and ORB, which are the operation classes
-COOL advertises as accelerated.
+| Operation as TellTale calls it | Stock 5.0.0 | COOL 5.1.0-dev | COOL speed-up |
+|---|---|---|---|
+| ORB, 4,000 features (stabilizer) | 64.2 | 44.2 | 1.45x |
+| cornerMinEigenVal (texture pre-screen) | 10.5 | 6.9 | 1.52x |
+| phaseCorrelate, half size (cross-check) | 11.2 | 10.0 | 1.12x |
+| matchTemplate 41-in-81, float32, x1,000 (DIC) | 152.5 | 161.7 | 0.94x |
+| warpAffine Lanczos, float32 (refinement pass) | 22.6 | 28.9 | 0.78x |
+| warpPerspective Lanczos, float32 (stabilizer warp) | 24.1 | 29.1 | 0.83x |
+| median of 7 frames (numpy) | 72.9 | 72.8 | 1.00x |
+
+COOL accelerates the feature and gradient operations, and TellTale's time is dominated by
+float32 template matching and float32 Lanczos warps, which COOL runs slower. A second probe
+(`evaluation/e6_interp_probe.py`, `evaluation/results/e6b_interp_*.json`) maps the build by
+interpolation and data type: COOL is 2.70x faster on Sobel, 1.96x on 8-bit nearest-neighbour
+affine warps, 1.08x on 8-bit template matching and 1.14x on float32 bilinear affine warps, and
+0.80x on float32 Lanczos warps.
+
+**Tuning for COOL, measured.** The probe suggested moving the DIC integer search onto 8-bit
+images, where COOL's `matchTemplate` is faster, while the re-sampling refinement stays float32
+(`GridConfig.search_dtype = "uint8"`). Accuracy is unchanged: the E1 gate is 0.0084 px with the
+8-bit search against 0.0085 px with float32, and the benchmark field's median displacement
+agrees to 0.0001 px. Speed, same host, 20 repetitions:
+
+| Build | float32 search | uint8 search |
+|---|---|---|
+| stock 5.0.0 | 1.717 s (DIC 0.561) | 1.711 s (DIC 0.554) |
+| COOL 5.1.0-dev | 1.834 s (DIC 0.610) | 1.808 s (DIC 0.580) |
+
+The 8-bit search takes 5 percent off COOL's DIC stage but COOL stays 5.7 percent slower per
+epoch, because the remaining gap sits in the float32 Lanczos warps of the stack, stabilize and
+refinement steps, and moving those to 8-bit would quantise the very images the sub-pixel
+measurement reads. So the finding we report is the measured one: on this workload the COOL
+build is verified, correct (31 of 31 tests, identical fields) and slightly slower; it is faster
+on the feature operations the stabilizer uses (ORB 1.45x, corner response 1.52x), which would
+matter for a feature-heavy pipeline and does not dominate this one. The comparison is also
+between versions (COOL ships 5.1.0-dev, pip 5.0.0), so part of the gap may be the version
+rather than the optimisation. The worker runs COOL in production for the award's verification
+requirement and because its cost is within 6 percent; `search_dtype` stays `float32` by
+default.
+
+**Which COOL image.** The same subscription offers `COOL-Graviton4-v2` (ami-01db31139bc5615d8),
+which ships OpenCV **4.14.0-pre**, and `Graviton5-COOL-v3`, which ships **5.1.0-dev** and runs on
+Graviton4. The competition requires OpenCV 5, so the worker uses v3. On both, cv2 and its
+libraries live outside the venv (`/opt/cool/python_3.12/site-packages`, `/opt/cool/cpp_sdk/lib`)
+and the venv's `activate` script adds them; `bootstrap.sh` copies those two paths into the
+service environment, which the first deployment did not do (it silently fell back to the stock
+wheel, and `runtime.cool = false` in the worker log is what caught it).
+
+Graviton4 against matched-vCPU x86 with the stock wheel: 1.6x faster per epoch and 44 percent
+cheaper per 1,000 epochs at on-demand list prices.
 
 ### E3b large motion: coarse-to-fine DIC against chaining (measured)
 

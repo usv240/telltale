@@ -336,8 +336,9 @@ Resources:
       InstanceInitiatedShutdownBehavior: stop
       BlockDeviceMappings:
         - DeviceName: /dev/sda1
-          # The COOL AMI ships a 50 GB root snapshot; a smaller volume fails the launch.
-          Ebs: { VolumeSize: !If [UseCool, 50, 20], VolumeType: gp3, DeleteOnTermination: true }
+          # COOL AMIs ship 50 to 80 GB root snapshots and a smaller volume fails the launch, so
+          # on COOL the volume takes the snapshot's own size.
+          Ebs: { VolumeSize: !If [UseCool, !Ref "AWS::NoValue", 20], VolumeType: gp3, DeleteOnTermination: true }
       Tags:
         - { Key: Name, Value: !Sub "${AWS::StackName}-worker" }
         - { Key: Project, Value: telltale }

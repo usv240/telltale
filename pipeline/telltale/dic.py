@@ -235,6 +235,14 @@ def compute_field(ref: np.ndarray, cur: np.ndarray, grid: GridConfig | None = No
         raise ValueError("reference and current epoch must have the same shape")
     ref = np.ascontiguousarray(ref, dtype=np.float32)
     cur = np.ascontiguousarray(cur, dtype=np.float32)
+    if grid.search_dtype == "uint8":
+        # The integer search and first peak fit run on 8-bit copies (the build's fastest
+        # matchTemplate path); the re-sampling refinement below still runs on float32, so the
+        # quantisation only perturbs the starting estimate it corrects.
+        ref_s = np.clip(np.rint(ref * 255.0), 0, 255).astype(np.uint8)
+        cur_s = np.clip(np.rint(cur * 255.0), 0, 255).astype(np.uint8)
+    else:
+        ref_s, cur_s = ref, cur
     half, s = grid.template // 2, grid.search
     xs, ys = grid_centers(ref.shape, grid, mask)
     n = len(xs)
@@ -265,8 +273,8 @@ def compute_field(ref: np.ndarray, cur: np.ndarray, grid: GridConfig | None = No
         if y0 < 0 or x0 < 0 or y1 > H or x1 > W:
             status[i] = STATUS_OUT_OF_BOUND
             return
-        win = cur[y0:y1, x0:x1]
-        r = cv2.matchTemplate(win, tpl, cv2.TM_CCOEFF_NORMED)
+        r = cv2.matchTemplate(cur_s[y0:y1, x0:x1], ref_s[y - half:y + half + 1, x - half:x + half + 1],
+                              cv2.TM_CCOEFF_NORMED)
         py, px = np.unravel_index(int(np.argmax(r)), r.shape)
         peak = float(r[py, px])
         corr[i] = peak

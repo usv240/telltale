@@ -47,12 +47,20 @@ upload never triggers processing). The first epoch of a site must include `--sit
 1. Subscribe to "Cloud Optimized OpenCV for AWS Graviton" on AWS Marketplace
    (https://aws.amazon.com/marketplace/pp/prodview-fdvbfiewzuehs). Subscription is a terms
    acceptance on the account; it is not automated here on purpose.
-2. Find the arm64 AMI id for your region, for example:
-   `aws ec2 describe-images --owners aws-marketplace --filters "Name=name,Values=*COOL*Graviton4*" --query "Images[].[ImageId,Name]"`
-3. `infra/scripts/deploy.sh --cool <ami-id>`.
+2. Pick the **v3** AMI. In us-east-1 the same subscription covers `COOL-Graviton4-v2`
+   (ami-01db31139bc5615d8), which ships **OpenCV 4.14.0-pre**, and `Graviton5-COOL-v3`
+   (ami-033e481a24f94c8cb), which ships **OpenCV 5.1.0-dev** and runs on Graviton4 c8g. The
+   competition requires OpenCV 5, so TellTale uses v3. List them with
+   `aws ec2 describe-images --owners aws-marketplace --filters "Name=name,Values=*COOL*" "Name=architecture,Values=arm64" --query "Images[].[ImageId,Name]"`
+   and check a candidate with `source /opt/cool/venvs/python_3.12/bin/activate && python3 -c "import cv2; print(cv2.__version__)"`.
+3. `infra/scripts/deploy.sh --cool <ami-id>`, or `aws cloudformation deploy ... --parameter-overrides CoolAmiId=<ami-id>`.
+   The root volume takes the AMI's snapshot size (60 GB for v3).
 
-`infra/worker/bootstrap.sh` detects `/opt/cool/venvs/python_3.12` and uses that interpreter, so
-the pipeline imports COOL's OpenCV 5 build. Every epoch record then carries
+`infra/worker/bootstrap.sh` finds a COOL venv whose `activate` script makes `import cv2` work,
+copies the `PYTHONPATH` and `LD_LIBRARY_PATH` that script sets (COOL keeps cv2 in
+`/opt/cool/python_3.12/site-packages` and its libraries in `/opt/cool/cpp_sdk/lib`, outside the
+venv) into the service environment, and runs the worker with that interpreter, so the pipeline
+imports COOL's OpenCV 5 build. Every epoch record then carries
 `runtime.cv2_file = /opt/cool/...`, `runtime.build_hash`, `runtime.instance_type` and
 `runtime.ami_id`; `forecast.json` exposes `runtime.cool = true` and the dashboard shows the
 "COOL on Graviton" badge. That is the proof-of-execution evidence the award asks for.

@@ -26,7 +26,7 @@ state, the gap, the risk if left, and the fix. Status: **open**, **in progress**
 | B4 | Vegetation mask (Stage D) implemented but not used by the worker | Judges will read the design and find dead code | Worker builds the mask from the trailing epochs and passes it to DIC; record coverage effect | closed |
 | B5 | Reference rotation / chained mode exists only in the E4 script | Long series will decorrelate; design says rotation exists | Site option `reference_mode: fixed | chained`; worker chains and integrates | closed |
 | B6 | DIC is single-threaded Python loop | Cost-per-epoch and COOL story both improve with parallel matchTemplate | ThreadPool over grid rows (matchTemplate releases the GIL); measure | closed |
-| B7 | E6 lacks the COOL cell (x86 done) | COOL award is 30 % "verified COOL" + 20 % measured value; baseline alone is not a comparison | c7i.large one-off run now; COOL after subscription | in progress |
+| B7 | E6 lacks the COOL cell (x86 done) | COOL award is 30 % "verified COOL" + 20 % measured value; baseline alone is not a comparison | COOL v3 AMI (OpenCV 5.1.0-dev) on the production worker; same-host COOL vs stock, op-level probe, and a COOL-tuned 8-bit search measured. COOL is 5.7 % slower on this workload and reported as such | closed (measured value is honest, not favourable) |
 | B8 | Dashboard has no explanations, tour, or landing page | UX 10 %: "usability, accessibility, quality of interaction" | Info popovers on every panel, "how to read this" drawer, landing page with the story and evidence, mobile and light-theme check, keyboard pass | closed except a formal accessibility audit (help disclosures, about page, replay scrubber, setup tool, keyboard-reachable controls) |
 | B9 | No agent; agentic award not claimed | 1,000 USD award unaddressed; "when present, judges credit agentic methods within overall criteria" | Bedrock Claude agent with MCP-style tools over the pipeline; bounded loop; traces; E5 agent-on arm | closed |
 | B10 | Worker runs as root-installed service with the instance role; no log shipping to CloudWatch Logs | Observability and security hygiene | Ship `/var/log/telltale-worker.log` via CloudWatch agent or structured logs to the `/telltale/worker` group | closed |
@@ -81,7 +81,7 @@ state, the gap, the risk if left, and the fix. Status: **open**, **in progress**
 | 8 Demo cannot break | pass | static replay, rule-policy fallback, offline clone |
 | 9 Practitioner or adoption | closed by published record | `docs/PUBLISHED-RECORD.md`: 30 opened sources mapping each stated need (Sendai 33(b) low-cost equipment, NDMA slope-scale timing gap, ISO 22327 district users, Brienz window plus political decision) to a TellTale feature; states plainly that no practitioner has evaluated TellTale |
 | 10 Shipped surface | pass | live URL, setup tool, offline demo |
-| 11 Limits as measured properties | closed except E2 photos and COOL cell | every limit has a number; two items still await the user |
+| 11 Limits as measured properties | closed except E2 photos | every limit has a number; COOL measured; E2 photos still await the user |
 | 12 Inspectable and rerunnable | pass | 31 tests, CI, result JSON, traces, MCP smoke test |
 
 | Coarse-to-fine DIC (`compute_field_pyramid`) | fixed reference follows 28 px of motion at 0.007 px MAE; removes the random-walk cost of chaining on textured scenes | closed |

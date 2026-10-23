@@ -98,7 +98,7 @@ claude mcp add telltale -- python -m agent.mcp_server   # or use the repo's .mcp
 | E1 named baselines | done | TellTale 0.004 px median vs Farneback 0.010, pyramidal LK 0.034, phase correlation 0.67 on the synthetic sweep |
 | E5 confounders (thresholds only) | done | zero false alarms under camera bump, lighting step, fog; non-rigid lens distortion partially caught |
 | E5 agent ablation (off / rules / Claude on Bedrock) | done | zero false pages in every arm; agent closes all seven camera-distortion events as false alarms and pages a person at confirmed acceleration, 42 time units before failure against 3 for thresholds alone |
-| E6 Graviton vs x86 | done | c8g.large 1.72 s per epoch vs c7i.large 2.73 s; 44 percent cheaper per 1,000 epochs; COOL cell pending subscription |
+| E6 Graviton vs x86, COOL vs stock | done | c8g.large 1.72 s per epoch vs c7i.large 2.73 s, 44 percent cheaper per 1,000 epochs; COOL (OpenCV 5.1.0-dev, Marketplace AMI) verified in production, passes all tests with identical fields, 5.7 to 6.6 percent slower per epoch on this workload, faster on ORB (1.45x) and corner response (1.52x) |
 
 ## Scope and responsible use
 

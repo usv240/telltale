@@ -116,6 +116,8 @@ def main(argv=None) -> int:
     p.add_argument("--price-per-hour", type=float, default=None,
                    help="on-demand USD/hour of this instance (plus COOL software fee if any)")
     p.add_argument("--threads", type=int, default=None, help="cv2.setNumThreads override")
+    p.add_argument("--search-dtype", default="float32", choices=["float32", "uint8"],
+                   help="DIC integer-search data type (GridConfig.search_dtype)")
     p.add_argument("--out", default=str(ROOT / "evaluation" / "results"))
     a = p.parse_args(argv)
     if a.threads is not None:
@@ -124,7 +126,7 @@ def main(argv=None) -> int:
     rt = runtime()
     print(json.dumps(rt, indent=1))
     ref, burst, stable = make_workload(a.res)
-    grid = GridConfig()
+    grid = GridConfig(search_dtype=a.search_dtype)
     print(f"workload {a.res}: {ref.shape[1]}x{ref.shape[0]}, burst of {len(burst)}, "
           f"{len(compute_field(ref, ref, GridConfig(search=2)).xs)} subsets")
 
