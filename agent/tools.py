@@ -64,6 +64,18 @@ class Toolbox:
         raw = self.store.get(f"{self.pub}/series.json")
         return json.loads(raw)["records"] if raw else []
 
+    def _snap(self, t: float) -> float:
+        """The stored epoch a caller means by ``t``. Models pass rounded times (38.9429 for
+        38.942857...), and an unsnapped time would make "previous" resolve to the epoch itself,
+        so any value within half the closest epoch spacing maps to that epoch."""
+        ts = sorted(r["t"] for r in self._series())
+        if not ts:
+            return float(t)
+        near = min(ts, key=lambda x: abs(x - t))
+        gaps = [b - a for a, b in zip(ts, ts[1:]) if b > a]
+        tol = 0.5 * min(gaps) if gaps else 1e-3
+        return float(near) if abs(near - t) <= tol else float(t)
+
     def _epoch_image(self, t: float, kind: str = "stabilized"):
         return _load_npy(self.store.get(f"{self.priv}/{kind}/{t:g}.npy"))
 
@@ -130,6 +142,7 @@ class Toolbox:
         increment since then), "reference" (the site reference), or "t=<value>" (a specific
         earlier usable epoch). Real ground motion is consistent across references; an artefact
         tied to one reference is not."""
+        t = self._snap(t)
         cur = self._epoch_image(t)
         if cur is None:
             return self._record("remeasure", {"t": t, "reference": reference},
@@ -137,7 +150,7 @@ class Toolbox:
         if reference == "reference":
             ref, ref_t = self._reference(t), None
         elif reference.startswith("t="):
-            ref_t = float(reference[2:])
+            ref_t = self._snap(float(reference[2:]))
             ref = self._epoch_image(ref_t)
         else:
             prev = self._usable_before(t, 1)
@@ -193,6 +206,7 @@ class Toolbox:
         the slope. mount_moved only says the camera pose differed from the reference and was
         corrected; a corrected pose with a small residual and scatter is a clean measurement,
         not evidence against ground motion."""
+        t = self._snap(t)
         stacked = self._epoch_image(t, "stacked")
         ref = self._reference(t)
         if stacked is None or ref is None:
@@ -210,6 +224,7 @@ class Toolbox:
     def inspect_quality(self, t: float) -> dict:
         """Image and matching quality for epoch t: sharpness, contrast, subset status counts,
         the phase-correlation cross-check, and burst stability."""
+        t = self._snap(t)
         rec = next((r for r in self._series() if r["t"] == t), None)
         img = self._epoch_image(t)
         out = {"t": t}
@@ -226,6 +241,7 @@ class Toolbox:
         """Direction coherence of the stored displacement field for epoch t per zone: the share
         of valid subsets moving within 45 degrees of the zone's median direction. Creep is
         coherent (above about 0.7); vegetation flutter, shadows and noise are not."""
+        t = self._snap(t)
         raw = self.store.get(f"{self.pub}/epochs/{t:g}/field.npz")
         if raw is None:
             return self._record("motion_coherence", {"t": t}, {"error": "no field stored"})
@@ -248,6 +264,7 @@ class Toolbox:
         """Page the duty contact with the evidence summary and signed approve / dismiss links.
         Use only when the acceleration is real or cannot be ruled out. The agent can never send
         a public alert itself."""
+        t = self._snap(t)
         links = self.alerting.links(self.site, t) if self.alerting else {}
         msg = (f"TellTale site {self.site}, epoch t={t:g}.\nAgent investigation summary:\n{summary}\n\n"
                f"APPROVE: {links.get('approve', 'n/a')}\nDISMISS: {links.get('dismiss', 'n/a')}\n")
@@ -259,6 +276,7 @@ class Toolbox:
     def close_event(self, t: float, verdict: str, reason: str) -> dict:
         """Close the investigation. verdict: CONFIRMED (real ground motion), FALSE_ALARM
         (artefact: camera, lighting, vegetation, blur), or INCONCLUSIVE (could not rule out)."""
+        t = self._snap(t)
         verdict = verdict.upper()
         if verdict not in ("CONFIRMED", "FALSE_ALARM", "INCONCLUSIVE"):
             verdict = "INCONCLUSIVE"

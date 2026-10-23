@@ -333,6 +333,15 @@ logged with time and source in `decisions.json`. On the live demo site the agent
 acceleration at t = 8.1 and again at the CRITICAL transition at t = 47, each with nine tool calls,
 and the human page carried its evidence summary.
 
+**A bug the live traces caught (October 23).** Re-seeding the demo through the COOL worker,
+Claude closed two genuine accelerations as FALSE_ALARM because `remeasure(t, "previous")` had
+returned 0.0004 px. The trace showed why: the model passed `t = 38.9429` for the epoch at
+38.942857, and "the last usable epoch before t" was the epoch itself. Every tool now snaps a
+time to the stored epoch within half the closest epoch spacing, and `test_worker.py` checks that
+a rounded time still resolves "previous" to the earlier epoch (it fails on the old code). The
+worker's own CRITICAL page fired regardless, so no warning was lost; the 32 Mukilteo and 391 E5
+traces contain no self-referenced re-measurement, because their epoch times were short.
+
 **Second transport: MCP.** `agent/mcp_server.py` exposes the same nine tools (plus `list_sites`)
 as a Model Context Protocol server (stdio, `mcp` 2.3), backed by the bucket or by a local
 store. The worker's tool runner is the production path and the MCP server is the open one;

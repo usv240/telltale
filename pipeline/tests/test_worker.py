@@ -66,6 +66,15 @@ def test_local_worker_end_to_end(tmp_path, scene, monkeypatch):
     assert log["events"] and all(e["verdict"] == "CONFIRMED" for e in log["events"])
     assert any(e["paged_human"] for e in log["events"])
     assert counter.pages, "a human must have been paged"
+    # A model passes rounded epoch times; "previous" must still mean the epoch before, not
+    # the epoch itself (which reads as zero motion and closed real creep as a false alarm).
+    from agent.tools import Toolbox
+    tb = Toolbox(store, "t", None)
+    t_last = recs[-1]["t"]
+    exact = tb.remeasure(t_last, "previous")
+    rounded = tb.remeasure(round(t_last - 1e-4, 4) + 4e-5, "previous")
+    assert exact["reference_t"] < t_last and rounded["reference_t"] == exact["reference_t"]
+    assert rounded["zones"]["slope"]["magnitude"] > 0.05
     # unknown site keys from a newer client are tolerated
     assert SiteConfig.from_json_dict({**asdict(cfg), "future": 1}).name == "t"
 
