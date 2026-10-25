@@ -31,6 +31,8 @@ jobs:
       - name: E1 accuracy gate
         working-directory: pipeline
         run: python -m telltale e1 --trials 2 --out ../out/e1-${{ matrix.arch }}
+      - name: Verify every headline claim against the result files
+        run: python evaluation/verify_claims.py --skip-live
       - name: Offline worker path (local store)
         run: python infra/scripts/seed_demo.py --local out/demo-${{ matrix.arch }} --epochs 12 --size 192
       - uses: actions/upload-artifact@v4

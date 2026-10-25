@@ -287,7 +287,8 @@ class Toolbox:
         t = self._snap(t)
         links = self.alerting.links(self.site, t) if self.alerting else {}
         msg = (f"TellTale site {self.site}, epoch t={t:g}.\nAgent investigation summary:\n{summary}\n\n"
-               f"APPROVE: {links.get('approve', 'n/a')}\nDISMISS: {links.get('dismiss', 'n/a')}\n")
+               + (f"EVIDENCE (the images the agent re-measured): {links['evidence']}\n\n" if links.get("evidence") else "")
+               + f"APPROVE: {links.get('approve', 'n/a')}\nDISMISS: {links.get('dismiss', 'n/a')}\n")
         if self.alerting:
             self.alerting.publish(f"TellTale CRITICAL (agent-verified): {self.site}", msg)
         out = {"t": t, "paged": bool(self.alerting and self.alerting.topic), "links_issued": bool(links)}

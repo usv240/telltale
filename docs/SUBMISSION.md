@@ -90,6 +90,8 @@ investigate a site.
 
 ### Accomplishments that we're proud of
 
+A judge can press one button and watch a slope collapse go through the real system: the queue,
+the self-waking COOL worker on Graviton and the Claude agent, live, in about four minutes.
 Two numbers from data we did not make (the USGS record and the SEM DIC Challenge). A negative
 control as the headline. A named baseline beaten (Farneback, pyramidal LK, phase correlation). An
 agent whose visual evidence is on screen: each investigation shows the displacement fields it
@@ -116,6 +118,8 @@ Manager, AWS CloudFormation, Amazon Bedrock, Claude, Anthropic SDK, Model Contex
 
 ## Try it out
 
+- **Run it live:** https://d30le2uwgaimao.cloudfront.net/?site=live-demo, then press "Start a new
+  collapse on AWS" and watch S3, the COOL worker and the Claude agent process it in about four minutes
 - Live dashboard: https://d30le2uwgaimao.cloudfront.net/
 - How it works: https://d30le2uwgaimao.cloudfront.net/about.html
 - Code, report and one-command verification: https://github.com/usv240/telltale

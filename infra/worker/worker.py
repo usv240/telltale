@@ -387,6 +387,7 @@ class Alerting:
     def __init__(self):
         self.topic = os.environ.get("TELLTALE_ALERT_TOPIC") or None
         self.url = (os.environ.get("TELLTALE_APPROVAL_URL") or "").rstrip("/") or None
+        self.dashboard = (os.environ.get("TELLTALE_DASHBOARD_URL") or "").rstrip("/") or None
         self.secret = os.environ.get("TELLTALE_APPROVAL_SECRET") or None
         param = os.environ.get("TELLTALE_SECRET_PARAM")
         if self.secret is None and param:
@@ -407,8 +408,12 @@ class Alerting:
         if not (self.url and self.secret):
             return {}
         ts = f"{t:g}"
-        return {a: f"{self.url}/?site={site}&t={ts}&action={a}&token={self.sign(site, ts, a)}"
-                for a in ("approve", "dismiss")}
+        out = {a: f"{self.url}/?site={site}&t={ts}&action={a}&token={self.sign(site, ts, a)}"
+               for a in ("approve", "dismiss")}
+        if self.dashboard:
+            # the investigation itself, with the fields the agent re-measured, one click away
+            out["evidence"] = f"{self.dashboard}/?site={site}&event={ts}"
+        return out
 
     def publish(self, subject: str, message: str) -> None:
         if not self.topic:
@@ -556,6 +561,7 @@ def _finish(store, site: SiteConfig, site_name: str, record: dict, fld, t0: floa
                f"Forecast failure window: t = {z.get('t_lo')} to {z.get('t_hi')} (median {z.get('tf')}), "
                f"R2 {z.get('r2')}.\n"
                + (f"Agent verdict: {trace['verdict']} ({trace['summary'][:300]})\n" if trace else "")
+               + (f"Dashboard: {links['evidence'].split('&event=')[0]}\n" if links.get("evidence") else "")
                + f"\nNo public alert is sent automatically. Decide:\n"
                f"APPROVE: {links.get('approve', 'approval link not configured')}\n"
                f"DISMISS: {links.get('dismiss', 'approval link not configured')}\n")

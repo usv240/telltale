@@ -96,6 +96,7 @@ input, select, textarea, button { font: inherit; color: inherit; caret-color: va
 .btn:active { transform: scale(0.97); }
 .btn-primary { background: var(--primary); color: var(--on-primary); }
 .btn-secondary { background: var(--surface); border-color: var(--control); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
 .btn-ghost { background: transparent; color: var(--muted); padding: 0 8px; }
 .btn-sm { height: 30px; padding: 0 10px; font-size: 13px; }
 @media (hover: hover) and (pointer: fine) {
@@ -239,6 +240,19 @@ details.help p { max-width: 70ch; }
 .evidence img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 6px; background: var(--raised); }
 .evidence figcaption { margin-top: 6px; font-size: 13px; color: var(--muted); line-height: 1.4; }
 .evidence figcaption b { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+.live-run { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.live-note { margin: 0; font-size: 13px; color: var(--muted); max-width: 34ch; text-align: right; }
+.is-waiting .kpis, .is-waiting .grid { display: none; }
+.waiting { margin-top: 16px; }
+.waiting h2 { font-size: 18px; margin: 0 0 6px; }
+.waiting-lead { margin: 0 0 14px; max-width: 72ch; color: var(--muted); }
+.waiting-steps { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.waiting-steps li { display: grid; grid-template-columns: 22px 1fr; gap: 10px; align-items: baseline; font-size: 15px; }
+.waiting-steps li::before { content: ""; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--border); justify-self: center; transform: translateY(1px); }
+.waiting-steps li.done::before { background: var(--chart-3); border-color: var(--chart-3); }
+.waiting-steps li.now::before { border-color: var(--chart-3); }
+.waiting-steps li span { color: var(--muted); font-size: 13px; margin-left: 6px; }
+@media (max-width: 860px) { .live-run { align-items: stretch; } .live-note { text-align: left; } }
 .calls { margin-top: 10px; }
 .calls > summary { cursor: pointer; font-size: 13px; color: var(--muted); list-style: none; }
 .calls > summary::-webkit-details-marker { display: none; }

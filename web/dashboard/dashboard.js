@@ -64,8 +64,26 @@
 
   async function loadSite(site) {
     const base = `${ROOT}/${site}`;
-    const [cfg, series, fc] = await Promise.all([
-      getJSON(`${base}/site.json`), getJSON(`${base}/series.json`), getJSON(`${base}/forecast.json`)]);
+    const isLive = !!LIVE && site === LIVE.site;
+    $("live-run").hidden = !isLive;
+    let run = null;
+    if (isLive) {
+      try { run = await getJSON(`${base}/run.json`); } catch (e) { /* never run */ }
+      refreshLiveStatus();
+    }
+    let cfg, series, fc;
+    try {
+      [cfg, series, fc] = await Promise.all([
+        getJSON(`${base}/site.json`), getJSON(`${base}/series.json`), getJSON(`${base}/forecast.json`)]);
+    } catch (e) {
+      if (!isLive) throw e;
+      series = { records: [] };
+    }
+    const n = series.records.length;
+    liveActive = isLive && !!run && n < run.epochs && Date.now() / 1000 - run.started < 1800;
+    if (isLive && (n < 2 || !fc)) { renderWaiting(site, run, series); return; }
+    document.getElementById("main").classList.remove("is-waiting");
+    $("waiting").hidden = true;
     let agentlog = { events: [] }, decisions = { decisions: [] };
     try { agentlog = await getJSON(`${base}/agentlog.json`); } catch (e) { /* none yet */ }
     try { decisions = await getJSON(`${base}/decisions.json`); } catch (e) { /* none yet */ }
@@ -73,6 +91,57 @@
     setupReplay(lastData);
     if (replayIndex === null) render(lastData);
   }
+
+  // ------------------------------------------------------------------ run it live
+  let LIVE = null, liveActive = false;
+  const ago = (s) => s < 90 ? `${Math.round(s)} s` : `${Math.round(s / 60)} min`;
+  function renderWaiting(site, run, series) {
+    liveActive = !!run;
+    document.getElementById("main").classList.add("is-waiting");
+    $("waiting").hidden = false;
+    $("site-title").textContent = site;
+    $("cool-badge").hidden = true;
+    $("decision-note").hidden = true;
+    const pillEl = $("state-pill");
+    pillEl.className = "pill pill-neutral";
+    pillEl.textContent = run ? "Running" : "Not run yet";
+    $("approval-actions").innerHTML = "";
+    $("scope-line").textContent = "Simulated slope · the real cloud path · one run every 20 minutes";
+    const n = series.records.length, since = run ? Date.now() / 1000 - run.started : 0;
+    $("status-line").innerHTML = run
+      ? `<b>Run started ${ago(since)} ago.</b> ${n ? "The worker is processing the first epochs." : "The worker is starting up; the first epoch arrives in about a minute."}`
+      : "<b>Press Start to send a slope collapse through the real system.</b> It takes about five minutes.";
+    const steps = [
+      [!!run, "Camera bursts copied into S3 ingest/", run ? `${run.epochs} epochs` : ""],
+      [n > 0, "Graviton4 worker on COOL started, reading the queue in time order", n || !run ? "" : "booting"],
+      [false, "Epochs stacked, stabilised, measured and forecast", run ? `${n} of ${run.epochs}` : ""],
+      [false, "The agent re-measures each event before a person is paged", ""],
+    ];
+    const firstOpen = steps.findIndex((s) => !s[0]);
+    $("waiting-steps").innerHTML = steps.map((s, i) => `<li class="${s[0] ? "done" : i === firstOpen ? "now" : ""}">${esc(s[1])}${s[2] ? `<span>${esc(s[2])}</span>` : ""}</li>`).join("");
+  }
+  async function refreshLiveStatus() {
+    if (!LIVE) return;
+    try {
+      const st = await (await fetch(LIVE.url, { cache: "no-store" })).json();
+      const wait = Math.max(0, st.next_allowed - st.now);
+      $("live-start").disabled = wait > 0;
+      $("live-note").textContent = wait > 0
+        ? `Last run started ${ago(st.now - st.last_run)} ago. The next one can start in ${ago(wait)}.`
+        : `Runs the real pipeline, COOL and the Claude agent on AWS. ${st.runs_today} of ${st.daily_limit} runs used today.`;
+    } catch (e) { $("live-note").textContent = "The live-run service is not reachable right now."; }
+  }
+  $("live-start").addEventListener("click", async () => {
+    const b = $("live-start");
+    b.disabled = true; $("live-note").textContent = "Copying the camera bursts into S3…";
+    try {
+      const r = await fetch(LIVE.url, { method: "POST" });
+      const st = await r.json();
+      $("live-note").textContent = r.ok ? "Started. The worker is waking up; follow it below." : (st.error || `Not started (${r.status}).`);
+    } catch (e) { $("live-note").textContent = "Could not reach the live-run service."; b.disabled = false; }
+    replayIndex = null;
+    loadSite(LIVE.site).catch(() => {});
+  });
 
   function setupReplay(d) {
     const box = $("replay"), s = $("scrub");
@@ -446,6 +515,8 @@
   (async function boot() {
     try {
       const index = await getJSON(`${ROOT}/index.json`);
+      try { LIVE = await getJSON("live.json"); } catch (e) { LIVE = null; }
+      if (LIVE && !index.some((s) => s.site === LIVE.site)) index.push({ site: LIVE.site, state: "QUIET" });
       const sel = $("site");
       sel.innerHTML = "";
       for (const s of index) {
@@ -463,7 +534,12 @@
         loadSite(sel.value);
       });
       await loadSite(want);
-      setInterval(() => { if (replayIndex === null && !playTimer) loadSite(sel.value).catch(() => {}); }, 15000);
+      let tick = 0;
+      setInterval(() => {
+        tick++;
+        // every 15 s normally; every 5 s while a live run is being processed
+        if (replayIndex === null && !playTimer && (liveActive || tick % 3 === 0)) loadSite(sel.value).catch(() => {});
+      }, 5000);
     } catch (e) {
       $("status-line").textContent = `Could not load data from "${ROOT}": ${e.message}. For an offline demo, open index.html?root=demo-data/public/sites after running seed_demo.py --local web/dashboard/demo-data.`;
       $("state-pill").textContent = "No data";

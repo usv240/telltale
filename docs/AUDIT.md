@@ -102,4 +102,5 @@ state, the gap, the risk if left, and the fix. Status: **open**, **in progress**
 | 16 Read the rubric weighting | pass | technical execution 30, innovation 20, impact 20, UX 10, documentation 10; rigour scores here, so the submission leads with the measured numbers and the verifier |
 | 17 Gallery shows the product | pass | `docs/gallery/` 01 to 04 are the product: forecast and approve button, the real landslide, the agent's evidence, the real record in the dashboard; architecture is last |
 | 18 Open with a known failure | pass | submission and video open on Bingham Canyon 2013 against Wayanad 2024, both sourced in `docs/PUBLISHED-RECORD.md` |
+| 8 Demo cannot break, and runs live (re-checked) | pass | judges can start a real run from the dashboard (rate-limited Lambda, three staged variants); the static demo sites stay as they were |
 | 9 Practitioner (re-checked) | partial, cannot close | the team cannot contact practitioners; `docs/PUBLISHED-RECORD.md` maps each published need to a feature and says plainly that no practitioner has evaluated TellTale |

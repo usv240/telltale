@@ -354,6 +354,7 @@ Resources:
           export TELLTALE_SECRET_PARAM=/${AWS::StackName}/approval-secret
           export TELLTALE_AGENT=${AgentMode}
           export TELLTALE_IDLE_STOP_MIN=${IdleStopMinutes}
+          export TELLTALE_DASHBOARD_URL=https://${Distribution.DomainName}
           mkdir -p /opt/telltale && cd /opt/telltale
           apt-get update -y
           apt-get install -y python3-venv python3-pip unzip curl
@@ -442,6 +443,149 @@ Resources:
       Principal: events.amazonaws.com
       SourceArn: !GetAtt WakeSchedule.Arn
 
+  # ---------------------------------------------------------------- run it live
+  # A judge (or anyone) presses one button on the dashboard: a pre-rendered slope collapse is
+  # copied into ingest/ for the site live-demo, the worker is started, and the real pipeline,
+  # COOL and the Claude agent process it while the page watches. One run per 20 minutes and
+  # twelve per day, so the endpoint's cost is bounded (about 1 USD a run, mostly Bedrock).
+  LiveRunRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal: { Service: lambda.amazonaws.com }
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: telltale-live-run
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action: [s3:ListBucket]
+                Resource: !Sub arn:aws:s3:::telltale-${AWS::AccountId}
+                Condition: { StringLike: { "s3:prefix": ["samples/live-demo/*"] } }
+              - Effect: Allow
+                Action: [s3:GetObject]
+                Resource:
+                  - !Sub arn:aws:s3:::telltale-${AWS::AccountId}/samples/live-demo/*
+                  - !Sub arn:aws:s3:::telltale-${AWS::AccountId}/private/live/*
+                  - !Sub arn:aws:s3:::telltale-${AWS::AccountId}/public/sites/live-demo/*
+              - Effect: Allow
+                Action: [s3:PutObject]
+                Resource:
+                  - !Sub arn:aws:s3:::telltale-${AWS::AccountId}/ingest/live-demo/*
+                  - !Sub arn:aws:s3:::telltale-${AWS::AccountId}/private/live/*
+                  - !Sub arn:aws:s3:::telltale-${AWS::AccountId}/public/sites/live-demo/*
+              - Effect: Allow
+                Action: [s3:DeleteObject]
+                Resource: !Sub arn:aws:s3:::telltale-${AWS::AccountId}/private/sites/live-demo/*
+              - Effect: Allow
+                Action: [ec2:StartInstances]
+                Resource: !Sub arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:instance/${Worker}
+
+  LiveRunFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-live-run
+      Runtime: python3.12
+      Architectures: [arm64]
+      Handler: index.handler
+      Timeout: 60
+      Role: !GetAtt LiveRunRole.Arn
+      Environment:
+        Variables:
+          BUCKET: !Sub telltale-${AWS::AccountId}
+          INSTANCE: !Ref Worker
+      Code:
+        ZipFile: |
+          import json, os, time, random, boto3
+          s3 = boto3.client("s3"); ec2 = boto3.client("ec2")
+          B, INST, SITE = os.environ["BUCKET"], os.environ["INSTANCE"], "live-demo"
+          RUNS, GAP, DAILY = "private/live/runs.json", 20 * 60, 12
+          PUB, PRIV, SAMPLES = f"public/sites/{SITE}", f"private/sites/{SITE}", f"samples/{SITE}/"
+          def out(code, body):
+              return {"statusCode": code, "headers": {"content-type": "application/json", "cache-control": "no-store"},
+                      "body": json.dumps(body)}
+          def get(key, default):
+              try:
+                  return json.loads(s3.get_object(Bucket=B, Key=key)["Body"].read())
+              except Exception:
+                  return default
+          def put(key, obj):
+              s3.put_object(Bucket=B, Key=key, Body=json.dumps(obj).encode(), ContentType="application/json",
+                            CacheControl="no-store")
+          def handler(event, ctx):
+              method = (event.get("requestContext", {}).get("http", {}) or {}).get("method", "GET")
+              runs, now = get(RUNS, []), time.time()
+              last = max((r["at"] for r in runs), default=0)
+              today = [r for r in runs if now - r["at"] < 86400]
+              status = {"last_run": last or None, "runs_today": len(today), "daily_limit": DAILY,
+                        "next_allowed": max(now, last + GAP, (min(r["at"] for r in today) + 86400) if len(today) >= DAILY else 0),
+                        "epochs": runs[-1]["epochs"] if runs else None, "now": now}
+              if method == "OPTIONS":
+                  return out(204, {})
+              if method != "POST":
+                  return out(200, status)
+              if now < status["next_allowed"]:
+                  return out(429, dict(status, error="A run is already under way or the limit is reached. Watch the current one."))
+              pages = s3.get_paginator("list_objects_v2").paginate(Bucket=B, Prefix=SAMPLES, Delimiter="/")
+              variants = [p["Prefix"] for page in pages for p in page.get("CommonPrefixes", [])]
+              if not variants:
+                  return out(503, dict(status, error="No staged samples. Run infra/scripts/stage_live_demo.py."))
+              variant = random.choice(variants)
+              keys = [o["Key"] for page in s3.get_paginator("list_objects_v2").paginate(Bucket=B, Prefix=variant)
+                      for o in page.get("Contents", [])]
+              epochs = sorted({k.split("/")[3] for k in keys if k.count("/") >= 4})
+              # Reset the site so the run starts from its own reference, not the last run's.
+              for k in ("reference.npy", "previous.npy"):
+                  s3.delete_object(Bucket=B, Key=f"{PRIV}/{k}")
+              put(f"{PUB}/series.json", {"records": []})
+              put(f"{PUB}/agentlog.json", {"events": []})
+              put(f"{PUB}/run.json", {"started": now, "variant": variant.rstrip("/").split("/")[-1], "epochs": len(epochs)})
+              for e in epochs:
+                  mk = f"{variant}{e}/manifest.json"
+                  man = json.loads(s3.get_object(Bucket=B, Key=mk)["Body"].read())
+                  dest = f"ingest/{SITE}/{man['t']:g}/"
+                  for f in man["frames"]:
+                      s3.copy_object(Bucket=B, Key=dest + f, CopySource={"Bucket": B, "Key": f"{variant}{e}/{f}"})
+                  s3.copy_object(Bucket=B, Key=dest + "manifest.json", CopySource={"Bucket": B, "Key": mk})
+              runs = (today + [{"at": now, "variant": variant, "epochs": len(epochs)}])[-50:]
+              put(RUNS, runs)
+              try:
+                  ec2.start_instances(InstanceIds=[INST])
+              except Exception as e:
+                  print("start:", e)
+              return out(202, dict(status, last_run=now, runs_today=len(runs), epochs=len(epochs), next_allowed=now + GAP,
+                                   started=True))
+
+  LiveRunUrl:
+    Type: AWS::Lambda::Url
+    Properties:
+      TargetFunctionArn: !Ref LiveRunFunction
+      AuthType: NONE
+      Cors:
+        AllowOrigins: [!Sub "https://${Distribution.DomainName}"]
+        AllowMethods: [GET, POST]
+        MaxAge: 300
+
+  LiveRunUrlPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref LiveRunFunction
+      Action: lambda:InvokeFunctionUrl
+      Principal: "*"
+      FunctionUrlAuthType: NONE
+
+  LiveRunInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref LiveRunFunction
+      Action: lambda:InvokeFunction
+      Principal: "*"
+      InvokedViaFunctionUrl: true
+
   # ---------------------------------------------------------------- liveness alarms
   QueueAgeAlarm:
     Type: AWS::CloudWatch::Alarm
@@ -528,5 +672,8 @@ Outputs:
     Value: !Sub https://${Distribution.DomainName}/
   WorkerInstanceId:
     Value: !Ref Worker
+  LiveRunUrl:
+    Description: POST starts a live run of the demo collapse (rate limited); GET returns its status
+    Value: !GetAtt LiveRunUrl.FunctionUrl
   WorkerAmi:
     Value: !If [UseCool, !Ref CoolAmiId, !Ref WorkerAmiId]

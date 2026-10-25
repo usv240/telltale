@@ -1,5 +1,7 @@
 # TellTale
 
+[![tests and claims](https://github.com/usv240/telltale/actions/workflows/tests.yml/badge.svg)](https://github.com/usv240/telltale/actions/workflows/tests.yml)
+
 **TellTale stacks bursts from any fixed camera, removes the camera's own motion, measures ground creep to a hundredth of a pixel, forecasts the failure window, re-measures to verify it, and pages a person.**
 
 On the public USGS time-lapse of an active coastal bluff, TellTale flagged 2 of 2 documented movement periods the camera could see and raised 0 false acceleration alarms across 147 quiet days in each of three zones; on the controlled sweep it measures displacement to 0.008 px, and on the public SEM DIC Challenge images to 0.005 px.

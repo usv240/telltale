@@ -124,6 +124,15 @@ after 30 days), SQS, CloudFront, Lambda and CloudWatch stay in free-tier territo
 scale. Each agent investigation on Bedrock (Claude Sonnet 4.5, about 25k input and 1.3k output
 tokens) costs a few cents and happens only on events, not on every epoch.
 
+**Run it live.** The dashboard's `live-demo` site has a "Start a new collapse on AWS" button. A
+Lambda (function URL, CORS limited to the dashboard's origin) copies one of three pre-rendered
+collapses (`infra/scripts/stage_live_demo.py`, true failure at t = 50, jitter 0.6 to 1.2 px) into
+`ingest/live-demo/`, resets the site's reference, and starts the worker; from there it is the
+production path. One run per 20 minutes and twelve a day bound the cost at about 1 USD a run,
+mostly Bedrock. First run, October 25: 36 epochs processed on COOL in under three minutes,
+CRITICAL with a window of 49.8 to 58.3 (truth 50), five investigations CONFIRMED, each with its
+evidence images; a second press during the run was refused.
+
 **Scale to zero.** The always-on column is the cost of a worker that waits. With
 `IdleStopMinutes` (default 20) the worker stops its own instance once the queue has been empty
 that long, and a scheduled Lambda starts it again within five minutes of an epoch arriving; if

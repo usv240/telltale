@@ -62,6 +62,10 @@
         <select id="site" aria-label="Site"></select>
       </label>
       <div id="approval-actions" class="actions"></div>
+      <div id="live-run" class="live-run" hidden>
+        <button id="live-start" class="btn btn-secondary" type="button">Start a new collapse on AWS</button>
+        <p id="live-note" class="live-note" aria-live="polite"></p>
+      </div>
     </div>
   </header>
   <p id="decision-note" class="decision-note" hidden></p>
@@ -73,6 +77,12 @@
     <div class="kpi"><span class="kpi-label">Velocity, short average</span><span class="kpi-value" id="k-vel">–</span><span class="kpi-sub" id="k-vel-sub"></span></div>
     <div class="kpi"><span class="kpi-label">Onset of acceleration</span><span class="kpi-value" id="k-ooa">–</span><span class="kpi-sub" id="k-ooa-sub"></span></div>
     <div class="kpi"><span class="kpi-label">Epochs usable</span><span class="kpi-value" id="k-epochs">–</span><span class="kpi-sub" id="k-epochs-sub"></span></div>
+  </section>
+
+  <section id="waiting" class="panel waiting" hidden aria-live="polite">
+    <h2>A live run is under way</h2>
+    <p class="waiting-lead">A simulated slope, creeping to failure at t = 50, is going through the real system: S3, the queue, the Graviton worker running COOL, and the Claude agent. This page updates every few seconds.</p>
+    <ol class="waiting-steps" id="waiting-steps"></ol>
   </section>
 
   <div class="grid">

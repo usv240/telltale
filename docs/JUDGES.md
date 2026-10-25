@@ -4,6 +4,13 @@ Everything below works without contacting us. Times are what it took us on a lap
 
 ## 1. See it working (2 minutes)
 
+**Run it yourself, live:** open https://d30le2uwgaimao.cloudfront.net/?site=live-demo and press
+**Start a new collapse on AWS**. A simulated slope goes through the real system while you watch:
+S3 ingest, the SQS queue, the Graviton4 worker running COOL (it wakes itself), and the Claude
+agent re-measuring each event before it pages a person. About three to five minutes; one run
+every 20 minutes. Then open any investigation to see the fields it re-measured.
+
+
 Open https://d30le2uwgaimao.cloudfront.net/ . Switch the site selector to `mukilteo-usgs`:
 that is the USGS coastal-bluff landslide record (public domain) processed by the unmodified
 worker (its forecast panel shows daily motion, with the steps the agent confirmed in blue,
