@@ -73,7 +73,7 @@ def run_arm(arm: str, out: Path, size: int, seed: int) -> dict:
         fc = json.loads(store.get(f"public/sites/{name}/forecast.json"))
         raw = store.get(f"public/sites/{name}/agentlog.json")
         events = json.loads(raw)["events"] if raw else []
-        pages = [p for p in counter.pages if "CRITICAL" in p["subject"]]
+        pages = [p for p in counter.pages if "left CRITICAL" not in p["subject"]]   # every page to a person
         results[name] = {
             "final_state": fc["state"], "true_tf": true_tf,
             "pages": len(pages), "false_page": bool(pages) and true_tf is None,

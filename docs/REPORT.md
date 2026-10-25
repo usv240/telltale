@@ -34,6 +34,46 @@ motion, forecast the failure window with uncertainty, and put a person in the lo
 alert. Measured precision: about 0.01 px on synthetic imagery (E1) and 0.1 to 0.4 px of daily
 scatter on a real vegetated bluff (E4); it is not a substitute for radar where radar exists.
 
+## 1b. Prior work, and what TellTale adds
+
+The measurement is not new and we do not claim it is. Correlating fixed-camera images to track
+a landslide is published (Travelletti et al. 2012; Khan et al. 2021; Muhammad et al. 2022;
+Hendrickx et al. 2025), the inverse-velocity forecast is decades old (Fukuzono 1985; Carlà et
+al. 2017), and both are sold as expert services. What existed did not join them into something
+an office without a geotechnical team can run.
+
+| Prior work | What it does | What it leaves open |
+|---|---|---|
+| Camera image correlation in research (Travelletti 2012, Khan 2021, Hendrickx 2025) | measures surface motion from a fixed camera, validated against GPS, total station or InSAR | processed by experts after the fact; no failure forecast; camera motion, weather and light named as the main limits but not handled automatically |
+| Commercial photo-monitoring (for example NHAZCA PhotoMonitoring) | sub-pixel correlation as a service | an expert reads every result; priced as a consultancy |
+| Ground-based radar with inverse velocity (mines) | forecasts failure; Bingham Canyon 2013 | cost limits most sites to one unit (CSIRO) |
+| Satellite InSAR (Carlà et al. 2019) | wide-area motion; failures visible in retrospect | revisits every few days; cannot follow the last days of acceleration |
+| Open DIC libraries (py2DIC, DICe, OpenCorr) | correlation toolkits for the laboratory | no outdoor camera-motion handling, no forecast, no alerting |
+| Hackathon landslide projects (2024 to 2026, Devpost and GitHub) | soil-moisture or tilt sensor boxes, or satellite-image classifiers | none measures displacement or forecasts a failure time |
+
+What TellTale adds, each with its measurement:
+
+1. **The whole loop, unattended:** camera, stack, stabilize, measure, forecast, verify, page a
+   person, record the decision. It is open source and deploys from one CloudFormation template
+   at about 1.40 USD per slope per month (section 5).
+2. **A forecast that survives real data.** The textbook onset rule raised 371 false acceleration
+   epochs on the quiet days of the USGS record. Two statistical gates, a signal-to-noise floor
+   and a significant quadratic term, brought that to 0 without losing either documented
+   movement period (E4b).
+3. **The camera's own failures are measured, not hidden.** A stabilizer selects the camera
+   model, and if stable ground still moves the epoch is a CAMERA_EVENT. BLIND and BLURRED
+   epochs are recorded, never shown as "no movement". The confounders the literature names
+   (camera motion, light, weather) are each measured in E5. Non-rigid lens distortion is the one
+   that partly gets through, and it is reported.
+4. **An agent that must look again before it wakes anyone.** Claude on Amazon Bedrock can only
+   decide by re-running OpenCV against an independent reference, checking coherence and
+   checking the camera. Every re-measured field is kept as an image beside the trace, and a
+   person is paged at most once per episode. In the ablation it kept zero false pages and paged
+   41.9 time units before failure, against 3.0 for thresholds alone (E5).
+5. **Reproducible.** `python evaluation/verify_claims.py` checks every headline number against
+   the result files and re-runs the accuracy sweep. A judge can also start a live run of the
+   whole cloud path from the dashboard.
+
 ## 2. Users
 
 District disaster-management offices and hill-town municipalities; small mines and quarries
@@ -316,11 +356,13 @@ worker (`process_epoch`, local store) with the supervising agent off (thresholds
 deterministic rule policy, and Claude Sonnet 4.5 on Amazon Bedrock. Pages are counted through a
 stand-in for SNS.
 
-| Arm | False pages (5 quiet scenarios) | Events investigated | OpenCV tool calls | Lens-distortion events | First human page in the creep scenario | Lead time before true failure (t = 50) |
-|---|---|---|---|---|---|---|
-| off (thresholds) | 0 | 0 | 0 | 0 events, all - | t = 47.0 | 3.0 |
-| rules | 0 | 10 | 55 | 7 events, all {'FALSE_ALARM'} | t = 8.1 | 41.9 |
-| Claude on Bedrock | 0 | 10 | 66 | 7 events, all {'FALSE_ALARM'} | t = 8.1 | 41.9 |
+| Arm | False pages (5 quiet scenarios) | Events investigated | OpenCV tool calls | Lens-distortion events | First human page in the creep scenario | Lead time before true failure (t = 50) | Pages for the one true collapse |
+|---|---|---|---|---|---|---|---|
+| off (thresholds) | 0 | 0 | 0 | 0 events | t = 47.0 | 3.0 | 1 |
+| rules | 0 | 10 | 55 | 7 events, all FALSE_ALARM | t = 8.1 | 41.9 | 2 (acceleration, then CRITICAL) |
+| Claude on Bedrock | 0 | 10 | 65 | 7 events, all FALSE_ALARM | t = 8.1 | 41.9 | 2 (acceleration, then CRITICAL) |
+
+Re-run October 25 with one page per episode: the confirmation at t = 11.3 is attached to the open page instead of waking the duty officer again (it had been a third page).
 
 What the agent changed. In the non-rigid lens scenario the stabilizer raised four camera events;
 both agent arms re-ran stabilization and DIC and closed all four as FALSE_ALARM without paging
@@ -377,6 +419,47 @@ time to the stored epoch within half the closest epoch spacing, and `test_worker
 a rounded time still resolves "previous" to the earlier epoch (it fails on the old code). The
 worker's own CRITICAL page fired regardless, so no warning was lost; the 32 Mukilteo and 391 E5
 traces contain no self-referenced re-measurement, because their epoch times were short.
+
+**One page per episode (October 25).** The agent used to page the duty officer at every
+confirmed event: three pages for one simulated collapse, five in a live run, fourteen across the
+Mukilteo record. That contradicts the evidence on warning fatigue that the design rests on
+(Sawada et al. 2022; LeClerc and Joslyn 2015). `request_human_approval` now sends a page only for:
+
+- the first confirmation of an episode;
+- an escalation, such as ACCELERATING to CRITICAL;
+- a new episode, after the slope has settled below ACCELERATING for six consecutive epochs;
+- a new confirmed step on a slope that is otherwise only MOVING, ten epochs after the last page.
+
+Any other confirmation is attached to the open page and shown on the dashboard as "added to the
+open page". Pages are logged in `pages.json`. On the live demo the duty officer was paged twice,
+once on acceleration and once on escalation, and the step between was attached.
+
+**An independent review of the week's code (October 25).** A second reviewer, given only the
+code, traced these defects, each now fixed:
+
+- A re-delivered or late epoch could re-announce a CRITICAL transition. A replay now updates
+  the record without raising an event or a page; this has a regression test.
+- Two presses of the live-run button within seconds could both start. The run is now claimed
+  with a conditional S3 write before any work is done.
+- A new live run inherited the previous run's approval. The reset now clears decisions and
+  pages.
+- A backlog over 100 epochs was only partly ordered. The worker now drains up to 600.
+- One malformed message could stall a batch. Each message is now guarded, and a failed epoch
+  becomes visible again after 60 s.
+- The agent re-measured without the coarse-to-fine pyramid the worker uses. It now measures the
+  same way the worker does.
+- Epoch-time snapping took its tolerance from the smallest gap in the whole series. It now uses
+  the neighbouring gaps.
+- Two dashboard bugs: polling never stopped on a stale run, and a deep link missed times of
+  1,000 or more.
+
+33 tests pass.
+
+**The demonstration slope is a real photograph.** The demo and live-run collapses used to be
+rendered on synthetic speckle. They are now rendered on a crop of the USGS Mukilteo camera frame
+(public domain), with the same simulated creep, failure on day 50, and time stated in days. On
+the photograph the forecast reaches CRITICAL with a window of 49.2 to 51.0 days. The accuracy
+tables (E1, E3) still use synthetic speckle, where ground truth is exact.
 
 **Second transport: MCP.** `agent/mcp_server.py` exposes the same nine tools (plus `list_sites`)
 as a Model Context Protocol server (stdio, `mcp` 2.3), backed by the bucket or by a local

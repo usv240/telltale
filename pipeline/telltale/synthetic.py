@@ -97,10 +97,19 @@ class CollapseScene:
 def simulate_collapse(h: int = 256, w: int = 256, n_epochs: int = 40, tf: float = 50.0,
                       t_end: float = 47.0, amp: float = 2.0, direction=(1.0, 0.5),
                       ss: int = 8, noise: float = 0.01, illum_drift: float = 0.1,
-                      jitter_px: float = 0.0, seed: int = 0) -> CollapseScene:
-    """Render an epoch sequence in which the lower-right target zone creeps to failure."""
+                      jitter_px: float = 0.0, seed: int = 0,
+                      base: np.ndarray | None = None) -> CollapseScene:
+    """Render an epoch sequence in which the lower-right target zone creeps to failure.
+
+    ``base``: an optional real photograph (gray, any size) used as the ground surface instead of
+    the synthetic speckle; the motion, timing and truth are the same either way."""
     rng = np.random.default_rng(seed)
-    tex = make_texture(h, w, seed)
+    if base is None:
+        tex = make_texture(h, w, seed)
+    else:
+        g = base if base.ndim == 2 else cv2.cvtColor(base, cv2.COLOR_BGR2GRAY)
+        g = g.astype(np.float32) / (255.0 if g.dtype == np.uint8 else 1.0)
+        tex = cv2.resize(g, (w, h), interpolation=cv2.INTER_AREA)
     big = supersample(tex, ss)
     bh, bw = big.shape
 

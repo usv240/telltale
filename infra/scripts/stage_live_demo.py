@@ -2,8 +2,8 @@
 
     python infra/scripts/stage_live_demo.py --s3 telltale-<account> [--variants 3]
 
-Each variant is a simulated collapse (true failure at t = 50) with its own seed and camera
-jitter, rendered as camera bursts and stored under samples/live-demo/v<n>/<epoch>/ in the same
+Each variant is a simulated collapse (true failure on day 50) rendered on a real USGS photograph of
+the Mukilteo bluff, with its own seed and camera jitter, rendered as camera bursts and stored under samples/live-demo/v<n>/<epoch>/ in the same
 layout the camera client uploads (frames plus manifest.json; the first manifest carries
 site.json). The live-run Lambda copies one variant into ingest/live-demo/, so the real queue,
 the COOL worker and the agent process it exactly as they would a camera's uploads.
@@ -41,8 +41,9 @@ def main(argv=None) -> int:
         jitter = (0.6, 0.9, 1.2)[v % 3]
         _, epochs, cfg = seed_demo.make_bursts(a.epochs, a.size, jitter, seed=100 + v)
         cfg["name"] = SITE
-        cfg["notes"] = (f"Live run, variant {v}: simulated creep to failure at t = 50 (Voight alpha = 2), "
-                        f"camera jitter {jitter} px; started from the dashboard's Run it live button.")
+        cfg["notes"] = (f"Live run, variant {v}: simulated creep on a real USGS photograph of the Mukilteo "
+                        f"bluff, true failure on day 50 (Voight alpha = 2); time unit: days; camera jitter "
+                        f"{jitter} px; started from the dashboard's Run it live button.")
         for i, (t, frames) in enumerate(epochs):
             prefix = f"samples/{SITE}/v{v}/{i:03d}/"
             names = []

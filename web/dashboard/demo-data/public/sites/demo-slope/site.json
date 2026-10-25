@@ -51,7 +51,8 @@
   "max_disp": 15.0,
   "refine_iters": 1,
   "threads": 0,
-  "pyramid_levels": 0
+  "pyramid_levels": 0,
+  "search_dtype": "float32"
  },
  "forecast": {
   "sma_window": 3,
@@ -75,5 +76,5 @@
  "reference_mode": "fixed",
  "mask_window": 0,
  "plane": null,
- "notes": "Synthetic collapse: Voight alpha=2 creep, true failure at t=50; 0.8 mm per pixel; left strip stable, right block moves."
+ "notes": "Simulated collapse on a real USGS photograph of the Mukilteo bluff: Voight alpha=2 creep, true failure on day 50; time unit: days; 0.8 mm per pixel; left strip stable, right block moves."
 }

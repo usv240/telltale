@@ -21,7 +21,7 @@ import cv2
 import numpy as np
 
 from telltale.config import GridConfig, SiteConfig, polygon_mask
-from telltale.dic import DisplacementField, compute_field, robust_sigma, zone_displacement
+from telltale.dic import DisplacementField, compute_field, compute_field_pyramid, robust_sigma, zone_displacement
 from telltale.stabilize import stabilize
 from telltale.stack import sharpness
 
@@ -84,13 +84,15 @@ class Toolbox:
     def _snap(self, t: float) -> float:
         """The stored epoch a caller means by ``t``. Models pass rounded times (38.9429 for
         38.942857...), and an unsnapped time would make "previous" resolve to the epoch itself,
-        so any value within half the closest epoch spacing maps to that epoch."""
-        ts = sorted(r["t"] for r in self._series())
+        so any value within half the spacing to the neighbouring epochs maps to that epoch."""
+        ts = sorted({r["t"] for r in self._series()})
         if not ts:
             return float(t)
-        near = min(ts, key=lambda x: abs(x - t))
-        gaps = [b - a for a, b in zip(ts, ts[1:]) if b > a]
-        tol = 0.5 * min(gaps) if gaps else 1e-3
+        i = min(range(len(ts)), key=lambda k: abs(ts[k] - t))
+        near = ts[i]
+        # the gap on the side t falls, so one dense stretch elsewhere cannot shrink the tolerance
+        side = ts[i + 1] - near if t > near and i + 1 < len(ts) else (near - ts[i - 1] if i > 0 else None)
+        tol = 0.5 * side if side else 1e-3
         return float(near) if abs(near - t) <= tol else float(t)
 
     def _epoch_image(self, t: float, kind: str = "stabilized"):
@@ -194,7 +196,9 @@ class Toolbox:
             return self._record("remeasure", {"t": t, "reference": reference},
                                 {"error": "reference image unavailable"})
         grid = self.cfg.grid
-        fld = compute_field(ref, cur, grid)
+        # measure exactly as the worker does: coarse-to-fine when the site uses a pyramid, so a
+        # large real motion is not mistaken for an artefact by a narrower search
+        fld = compute_field_pyramid(ref, cur, grid) if grid.pyramid_levels > 0 else compute_field(ref, cur, grid)
         zones = {}
         for name, poly in self.cfg.target_zones.items():
             zm = zone_displacement(fld, name, poly)
@@ -285,14 +289,66 @@ class Toolbox:
         Use only when the acceleration is real or cannot be ruled out. The agent can never send
         a public alert itself."""
         t = self._snap(t)
+        send, why, state = self._page_policy(t)
+        if not send:
+            # One page per episode: the duty officer already holds a page for this state, so a
+            # further confirmation is filed with it instead of waking them again.
+            out = {"t": t, "paged": False, "suppressed": True, "state": state, "note": why}
+            return self._record("request_human_approval", {"t": t, "summary": summary}, out)
         links = self.alerting.links(self.site, t) if self.alerting else {}
         msg = (f"TellTale site {self.site}, epoch t={t:g}.\nAgent investigation summary:\n{summary}\n\n"
                + (f"EVIDENCE (the images the agent re-measured): {links['evidence']}\n\n" if links.get("evidence") else "")
                + f"APPROVE: {links.get('approve', 'n/a')}\nDISMISS: {links.get('dismiss', 'n/a')}\n")
         if self.alerting:
-            self.alerting.publish(f"TellTale CRITICAL (agent-verified): {self.site}", msg)
-        out = {"t": t, "paged": bool(self.alerting and self.alerting.topic), "links_issued": bool(links)}
+            self.alerting.publish(f"TellTale {state} (agent-verified): {self.site}", msg)
+        self._log_page(t, state, why)
+        out = {"t": t, "paged": bool(self.alerting and self.alerting.topic), "links_issued": bool(links),
+               "state": state, "why": why}
         return self._record("request_human_approval", {"t": t, "summary": summary}, out)
+
+    # A duty officer is woken once per episode. A further page goes out only when the state
+    # escalates, when an accelerating episode has ended and a new one begins, or, for a confirmed
+    # step on a slope that is otherwise only MOVING, REPAGE_EPOCHS epochs after the last page. Repeated pages for one event are what erode trust in a warning system
+    # (Sawada et al. 2022; LeClerc and Joslyn 2015, in docs/PUBLISHED-RECORD.md).
+    REPAGE_EPOCHS = 10
+    SETTLE_EPOCHS = 6
+    _RANK = {"QUIET": 0, "MOVING": 1, "ACCELERATING": 2, "CRITICAL": 3}
+
+    def _pages(self) -> dict:
+        raw = self.store.get(f"{self.pub}/pages.json")
+        return json.loads(raw) if raw else {"pages": []}
+
+    def _page_policy(self, t: float) -> tuple[bool, str, str]:
+        fc = json.loads(self.store.get(f"{self.pub}/forecast.json") or "{}")
+        state = fc.get("state") or "MOVING"
+        sent = [p for p in self._pages()["pages"] if p["t"] < t]
+        if not sent:
+            return True, "first page of this episode", state
+        last = sent[-1]
+        if self._RANK.get(state, 0) > self._RANK.get(last["state"], 0):
+            return True, f"escalation from {last['state']} to {state}", state
+        since = [r for r in self._series() if last["t"] < r["t"] < t]
+        if self._RANK.get(last["state"], 0) >= self._RANK["ACCELERATING"]:
+            # an accelerating or critical episode is new only once the old one has ended: the
+            # slope settled below ACCELERATING for SETTLE_EPOCHS in a row (a one-epoch flicker of
+            # the onset gates is the same episode)
+            run = best = 0
+            for r in since:
+                run = run + 1 if self._RANK.get(r.get("state"), 0) < self._RANK["ACCELERATING"] else 0
+                best = max(best, run)
+            if best >= self.SETTLE_EPOCHS:
+                return True, f"new episode: the slope settled for {best} epochs after the last page", state
+        elif len(since) >= self.REPAGE_EPOCHS:
+            # a confirmed step on a slope that is otherwise MOVING: a later step is news
+            return True, f"new step: {len(since)} epochs since the last page", state
+        return False, (f"the duty officer was paged at t = {last['t']:g} for {last['state']}; "
+                       f"this confirmation is attached to that page"), state
+
+    def _log_page(self, t: float, state: str, why: str) -> None:
+        d = self._pages()
+        d["pages"] = sorted([p for p in d["pages"] if p["t"] != t] + [{"t": t, "state": state, "why": why}],
+                            key=lambda p: p["t"])
+        self.store.put(f"{self.pub}/pages.json", json.dumps(d, indent=1).encode(), "application/json")
 
     def close_event(self, t: float, verdict: str, reason: str) -> dict:
         """Close the investigation. verdict: CONFIRMED (real ground motion), FALSE_ALARM

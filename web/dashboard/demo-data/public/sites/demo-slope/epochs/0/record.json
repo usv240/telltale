@@ -16,15 +16,15 @@
   "instance_id": null
  },
  "timing": {
-  "stack_s": 0.06381130000227131,
-  "total_s": 0.22862619999796152
+  "stack_s": 0.09195709999994506,
+  "total_s": 0.31600239999988844
  },
  "overlay": "epochs/0/overlay.png",
  "stack": {
   "status": "OK",
   "n_frames": 5,
-  "max_shift": 0.7251185774803162,
-  "contrast": 0.08887449651956558
+  "max_shift": 0.7736520171165466,
+  "contrast": 0.14154298603534698
  },
  "zones": {
   "slope": {

@@ -254,10 +254,10 @@ details.help p { max-width: 70ch; }
 .waiting-steps li span { color: var(--muted); font-size: 13px; margin-left: 6px; }
 @media (max-width: 860px) { .live-run { align-items: stretch; } .live-note { text-align: left; } }
 .calls { margin-top: 10px; }
-.calls > summary { cursor: pointer; font-size: 13px; color: var(--muted); list-style: none; }
-.calls > summary::-webkit-details-marker { display: none; }
-.calls > summary::before { content: "+ "; }
-.calls[open] > summary::before { content: "2  "; }
+.event-list .calls > summary { display: block; padding: 4px 0; cursor: pointer; font-size: 13px; color: var(--muted); list-style: none; }
+.event-list .calls > summary::-webkit-details-marker { display: none; }
+.event-list .calls > summary::before { content: "+ "; }
+.event-list .calls[open] > summary::before { content: "\2212  "; }
 .trace { margin: 8px 0 0; padding: 0 0 0 18px; color: var(--muted); font-size: var(--fs-small); }
 .trace li { margin: 3px 0; }
 .trace b { color: var(--text); font-weight: 500; }

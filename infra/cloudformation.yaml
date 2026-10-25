@@ -484,6 +484,9 @@ Resources:
               - Effect: Allow
                 Action: [ec2:StartInstances]
                 Resource: !Sub arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:instance/${Worker}
+              - Effect: Allow
+                Action: [ec2:DescribeInstances]
+                Resource: "*"
 
   LiveRunFunction:
     Type: AWS::Lambda::Function
@@ -501,6 +504,7 @@ Resources:
       Code:
         ZipFile: |
           import json, os, time, random, boto3
+          from botocore.exceptions import ClientError, ParamValidationError
           s3 = boto3.client("s3"); ec2 = boto3.client("ec2")
           B, INST, SITE = os.environ["BUCKET"], os.environ["INSTANCE"], "live-demo"
           RUNS, GAP, DAILY = "private/live/runs.json", 20 * 60, 12
@@ -508,17 +512,44 @@ Resources:
           def out(code, body):
               return {"statusCode": code, "headers": {"content-type": "application/json", "cache-control": "no-store"},
                       "body": json.dumps(body)}
-          def get(key, default):
-              try:
-                  return json.loads(s3.get_object(Bucket=B, Key=key)["Body"].read())
-              except Exception:
-                  return default
-          def put(key, obj):
+          def put(key, obj, **kw):
               s3.put_object(Bucket=B, Key=key, Body=json.dumps(obj).encode(), ContentType="application/json",
-                            CacheControl="no-store")
+                            CacheControl="no-store", **kw)
+          def read_runs():
+              # A missing log means no runs yet; any other read error is raised, never read as "no runs".
+              try:
+                  o = s3.get_object(Bucket=B, Key=RUNS)
+                  return json.loads(o["Body"].read()), o["ETag"]
+              except ClientError as e:
+                  if e.response["Error"]["Code"] in ("NoSuchKey", "404"):
+                      return [], None
+                  raise
+          def claim(runs, etag):
+              # Write the run before doing any work, conditionally, so two presses cannot both start.
+              kw = {"IfMatch": etag} if etag else {"IfNoneMatch": "*"}
+              try:
+                  put(RUNS, runs, **kw)
+              except ParamValidationError:
+                  put(RUNS, runs)          # an SDK without conditional writes: best effort
+              except ClientError as e:
+                  if e.response["Error"]["Code"] in ("PreconditionFailed", "ConditionalRequestConflict", "412", "409"):
+                      return False
+                  raise
+              return True
+          def start_worker():
+              for _ in range(10):          # a worker that is shutting down cannot be started yet
+                  st = ec2.describe_instances(InstanceIds=[INST])["Reservations"][0]["Instances"][0]["State"]["Name"]
+                  if st != "stopping":
+                      break
+                  time.sleep(3)
+              try:
+                  ec2.start_instances(InstanceIds=[INST])
+              except Exception as e:
+                  print("start:", e)       # the wake function retries every five minutes
           def handler(event, ctx):
               method = (event.get("requestContext", {}).get("http", {}) or {}).get("method", "GET")
-              runs, now = get(RUNS, []), time.time()
+              runs, etag = read_runs()
+              now = time.time()
               last = max((r["at"] for r in runs), default=0)
               today = [r for r in runs if now - r["at"] < 86400]
               status = {"last_run": last or None, "runs_today": len(today), "daily_limit": DAILY,
@@ -538,12 +569,18 @@ Resources:
               keys = [o["Key"] for page in s3.get_paginator("list_objects_v2").paginate(Bucket=B, Prefix=variant)
                       for o in page.get("Contents", [])]
               epochs = sorted({k.split("/")[3] for k in keys if k.count("/") >= 4})
-              # Reset the site so the run starts from its own reference, not the last run's.
+              runs = (today + [{"at": now, "variant": variant, "epochs": len(epochs)}])[-50:]
+              if not claim(runs, etag):
+                  return out(409, dict(status, error="Someone started a run a moment ago. Watch that one."))
+              # Reset the site so the run starts from its own reference, decisions and pages.
               for k in ("reference.npy", "previous.npy"):
                   s3.delete_object(Bucket=B, Key=f"{PRIV}/{k}")
               put(f"{PUB}/series.json", {"records": []})
               put(f"{PUB}/agentlog.json", {"events": []})
+              put(f"{PUB}/decisions.json", {"decisions": []})
+              put(f"{PUB}/pages.json", {"pages": []})
               put(f"{PUB}/run.json", {"started": now, "variant": variant.rstrip("/").split("/")[-1], "epochs": len(epochs)})
+              start_worker()
               for e in epochs:
                   mk = f"{variant}{e}/manifest.json"
                   man = json.loads(s3.get_object(Bucket=B, Key=mk)["Body"].read())
@@ -551,12 +588,6 @@ Resources:
                   for f in man["frames"]:
                       s3.copy_object(Bucket=B, Key=dest + f, CopySource={"Bucket": B, "Key": f"{variant}{e}/{f}"})
                   s3.copy_object(Bucket=B, Key=dest + "manifest.json", CopySource={"Bucket": B, "Key": mk})
-              runs = (today + [{"at": now, "variant": variant, "epochs": len(epochs)}])[-50:]
-              put(RUNS, runs)
-              try:
-                  ec2.start_instances(InstanceIds=[INST])
-              except Exception as e:
-                  print("start:", e)
               return out(202, dict(status, last_run=now, runs_today=len(runs), epochs=len(epochs), next_allowed=now + GAP,
                                    started=True))
 

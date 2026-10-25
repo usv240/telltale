@@ -16,7 +16,7 @@
    "false_pages": 0,
    "correct_pages": 1,
    "events": 10,
-   "tool_calls": 66
+   "tool_calls": 65
   }
  },
  "arms": {
@@ -196,7 +196,7 @@
       "verdict": "FALSE_ALARM",
       "n_tool_calls": 4,
       "paged_human": false,
-      "seconds": 0.12
+      "seconds": 0.15
      },
      {
       "t": 24.310344827586206,
@@ -204,7 +204,7 @@
       "verdict": "FALSE_ALARM",
       "n_tool_calls": 4,
       "paged_human": false,
-      "seconds": 0.13
+      "seconds": 0.17
      },
      {
       "t": 25.93103448275862,
@@ -212,7 +212,7 @@
       "verdict": "FALSE_ALARM",
       "n_tool_calls": 4,
       "paged_human": false,
-      "seconds": 0.11
+      "seconds": 0.17
      },
      {
       "t": 34.03448275862069,
@@ -220,7 +220,7 @@
       "verdict": "FALSE_ALARM",
       "n_tool_calls": 4,
       "paged_human": false,
-      "seconds": 0.16
+      "seconds": 0.15
      },
      {
       "t": 35.6551724137931,
@@ -228,7 +228,7 @@
       "verdict": "FALSE_ALARM",
       "n_tool_calls": 4,
       "paged_human": false,
-      "seconds": 0.12
+      "seconds": 0.15
      },
      {
       "t": 40.51724137931034,
@@ -236,7 +236,7 @@
       "verdict": "FALSE_ALARM",
       "n_tool_calls": 4,
       "paged_human": false,
-      "seconds": 0.1
+      "seconds": 0.15
      },
      {
       "t": 42.137931034482754,
@@ -244,7 +244,7 @@
       "verdict": "FALSE_ALARM",
       "n_tool_calls": 4,
       "paged_human": false,
-      "seconds": 0.1
+      "seconds": 0.14
      }
     ],
     "verdicts": [
@@ -267,7 +267,7 @@
    "creep+bump": {
     "final_state": "CRITICAL",
     "true_tf": 50.0,
-    "pages": 3,
+    "pages": 2,
     "false_page": false,
     "correct_page": true,
     "events": [
@@ -277,15 +277,15 @@
       "verdict": "CONFIRMED",
       "n_tool_calls": 9,
       "paged_human": true,
-      "seconds": 0.37
+      "seconds": 0.42
      },
      {
       "t": 11.344827586206897,
       "event": "E_ANOMALY",
       "verdict": "CONFIRMED",
       "n_tool_calls": 9,
-      "paged_human": true,
-      "seconds": 0.42
+      "paged_human": false,
+      "seconds": 0.41
      },
      {
       "t": 47.0,
@@ -386,9 +386,9 @@
       "t": 16.206896551724135,
       "event": "E_CAMERA",
       "verdict": "FALSE_ALARM",
-      "n_tool_calls": 4,
+      "n_tool_calls": 5,
       "paged_human": false,
-      "seconds": 25.71
+      "seconds": 23.17
      },
      {
       "t": 24.310344827586206,
@@ -396,31 +396,31 @@
       "verdict": "FALSE_ALARM",
       "n_tool_calls": 7,
       "paged_human": false,
-      "seconds": 27.37
+      "seconds": 29.04
      },
      {
       "t": 25.93103448275862,
       "event": "E_CAMERA",
       "verdict": "FALSE_ALARM",
-      "n_tool_calls": 5,
+      "n_tool_calls": 4,
       "paged_human": false,
-      "seconds": 17.1
+      "seconds": 13.71
      },
      {
       "t": 34.03448275862069,
       "event": "E_JUMP",
       "verdict": "FALSE_ALARM",
-      "n_tool_calls": 6,
+      "n_tool_calls": 7,
       "paged_human": false,
-      "seconds": 23.52
+      "seconds": 25.18
      },
      {
       "t": 35.6551724137931,
       "event": "E_CAMERA",
       "verdict": "FALSE_ALARM",
-      "n_tool_calls": 4,
+      "n_tool_calls": 6,
       "paged_human": false,
-      "seconds": 15.97
+      "seconds": 20.09
      },
      {
       "t": 40.51724137931034,
@@ -428,15 +428,15 @@
       "verdict": "FALSE_ALARM",
       "n_tool_calls": 7,
       "paged_human": false,
-      "seconds": 24.84
+      "seconds": 22.08
      },
      {
       "t": 42.137931034482754,
       "event": "E_CAMERA",
       "verdict": "FALSE_ALARM",
-      "n_tool_calls": 5,
+      "n_tool_calls": 6,
       "paged_human": false,
-      "seconds": 20.77
+      "seconds": 22.37
      }
     ],
     "verdicts": [
@@ -448,7 +448,7 @@
      "FALSE_ALARM",
      "FALSE_ALARM"
     ],
-    "tool_calls": 38,
+    "tool_calls": 42,
     "forecast": {
      "tf": null,
      "t_lo": null,
@@ -459,7 +459,7 @@
    "creep+bump": {
     "final_state": "CRITICAL",
     "true_tf": 50.0,
-    "pages": 3,
+    "pages": 2,
     "false_page": false,
     "correct_page": true,
     "events": [
@@ -467,25 +467,25 @@
       "t": 8.103448275862068,
       "event": "E_ANOMALY",
       "verdict": "CONFIRMED",
-      "n_tool_calls": 10,
+      "n_tool_calls": 8,
       "paged_human": true,
-      "seconds": 28.86
+      "seconds": 31.03
      },
      {
       "t": 11.344827586206897,
       "event": "E_ANOMALY",
       "verdict": "CONFIRMED",
-      "n_tool_calls": 9,
-      "paged_human": true,
-      "seconds": 28.2
+      "n_tool_calls": 8,
+      "paged_human": false,
+      "seconds": 25.91
      },
      {
       "t": 47.0,
       "event": "E_ANOMALY",
       "verdict": "CONFIRMED",
-      "n_tool_calls": 9,
+      "n_tool_calls": 7,
       "paged_human": true,
-      "seconds": 33.85
+      "seconds": 24.8
      }
     ],
     "verdicts": [
@@ -493,7 +493,7 @@
      "CONFIRMED",
      "CONFIRMED"
     ],
-    "tool_calls": 28,
+    "tool_calls": 23,
     "forecast": {
      "tf": 50.50246008126937,
      "t_lo": 49.39504927059025,

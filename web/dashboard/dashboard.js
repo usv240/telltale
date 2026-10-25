@@ -57,7 +57,11 @@
   // Time context per site: Mukilteo epochs are days since a known date (in site.json notes).
   function timeContext(cfg) {
     const m = /days since (\d{4}-\d{2}-\d{2})/.exec(cfg.notes || "");
-    if (!m) return { unit: "time units", unitShort: "", date: null };
+    if (!m) {
+      // a site may name its unit without a calendar ("time unit: days"), e.g. a simulated slope
+      const u = /time unit: (days|hours|minutes)/.exec(cfg.notes || "");
+      return u ? { unit: u[1], unitShort: "", date: null } : { unit: "time units", unitShort: "", date: null };
+    }
     const start = new Date(m[1] + "T00:00:00Z");
     return { unit: "days", unitShort: " d", date: (t) => new Date(start.getTime() + Math.round(t) * 864e5).toISOString().slice(0, 10) };
   }
@@ -96,7 +100,6 @@
   let LIVE = null, liveActive = false;
   const ago = (s) => s < 90 ? `${Math.round(s)} s` : `${Math.round(s / 60)} min`;
   function renderWaiting(site, run, series) {
-    liveActive = !!run;
     document.getElementById("main").classList.add("is-waiting");
     $("waiting").hidden = false;
     $("site-title").textContent = site;
@@ -104,7 +107,8 @@
     $("decision-note").hidden = true;
     const pillEl = $("state-pill");
     pillEl.className = "pill pill-neutral";
-    pillEl.textContent = run ? "Running" : "Not run yet";
+    const stale = run && Date.now() / 1000 - run.started > 1800;
+    pillEl.textContent = !run ? "Not run yet" : stale ? "Run did not finish" : "Running";
     $("approval-actions").innerHTML = "";
     $("scope-line").textContent = "Simulated slope · the real cloud path · one run every 20 minutes";
     const n = series.records.length, since = run ? Date.now() / 1000 - run.started : 0;
@@ -357,7 +361,8 @@
       : "";
     let target = null;
     if (deepEvent && events.length) {
-      target = deepEvent === "latest" ? events[0] : events.find((e) => Math.abs(e.t - Number(deepEvent)) < 1e-3) || null;
+      target = deepEvent === "latest" ? events[0]
+        : events.find((e) => gfmt(e.t) === deepEvent || Math.abs(e.t - Number(deepEvent)) < 1e-3) || null;
       if (target && events.indexOf(target) >= 4) showAllAgent = true;
     }
     const shown = showAllAgent ? events : events.slice(0, 4);
@@ -369,7 +374,7 @@
       det.dataset.t = String(e.t);
       const when = `t = ${fmt(e.t, 1)}${ctx.date ? " · " + ctx.date(e.t) : ""}`;
       det.innerHTML = `<summary>${pill(VERDICT[e.verdict], e.verdict)}<span class="event-title">${esc(EVENT[e.event] || e.event)} at ${esc(when)}</span>` +
-        `<span class="event-meta">${e.n_tool_calls} calls · ${e.paged_human ? "person paged" : "no page"} · ${fmt(e.seconds, 0)} s</span></summary>` +
+        `<span class="event-meta">${e.n_tool_calls} calls · ${e.paged_human ? "person paged" : e.page_attached ? "added to the open page" : "no page"} · ${fmt(e.seconds, 0)} s</span></summary>` +
         `<div class="event-body"><p class="event-summary">${esc((e.summary || "").replace(/\*\*/g, ""))}</p><div class="evidence" hidden></div><details class="calls"><summary>Every tool call, with its arguments and result</summary><ol class="trace"><li>Loading the trace…</li></ol></details></div>`;
       det.addEventListener("toggle", async () => {
         if (!det.open || det.dataset.loaded) return;

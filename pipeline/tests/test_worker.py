@@ -52,8 +52,9 @@ def test_local_worker_end_to_end(tmp_path, scene, monkeypatch):
                      target_zones={"slope": scene.zone_poly},
                      grid=GridConfig(template=41, stride=16, search=16), forecast=ForecastConfig())
     rng = np.random.default_rng(1)
+    bursts = list(_bursts(scene, rng))
     recs = [W.process_epoch(store, "t", t, fr, asdict(cfg) if i == 0 else None)
-            for i, (t, fr) in enumerate(_bursts(scene, rng))]
+            for i, (t, fr) in enumerate(bursts)]
     assert recs[0]["reason"] == "REFERENCE" and all(r["usable"] for r in recs)
     fc = json.loads(store.get("public/sites/t/forecast.json"))
     assert fc["state"] == "CRITICAL" and fc["zones"]["slope"]["tf"] is not None
@@ -79,6 +80,13 @@ def test_local_worker_end_to_end(tmp_path, scene, monkeypatch):
     assert exact["evidence_png"] and store.get(f"public/sites/t/{exact['evidence_png']}")[1:4] == b"PNG"
     tr = json.loads(store.get(f"public/sites/t/agent/{recs[-1]['t']:g}.json"))
     assert any(c["result"].get("evidence_png") for c in tr["calls"] if c["tool"] == "remeasure")
+    # SQS re-delivers the newest epoch, then a retried older one arrives: neither re-pages
+    n_pages, n_events = len(counter.pages), len(json.loads(store.get("public/sites/t/agentlog.json"))["events"])
+    W.process_epoch(store, "t", *bursts[-1])
+    W.process_epoch(store, "t", *bursts[-4])
+    assert len(counter.pages) == n_pages
+    assert len(json.loads(store.get("public/sites/t/agentlog.json"))["events"]) == n_events
+    assert json.loads(store.get("public/sites/t/forecast.json"))["updated_t"] == recs[-1]["t"]
     # unknown site keys from a newer client are tolerated
     assert SiteConfig.from_json_dict({**asdict(cfg), "future": 1}).name == "t"
 
@@ -134,3 +142,28 @@ def test_backlog_is_processed_in_time_order():
     got = [W._message_epoch(m)[1] for m in msgs]
     assert len(got) == 36 and got == sorted(got)
     assert min(sqs.hold) >= 600 + 60 * 36, "the whole batch must stay invisible while it is processed"
+
+
+def test_one_page_per_episode(tmp_path):
+    """Confirmations inside an open episode are attached to its page; escalation pages again,
+    and so does a new episode after the slope settled."""
+    from agent.tools import Toolbox
+    store = W.LocalStore(tmp_path)
+    store.put("public/sites/p/site.json", json.dumps({"name": "p", "target_zones": {}}).encode(), "application/json")
+    states = (["MOVING"] * 10 + ["ACCELERATING", "MOVING", "ACCELERATING", "ACCELERATING"] + ["CRITICAL"] * 6
+              + ["MOVING"] * 8 + ["CRITICAL"] * 12)
+    recs = [{"t": float(i), "usable": True, "state": st} for i, st in enumerate(states)]
+    store.put("public/sites/p/series.json", json.dumps({"records": recs}).encode(), "application/json")
+    counter = CountingAlerting()
+
+    def page(t):
+        store.put("public/sites/p/forecast.json", json.dumps({"state": states[t]}).encode(), "application/json")
+        return Toolbox(store, "p", counter, event_t=float(t)).request_human_approval(float(t), "evidence")
+
+    assert not page(10).get("suppressed")          # first page, ACCELERATING
+    assert page(12)["suppressed"]                  # a one-epoch flicker at t=11 is the same episode
+    assert not page(14).get("suppressed")          # escalation to CRITICAL
+    assert page(18)["suppressed"]                  # still the same CRITICAL episode
+    assert not page(28).get("suppressed")          # settled to MOVING in between: a new episode
+    assert page(39)["suppressed"]                  # a long CRITICAL episode does not re-page
+    assert len(counter.pages) == 3

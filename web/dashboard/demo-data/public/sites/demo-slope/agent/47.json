@@ -4,9 +4,10 @@
  "event": "E_ANOMALY",
  "policy": "rules",
  "model": null,
- "started": "2026-10-22T04:53:18Z",
+ "started": "2026-10-25T22:38:22Z",
  "verdict": "CONFIRMED",
  "paged_human": true,
+ "page_attached": false,
  "cadence_changed": true,
  "n_tool_calls": 9,
  "calls": [
@@ -20,12 +21,12 @@
     "zones": {
      "slope": {
       "state": "CRITICAL",
-      "tf": 50.35748270763603,
-      "t_lo": 49.15033540504509,
-      "t_hi": 51.3648089857515,
-      "r2": 0.9831724794999801,
+      "tf": 50.95257460417143,
+      "t_lo": 49.157671028687304,
+      "t_hi": 51.945887576940564,
+      "r2": 0.9684262868526796,
       "ooa_time": 35.6551724137931,
-      "horizon": 3.3574827076360307
+      "horizon": 3.9525746041714314
      }
     },
     "recent_epochs": [
@@ -39,16 +40,16 @@
        "verdict": "OK",
        "refine_model": "translation",
        "residual": [
-        0.003978326451033354,
-        -0.017360897734761238
+        0.012791454792022705,
+        -0.0007890809793025255
        ],
-       "scatter": 0.013146853596576146,
-       "n_inliers": 1311
+       "scatter": 0.018138902453435038,
+       "n_inliers": 903
       },
       "zones": {
        "slope": {
-        "magnitude": 3.066886983222112,
-        "sigma": 0.019157528282328088,
+        "magnitude": 3.0928360135932915,
+        "sigma": 0.03608126817734937,
         "n_valid": 108,
         "n_total": 108
        }
@@ -64,16 +65,16 @@
        "verdict": "OK",
        "refine_model": "translation",
        "residual": [
-        0.0074987392872571945,
-        0.013819947838783264
+        0.005308143794536591,
+        0.00646465178579092
        ],
-       "scatter": 0.013627920642984116,
-       "n_inliers": 1344
+       "scatter": 0.017866024093731364,
+       "n_inliers": 892
       },
       "zones": {
        "slope": {
-        "magnitude": 3.3663322021098763,
-        "sigma": 0.021062872717692083,
+        "magnitude": 3.358153347408301,
+        "sigma": 0.03320427229858456,
         "n_valid": 108,
         "n_total": 108
        }
@@ -89,16 +90,16 @@
        "verdict": "OK",
        "refine_model": "translation",
        "residual": [
-        -0.0018049250356853008,
-        0.014248428866267204
+        0.0075566573068499565,
+        0.010464102029800415
        ],
-       "scatter": 0.014402149082038823,
-       "n_inliers": 1240
+       "scatter": 0.015710575494059166,
+       "n_inliers": 861
       },
       "zones": {
        "slope": {
-        "magnitude": 3.6360367490686314,
-        "sigma": 0.019258255755153792,
+        "magnitude": 3.6230997153045257,
+        "sigma": 0.03706953263062591,
         "n_valid": 108,
         "n_total": 108
        }
@@ -109,22 +110,22 @@
       "usable": true,
       "reason": "OK",
       "state": "ACCELERATING",
-      "coverage": 1.0,
+      "coverage": 0.9921875,
       "stabilize": {
        "verdict": "OK",
        "refine_model": "translation",
        "residual": [
-        0.00017958547687157989,
-        0.015194177627563477
+        0.0022018870804458857,
+        -0.014896582812070847
        ],
-       "scatter": 0.013003645543202727,
-       "n_inliers": 1248
+       "scatter": 0.016257881871295933,
+       "n_inliers": 795
       },
       "zones": {
        "slope": {
-        "magnitude": 4.203125298924255,
-        "sigma": 0.020010668045274627,
-        "n_valid": 108,
+        "magnitude": 4.195337983987076,
+        "sigma": 0.024330560905067806,
+        "n_valid": 106,
         "n_total": 108
        }
       }
@@ -139,16 +140,16 @@
        "verdict": "OK",
        "refine_model": "translation",
        "residual": [
-        -0.0013122307136654854,
-        0.013981092721223831
+        -0.01660970039665699,
+        0.011799427680671215
        ],
-       "scatter": 0.013289364678001504,
-       "n_inliers": 1439
+       "scatter": 0.01865541018668713,
+       "n_inliers": 850
       },
       "zones": {
        "slope": {
-        "magnitude": 4.751557232849836,
-        "sigma": 0.019991109778669205,
+        "magnitude": 4.727448349015079,
+        "sigma": 0.0215517600568097,
         "n_valid": 108,
         "n_total": 108
        }
@@ -159,22 +160,22 @@
       "usable": true,
       "reason": "OK",
       "state": "CRITICAL",
-      "coverage": 1.0,
+      "coverage": 0.9921875,
       "stabilize": {
        "verdict": "OK",
        "refine_model": "translation",
        "residual": [
-        0.0005399395013228059,
-        0.014421716332435608
+        -0.007802686188369989,
+        0.01687614433467388
        ],
-       "scatter": 0.013023655049733015,
-       "n_inliers": 1378
+       "scatter": 0.01752408799477276,
+       "n_inliers": 831
       },
       "zones": {
        "slope": {
-        "magnitude": 5.599508826871372,
-        "sigma": 0.01632910378385863,
-        "n_valid": 108,
+        "magnitude": 5.591334968082091,
+        "sigma": 0.03032134965817936,
+        "n_valid": 106,
         "n_total": 108
        }
       }
@@ -182,8 +183,8 @@
     ],
     "recent_increment_baseline": {
      "slope": {
-      "median_increment_px": 0.16954086513641464,
-      "p90_increment_px": 0.5502975955185855,
+      "median_increment_px": 0.1829377598747236,
+      "p90_increment_px": 0.5361231553934577,
       "n": 20
      }
     },
@@ -191,7 +192,7 @@
     "reference_mode": "fixed",
     "note": "fixed site: magnitudes are displacement since the site reference"
    },
-   "at": "2026-10-22T04:53:18Z"
+   "at": "2026-10-25T22:38:22Z"
   },
   {
    "n": 2,
@@ -201,32 +202,32 @@
    },
    "result": {
     "t": 47.0,
-    "sharpness": 0.0277311559766531,
-    "contrast": 0.07944576442241669,
+    "sharpness": 0.0068900613114237785,
+    "contrast": 0.13019171357154846,
     "stack": {
      "status": "OK",
      "n_frames": 5,
-     "max_shift": 0.5057429075241089,
-     "contrast": 0.08158843219280243
+     "max_shift": 0.47594064474105835,
+     "contrast": 0.13099293410778046
     },
     "field": {
      "n_subsets": 256,
-     "n_valid": 256,
-     "coverage": 1.0,
+     "n_valid": 254,
+     "coverage": 0.9921875,
      "status_counts": {
-      "OK": 256,
+      "OK": 254,
       "LOW_TEXTURE": 0,
       "LOW_CORR": 0,
-      "LOW_MARGIN": 0,
+      "LOW_MARGIN": 2,
       "OUT_OF_BOUND": 0,
       "EDGE_PEAK": 0
      },
-     "crosscheck_px": 0.76621013879776,
+     "crosscheck_px": 0.7582876682281494,
      "review": false
     },
     "reason": "OK"
    },
-   "at": "2026-10-22T04:53:18Z"
+   "at": "2026-10-25T22:38:22Z"
   },
   {
    "n": 3,
@@ -239,21 +240,21 @@
     "verdict": "OK",
     "camera_model": "translation",
     "coarse_method": "orb",
-    "n_inliers": 1378,
+    "n_inliers": 831,
     "residual_px": [
-     0.0005625099292956293,
-     0.015837637707591057
+     -0.007387132849544287,
+     0.015659091994166374
     ],
-    "scatter_px": 0.01440106708154276,
+    "scatter_px": 0.01935873419157683,
     "translation_px": [
-     0.1855754852294922,
-     -0.2614784240722656
+     0.09807205200195312,
+     -0.23392105102539062
     ],
     "rotation_deg": 0.0,
     "scale": 1.0,
     "mount_moved": false
    },
-   "at": "2026-10-22T04:53:18Z"
+   "at": "2026-10-25T22:38:22Z"
   },
   {
    "n": 4,
@@ -270,21 +271,21 @@
     "review": false,
     "zones": {
      "slope": {
-      "u": 0.7480490207672119,
-      "v": 0.3714035153388977,
-      "magnitude": 0.8351753760000803,
-      "sigma": 0.023684605016779225,
+      "u": 0.7871001958847046,
+      "v": 0.3394663333892822,
+      "magnitude": 0.8571838250145085,
+      "sigma": 0.03725220409351141,
       "n_valid": 108,
       "n_total": 108,
       "coherence": 1.0
      }
     },
+    "evidence_png": "agent/47/call-4.png",
     "worker_recorded": {
-     "slope": 5.599508826871372
-    },
-    "evidence_png": "agent/47/call-4.png"
+     "slope": 5.591334968082091
+    }
    },
-   "at": "2026-10-22T04:53:18Z"
+   "at": "2026-10-25T22:38:22Z"
   },
   {
    "n": 5,
@@ -297,25 +298,25 @@
     "t": 47.0,
     "reference": "reference",
     "reference_t": null,
-    "coverage": 1.0,
+    "coverage": 0.9921875,
     "review": false,
     "zones": {
      "slope": {
-      "u": 5.002213954925537,
-      "v": 2.5164170265197754,
-      "magnitude": 5.599508826871372,
-      "sigma": 0.01632910378385863,
-      "n_valid": 108,
+      "u": 4.982370853424072,
+      "v": 2.537519931793213,
+      "magnitude": 5.591334968082091,
+      "sigma": 0.03032134965817936,
+      "n_valid": 106,
       "n_total": 108,
-      "coherence": 1.0
+      "coherence": 0.9905660377358491
      }
     },
+    "evidence_png": "agent/47/call-5.png",
     "worker_recorded": {
-     "slope": 5.599508826871372
-    },
-    "evidence_png": "agent/47/call-5.png"
+     "slope": 5.591334968082091
+    }
    },
-   "at": "2026-10-22T04:53:18Z"
+   "at": "2026-10-25T22:38:22Z"
   },
   {
    "n": 6,
@@ -327,15 +328,15 @@
     "t": 47.0,
     "zones": {
      "slope": {
-      "coherence": 1.0,
-      "n": 108,
-      "n_moving": 107,
-      "median_direction_deg": 26.713956832885742,
-      "median_magnitude_px": 5.598512649536133
+      "coherence": 0.9905660377358491,
+      "n": 106,
+      "n_moving": 106,
+      "median_direction_deg": 27.000261306762695,
+      "median_magnitude_px": 5.592097282409668
      }
     }
    },
-   "at": "2026-10-22T04:53:19Z"
+   "at": "2026-10-25T22:38:22Z"
   },
   {
    "n": 7,
@@ -347,24 +348,26 @@
    "result": {
     "epochs_per_day": 24,
     "reason": "confirmed motion; tighten forecast",
-    "set_at": "2026-10-22T04:53:19Z",
+    "set_at": "2026-10-25T22:38:22Z",
     "by": "agent"
    },
-   "at": "2026-10-22T04:53:19Z"
+   "at": "2026-10-25T22:38:22Z"
   },
   {
    "n": 8,
    "tool": "request_human_approval",
    "args": {
     "t": 47.0,
-    "summary": "remeasure vs reference {\"slope\": 5.6}, coherence {\"slope\": 1.0}"
+    "summary": "remeasure vs reference {\"slope\": 5.591}, coherence {\"slope\": 0.9905660377358491}"
    },
    "result": {
     "t": 47.0,
     "paged": false,
-    "links_issued": false
+    "links_issued": false,
+    "state": "CRITICAL",
+    "why": "escalation from ACCELERATING to CRITICAL"
    },
-   "at": "2026-10-22T04:53:19Z"
+   "at": "2026-10-25T22:38:22Z"
   },
   {
    "n": 9,
@@ -379,9 +382,9 @@
     "verdict": "CONFIRMED",
     "reason": "consistent across references and coherent"
    },
-   "at": "2026-10-22T04:53:19Z"
+   "at": "2026-10-25T22:38:22Z"
   }
  ],
  "summary": "Rule policy: motion confirmed; human paged.",
- "seconds": 0.6
+ "seconds": 0.58
 }

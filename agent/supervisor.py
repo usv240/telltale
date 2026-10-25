@@ -140,6 +140,9 @@ def make_tools(tb: Toolbox):
     @beta_tool
     def request_human_approval(t: float, summary: str) -> str:
         """Page the duty contact with signed approve / dismiss links and an evidence summary.
+        At most one page per episode: if the contact already holds a page for this state, the
+        result has suppressed=true and the confirmation is attached to that page; that is
+        expected and needs no retry.
 
         Args:
             t: Epoch time of the alert.
@@ -238,7 +241,9 @@ def investigate(store, site_name: str, t: float, event: str, alerting=None,
             text = text or "Agent error; event closed as inconclusive."
     closes = [c for c in tb.calls if c["tool"] == "close_event"]
     trace["verdict"] = closes[-1]["result"]["verdict"] if closes else "INCONCLUSIVE"
-    trace["paged_human"] = any(c["tool"] == "request_human_approval" for c in tb.calls)
+    pages = [c for c in tb.calls if c["tool"] == "request_human_approval"]
+    trace["paged_human"] = any(not c["result"].get("suppressed") for c in pages)
+    trace["page_attached"] = bool(pages) and not trace["paged_human"]
     trace["cadence_changed"] = any(c["tool"] == "set_capture_cadence" for c in tb.calls)
     trace["n_tool_calls"] = len(tb.calls)
     trace["calls"] = tb.calls
@@ -249,7 +254,7 @@ def investigate(store, site_name: str, t: float, event: str, alerting=None,
     raw = store.get(f"{pub}/agentlog.json")
     logd = json.loads(raw) if raw else {"events": []}
     logd["events"] = [e for e in logd["events"] if e["t"] != t] + [
-        {k: trace[k] for k in ("t", "event", "policy", "verdict", "paged_human", "cadence_changed",
+        {k: trace[k] for k in ("t", "event", "policy", "verdict", "paged_human", "page_attached", "cadence_changed",
                                "n_tool_calls", "seconds", "started", "summary")}]
     logd["events"].sort(key=lambda e: e["t"])
     store.put(f"{pub}/agentlog.json", json.dumps(logd, indent=1, default=str).encode(), "application/json")

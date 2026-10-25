@@ -32,9 +32,16 @@ from telltale.synthetic import perturb, simulate_collapse  # noqa: E402
 SITE = "demo-slope"
 
 
-def make_bursts(n_epochs: int, size: int, jitter: float, seed: int, burst: int = 5):
+# A real ground surface for the demo: a crop of the USGS Mukilteo camera frame (public domain,
+# Smith et al. 2020, doi:10.5066/P99QOYL2). The motion on it is simulated.
+REAL_SURFACE = Path(__file__).resolve().parent / "assets" / "mukilteo_slope_512.png"
+
+
+def make_bursts(n_epochs: int, size: int, jitter: float, seed: int, burst: int = 5,
+                surface: str | None = "real"):
+    base = cv2.imread(str(REAL_SURFACE), cv2.IMREAD_GRAYSCALE) if surface == "real" and REAL_SURFACE.exists() else None
     scene = simulate_collapse(h=size, w=size, n_epochs=n_epochs, tf=50.0, t_end=47.0,
-                              amp=2.0, noise=0.0, jitter_px=jitter, seed=seed)
+                              amp=2.0, noise=0.0, jitter_px=jitter, seed=seed, base=base)
     rng = np.random.default_rng(seed + 1)
     epochs = []
     for t, frame in zip(scene.times, scene.frames):
@@ -48,8 +55,12 @@ def make_bursts(n_epochs: int, size: int, jitter: float, seed: int, burst: int =
                       target_zones={"slope": scene.zone_poly},
                       grid=GridConfig(template=41, stride=16, search=16),
                       forecast=ForecastConfig(),
-                      notes="Synthetic collapse: Voight alpha=2 creep, true failure at t=50; "
-                            "0.8 mm per pixel; left strip stable, right block moves.")
+                      notes=("Simulated collapse on a real USGS photograph of the Mukilteo bluff: "
+                             "Voight alpha=2 creep, true failure on day 50; time unit: days; "
+                             "0.8 mm per pixel; left strip stable, right block moves."
+                             if base is not None else
+                             "Synthetic collapse: Voight alpha=2 creep, true failure at t=50; "
+                             "0.8 mm per pixel; left strip stable, right block moves."))
     return scene, epochs, asdict(site)
 
 
@@ -109,11 +120,13 @@ def main(argv=None) -> int:
     p.add_argument("--size", type=int, default=384)
     p.add_argument("--jitter", type=float, default=0.8)
     p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--surface", choices=["real", "synthetic"], default="real",
+                   help="ground surface: a real USGS photo (default) or synthetic speckle")
     p.add_argument("--wait", action="store_true")
     p.add_argument("--delay", type=float, default=0.5, help="seconds between uploads")
     p.add_argument("--region", default=None)
     a = p.parse_args(argv)
-    scene, epochs, site_cfg = make_bursts(a.epochs, a.size, a.jitter, a.seed)
+    scene, epochs, site_cfg = make_bursts(a.epochs, a.size, a.jitter, a.seed, surface=a.surface)
     print(f"rendered {len(epochs)} epochs of {a.size}px, true failure t={scene.tf}")
     if a.local:
         run_local(Path(a.local), epochs, site_cfg)

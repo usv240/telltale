@@ -216,11 +216,13 @@ def process_epoch(store, site_name: str, t: float, frames: list[np.ndarray],
     rt = runtime_info()
 
     raw = store.get(f"{pub}/site.json")
-    if raw is None:
-        if site_config is None:
-            raise RuntimeError(f"no site.json for {site_name} and manifest carried none")
+    if site_config is not None:
+        # a manifest that carries a site config sets it: the first epoch of a site, or an
+        # operator re-sending a corrected setup.html export
         store.put(f"{pub}/site.json", _json(site_config), "application/json")
         raw = _json(site_config)
+    elif raw is None:
+        raise RuntimeError(f"no site.json for {site_name} and manifest carried none")
     cfg_dict = json.loads(raw)
     site = SiteConfig.from_json_dict(cfg_dict)
 
@@ -490,10 +492,16 @@ def _finish(store, site: SiteConfig, site_name: str, record: dict, fld, t0: floa
 
     raw = store.get(f"{pub}/series.json")
     series = json.loads(raw) if raw else {"records": []}
-    # The state before this epoch, by time rather than by arrival, so a late epoch is compared
-    # with the epoch that really preceded it.
-    before = [r for r in series["records"] if r["t"] < record["t"]]
-    prev_state = before[-1].get("state", "QUIET") if before else "QUIET"
+    # A replay (SQS re-delivery of an epoch already recorded) or a late epoch (older than the
+    # newest one) changes the record but must not re-announce a transition the site already
+    # went through: the state "before" is the site's current state, and no event is raised.
+    existing_t = [r["t"] for r in series["records"]]
+    replay = record["t"] in existing_t or (bool(existing_t) and record["t"] < max(existing_t))
+    if replay:
+        newest = max(series["records"], key=lambda r: r["t"])
+        prev_state = newest.get("state", "QUIET")
+    else:
+        prev_state = series["records"][-1].get("state", "QUIET") if series["records"] else "QUIET"
 
     fcs, overall = {}, "QUIET"
     rank = {"QUIET": 0, "MOVING": 1, "ACCELERATING": 2, "CRITICAL": 3}
@@ -517,7 +525,12 @@ def _finish(store, site: SiteConfig, site_name: str, record: dict, fld, t0: floa
         overall_display = f"{overall} (last epoch {record['reason']})"
     else:
         overall_display = overall
-    record["state"] = overall
+    if replay and record["t"] < max(existing_t):
+        # a late epoch: its own state is the one that held when it was taken, not today's
+        older = [r for r in series["records"] if r["t"] < record["t"]]
+        record["state"] = older[-1].get("state", "QUIET") if older else "QUIET"
+    else:
+        record["state"] = overall
     store.put(f"{pub}/epochs/{record['t']:g}/record.json", _json(record), "application/json")
     store.put(f"{pub}/series.json", _json(series), "application/json")
 
@@ -534,7 +547,7 @@ def _finish(store, site: SiteConfig, site_name: str, record: dict, fld, t0: floa
     agent_mode = os.environ.get("TELLTALE_AGENT", "llm" if hasattr(store, "s3") else "rules").lower()
     trace = None
     event = None
-    if agent_mode != "off":
+    if agent_mode != "off" and not replay:
         from agent.supervisor import _event_from, investigate
         prev_recs = [r for r in series["records"] if r["t"] < record["t"]]
         prev_reason = prev_recs[-1].get("reason") if prev_recs else None
@@ -551,7 +564,7 @@ def _finish(store, site: SiteConfig, site_name: str, record: dict, fld, t0: floa
                                 "n_tool_calls": trace["n_tool_calls"], "summary": trace["summary"]}
             store.put(f"{pub}/forecast.json", _json(payload), "application/json")
 
-    entered_critical = overall == "CRITICAL" and prev_state != "CRITICAL"
+    entered_critical = overall == "CRITICAL" and prev_state != "CRITICAL" and not replay
     agent_handled = trace is not None and trace["verdict"] in ("CONFIRMED", "FALSE_ALARM")
     if entered_critical and not agent_handled:
         # Safety net: no agent, agent disabled, or agent inconclusive -> a person is paged.
@@ -567,7 +580,7 @@ def _finish(store, site: SiteConfig, site_name: str, record: dict, fld, t0: floa
                f"DISMISS: {links.get('dismiss', 'approval link not configured')}\n")
         alerting().publish(f"TellTale CRITICAL: {site_name}", msg)
         log.info("CRITICAL transition for %s; alert published=%s", site_name, bool(alerting().topic))
-    elif overall != "CRITICAL" and prev_state == "CRITICAL":
+    elif overall != "CRITICAL" and prev_state == "CRITICAL" and not replay:
         alerting().publish(f"TellTale {site_name}: left CRITICAL",
                            f"Site {site_name} is now {overall} at epoch t={record['t']:g}.")
 
@@ -667,8 +680,9 @@ def _message_epoch(msg: dict) -> tuple:
         return ("", float("-inf"))
 
 
-def drain_in_order(sqs, queue: str, msgs: list, limit: int = 100) -> list:
-    """Take every message already waiting (up to ``limit``) and return them in epoch order.
+def drain_in_order(sqs, queue: str, msgs: list, limit: int = 600) -> list:
+    """Take every message already waiting (up to ``limit``, ten minutes of epochs at the
+    measured rate) and return them in epoch order.
 
     The queue is SQS standard, which does not keep order, and S3 notifications cannot target a
     FIFO queue. A backlog (the worker was stopped, or the camera uploaded after an outage)
@@ -726,17 +740,29 @@ def main() -> int:
             subprocess.run(["shutdown", "-h", "now"], check=False)
             return 0
         for msg in resp.get("Messages", []):
-            body = json.loads(msg["Body"])
+            # One bad message must not stall the batch behind it: every step is guarded, and a
+            # failed epoch is made visible again in a minute (three failures send it to the DLQ).
             ok = True
-            for rec in body.get("Records", []):
-                key = urllib.parse.unquote_plus(rec["s3"]["object"]["key"])
+            try:
+                body = json.loads(msg["Body"])
+                for rec in body.get("Records", []):
+                    key = urllib.parse.unquote_plus(rec["s3"]["object"]["key"])
+                    try:
+                        handle_manifest(store, key, cw)
+                    except Exception:
+                        log.exception("epoch failed for %s", key)
+                        ok = False
+                if ok or body.get("Event") == "s3:TestEvent":
+                    sqs.delete_message(QueueUrl=queue, ReceiptHandle=msg["ReceiptHandle"])
+            except Exception:
+                log.exception("message could not be handled")
+                ok = False
+            if not ok:
                 try:
-                    handle_manifest(store, key, cw)
+                    sqs.change_message_visibility(QueueUrl=queue, ReceiptHandle=msg["ReceiptHandle"],
+                                                  VisibilityTimeout=60)
                 except Exception:
-                    log.exception("epoch failed for %s", key)
-                    ok = False
-            if ok or body.get("Event") == "s3:TestEvent":
-                sqs.delete_message(QueueUrl=queue, ReceiptHandle=msg["ReceiptHandle"])
+                    pass
 
 
 if __name__ == "__main__":

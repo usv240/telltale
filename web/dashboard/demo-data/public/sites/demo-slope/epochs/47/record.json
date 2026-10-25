@@ -16,74 +16,74 @@
   "instance_id": null
  },
  "timing": {
-  "stack_s": 0.042530200007604435,
-  "stabilize_s": 0.17495770001551136,
-  "dic_s": 0.18672490000608377,
-  "total_s": 0.4586049999925308
+  "stack_s": 0.026158399999985704,
+  "stabilize_s": 0.08891349999976228,
+  "dic_s": 0.11367470000004687,
+  "total_s": 0.2665718999996898
  },
  "overlay": "epochs/47/overlay.png",
  "stack": {
   "status": "OK",
   "n_frames": 5,
-  "max_shift": 0.5057429075241089,
-  "contrast": 0.08158843219280243
+  "max_shift": 0.47594064474105835,
+  "contrast": 0.13099293410778046
  },
  "stabilize": {
   "verdict": "OK",
-  "n_matches": 1393,
-  "n_inliers": 1378,
-  "rms": 0.6031172275543213,
+  "n_matches": 855,
+  "n_inliers": 831,
+  "rms": 0.617926299571991,
   "translation": [
-   0.1855754852294922,
-   -0.2614784240722656
+   0.09807205200195312,
+   -0.23392105102539062
   ],
   "rotation_deg": 0.0,
   "scale": 1.0,
   "residual": [
-   0.0005399395013228059,
-   0.014421716332435608
+   -0.007802686188369989,
+   0.01687614433467388
   ],
-  "scatter": 0.013023655049733015,
+  "scatter": 0.01752408799477276,
   "n_refine": 136,
   "n_verify": 60,
   "mount_moved": false,
   "coarse": "orb",
   "refine_model": "translation",
-  "refine_rms": 0.016978980973362923,
+  "refine_rms": 0.03759974241256714,
   "refine_inlier_frac": 1.0,
   "coarse_residual": [
-   -0.06852559000253677,
-   0.0828620195388794
+   -0.03219423070549965,
+   0.0816643089056015
   ]
  },
  "field": {
   "n_subsets": 256,
-  "n_valid": 256,
-  "coverage": 1.0,
+  "n_valid": 254,
+  "coverage": 0.9921875,
   "status_counts": {
-   "OK": 256,
+   "OK": 254,
    "LOW_TEXTURE": 0,
    "LOW_CORR": 0,
-   "LOW_MARGIN": 0,
+   "LOW_MARGIN": 2,
    "OUT_OF_BOUND": 0,
    "EDGE_PEAK": 0
   },
-  "crosscheck_px": 0.76621013879776,
+  "crosscheck_px": 0.7582876682281494,
   "review": false
  },
  "zones": {
   "slope": {
    "zone": "slope",
-   "u": 5.002213954925537,
-   "v": 2.5164170265197754,
-   "sigma_u": 0.012351276353001595,
-   "sigma_v": 0.010681086219847202,
-   "n_valid": 108,
+   "u": 4.982370853424072,
+   "v": 2.537519931793213,
+   "sigma_u": 0.013599765487015247,
+   "sigma_v": 0.02710038051009178,
+   "n_valid": 106,
    "n_total": 108,
-   "magnitude": 5.599508826871372,
-   "sigma": 0.01632910378385863,
-   "mm": 4.479607061497098,
-   "sigma_mm": 0.013063283027086904
+   "magnitude": 5.591334968082091,
+   "sigma": 0.03032134965817936,
+   "mm": 4.473067974465673,
+   "sigma_mm": 0.02425707972654349
   }
  },
  "state": "CRITICAL"

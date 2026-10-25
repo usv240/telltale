@@ -34,7 +34,8 @@ about 3,000 points with sub-pixel image correlation, and when the movement accel
 forecasts a failure window with the inverse-velocity method mines use. A supervising agent,
 Claude on Amazon Bedrock, then re-runs OpenCV on the stored images to check the warning is real
 before anyone is woken: it re-measures against a different reference, checks that the motion is
-coherent, and checks the camera did not move. Only then does it page the duty officer, with
+coherent, and checks the camera did not move. Only then does it page the duty officer, once per
+episode, with
 the evidence images and signed approve and dismiss links. Nothing reaches the public without a
 person.
 
@@ -47,7 +48,21 @@ What that buys, in the units a district office pays in:
   worker, or about 10.50 USD for a single slope with the worker sleeping between photos. A
   single chain inclinometer starts at about 5,000 EUR before drilling and watches one borehole.
 - **A forecast window, not a date.** At Brienz in 2023 the evacuation letter gave "between May
-  15 and June 1"; TellTale's demo publishes 50.0 to 50.7 for a failure at 50.0.
+  15 and June 1"; TellTale's demo, a simulated collapse on a real USGS photograph, publishes days
+  49.2 to 51.0 for a failure on day 50.
+
+### What is new
+
+Camera image correlation for landslides and the inverse-velocity forecast are both published,
+and both are sold as expert services. TellTale joins them into one unattended loop that an
+office without a geotechnical team can run. It adds three things the prior work leaves open:
+
+- **Onset gates.** They took real-data false alarms from 371 to 0.
+- **Measured camera failures.** CAMERA_EVENT, BLIND and BLURRED are reported, never shown as
+  "no movement".
+- **An agent that must re-measure before it may page anyone,** at most once per episode.
+
+Report section 1b has the comparison table.
 
 ### How we built it
 

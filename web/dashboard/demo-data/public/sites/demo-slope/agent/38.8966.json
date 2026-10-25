@@ -4,9 +4,10 @@
  "event": "E_ANOMALY",
  "policy": "rules",
  "model": null,
- "started": "2026-10-22T04:53:14Z",
+ "started": "2026-10-25T22:38:19Z",
  "verdict": "CONFIRMED",
  "paged_human": true,
+ "page_attached": false,
  "cadence_changed": true,
  "n_tool_calls": 9,
  "calls": [
@@ -39,16 +40,16 @@
        "verdict": "OK",
        "refine_model": "translation",
        "residual": [
-        0.016101406887173653,
-        -0.013113092631101608
+        -0.0036400980316102505,
+        -0.008273416198790073
        ],
-       "scatter": 0.013922134507909549,
-       "n_inliers": 1506
+       "scatter": 0.016587772301756152,
+       "n_inliers": 983
       },
       "zones": {
        "slope": {
-        "magnitude": 1.9550759039282517,
-        "sigma": 0.02153970075100712,
+        "magnitude": 1.9536896927772627,
+        "sigma": 0.027741572000247627,
         "n_valid": 108,
         "n_total": 108
        }
@@ -64,16 +65,16 @@
        "verdict": "OK",
        "refine_model": "translation",
        "residual": [
-        0.008010255172848701,
-        0.012502075172960758
+        -0.015965279191732407,
+        -0.016111992299556732
        ],
-       "scatter": 0.011967415578466114,
-       "n_inliers": 1326
+       "scatter": 0.01496904665596994,
+       "n_inliers": 926
       },
       "zones": {
        "slope": {
-        "magnitude": 2.0811830166441845,
-        "sigma": 0.01863556772286275,
+        "magnitude": 2.0505354535010483,
+        "sigma": 0.024632225366043,
         "n_valid": 108,
         "n_total": 108
        }
@@ -87,18 +88,18 @@
       "coverage": 1.0,
       "stabilize": {
        "verdict": "OK",
-       "refine_model": "translation",
+       "refine_model": "similarity",
        "residual": [
-        0.015261229127645493,
-        -0.011983219534158707
+        -0.00894925557076931,
+        -0.013225991278886795
        ],
-       "scatter": 0.011848948410748147,
-       "n_inliers": 1385
+       "scatter": 0.025304014674444954,
+       "n_inliers": 943
       },
       "zones": {
        "slope": {
-        "magnitude": 2.2402057196997704,
-        "sigma": 0.018660764040517797,
+        "magnitude": 2.1870456369755,
+        "sigma": 0.03178730163524723,
         "n_valid": 108,
         "n_total": 108
        }
@@ -114,16 +115,16 @@
        "verdict": "OK",
        "refine_model": "translation",
        "residual": [
-        0.0074797761626541615,
-        0.014584440737962723
+        -0.00962928868830204,
+        -0.019741397351026535
        ],
-       "scatter": 0.012621468190406817,
-       "n_inliers": 1623
+       "scatter": 0.014616673759405906,
+       "n_inliers": 1054
       },
       "zones": {
        "slope": {
-        "magnitude": 2.519016362671189,
-        "sigma": 0.01889925928509317,
+        "magnitude": 2.48217786617103,
+        "sigma": 0.022093722221364027,
         "n_valid": 108,
         "n_total": 108
        }
@@ -139,16 +140,16 @@
        "verdict": "OK",
        "refine_model": "translation",
        "residual": [
-        0.0006538848974741995,
-        0.012329936027526855
+        0.012749804183840752,
+        -0.014067967422306538
        ],
-       "scatter": 0.011888461728328975,
-       "n_inliers": 1373
+       "scatter": 0.015235934224239257,
+       "n_inliers": 919
       },
       "zones": {
        "slope": {
-        "magnitude": 2.7968677409057108,
-        "sigma": 0.02107084103927781,
+        "magnitude": 2.816522662025868,
+        "sigma": 0.043184479846341293,
         "n_valid": 108,
         "n_total": 108
        }
@@ -164,16 +165,16 @@
        "verdict": "OK",
        "refine_model": "translation",
        "residual": [
-        0.003978326451033354,
-        -0.017360897734761238
+        0.012791454792022705,
+        -0.0007890809793025255
        ],
-       "scatter": 0.013146853596576146,
-       "n_inliers": 1311
+       "scatter": 0.018138902453435038,
+       "n_inliers": 903
       },
       "zones": {
        "slope": {
-        "magnitude": 3.066886983222112,
-        "sigma": 0.019157528282328088,
+        "magnitude": 3.0928360135932915,
+        "sigma": 0.03608126817734937,
         "n_valid": 108,
         "n_total": 108
        }
@@ -182,8 +183,8 @@
     ],
     "recent_increment_baseline": {
      "slope": {
-      "median_increment_px": 0.13556339190812167,
-      "p90_increment_px": 0.2708024559082133,
+      "median_increment_px": 0.13877117380981835,
+      "p90_increment_px": 0.2781952393302343,
       "n": 20
      }
     },
@@ -191,7 +192,7 @@
     "reference_mode": "fixed",
     "note": "fixed site: magnitudes are displacement since the site reference"
    },
-   "at": "2026-10-22T04:53:14Z"
+   "at": "2026-10-25T22:38:19Z"
   },
   {
    "n": 2,
@@ -201,13 +202,13 @@
    },
    "result": {
     "t": 38.89655172413793,
-    "sharpness": 0.033211853355169296,
-    "contrast": 0.09165693074464798,
+    "sharpness": 0.008120408281683922,
+    "contrast": 0.15166768431663513,
     "stack": {
      "status": "OK",
      "n_frames": 5,
-     "max_shift": 0.6221941113471985,
-     "contrast": 0.09372363239526749
+     "max_shift": 0.6527988910675049,
+     "contrast": 0.15251865983009338
     },
     "field": {
      "n_subsets": 256,
@@ -221,12 +222,12 @@
       "OUT_OF_BOUND": 0,
       "EDGE_PEAK": 0
      },
-     "crosscheck_px": 0.6986064910888672,
+     "crosscheck_px": 0.7003968358039856,
      "review": false
     },
     "reason": "OK"
    },
-   "at": "2026-10-22T04:53:14Z"
+   "at": "2026-10-25T22:38:19Z"
   },
   {
    "n": 3,
@@ -239,21 +240,21 @@
     "verdict": "OK",
     "camera_model": "translation",
     "coarse_method": "orb",
-    "n_inliers": 1311,
+    "n_inliers": 903,
     "residual_px": [
-     0.006624066270887852,
-     -0.014466243796050549
+     0.012969432398676872,
+     0.0010622621048241854
     ],
-    "scatter_px": 0.015035238850175903,
+    "scatter_px": 0.018451738190971716,
     "translation_px": [
-     0.8103456497192383,
-     0.4202079772949219
+     0.7706413269042969,
+     0.43604278564453125
     ],
     "rotation_deg": 0.0,
     "scale": 1.0,
     "mount_moved": false
    },
-   "at": "2026-10-22T04:53:14Z"
+   "at": "2026-10-25T22:38:19Z"
   },
   {
    "n": 4,
@@ -270,21 +271,21 @@
     "review": false,
     "zones": {
      "slope": {
-      "u": 0.24890980124473572,
-      "v": 0.09939774125814438,
-      "magnitude": 0.26802238735395756,
-      "sigma": 0.017611476978811994,
+      "u": 0.23433367908000946,
+      "v": 0.13006651401519775,
+      "magnitude": 0.26801039386419045,
+      "sigma": 0.024100914929300193,
       "n_valid": 108,
       "n_total": 108,
       "coherence": 1.0
      }
     },
+    "evidence_png": "agent/38.8966/call-4.png",
     "worker_recorded": {
-     "slope": 3.066886983222112
-    },
-    "evidence_png": "agent/38.8966/call-4.png"
+     "slope": 3.0928360135932915
+    }
    },
-   "at": "2026-10-22T04:53:14Z"
+   "at": "2026-10-25T22:38:19Z"
   },
   {
    "n": 5,
@@ -301,21 +302,21 @@
     "review": false,
     "zones": {
      "slope": {
-      "u": 2.7500081062316895,
-      "v": 1.357663869857788,
-      "magnitude": 3.066886983222112,
-      "sigma": 0.019157528282328088,
+      "u": 2.7892658710479736,
+      "v": 1.3362748622894287,
+      "magnitude": 3.0928360135932915,
+      "sigma": 0.03608126817734937,
       "n_valid": 108,
       "n_total": 108,
       "coherence": 1.0
      }
     },
+    "evidence_png": "agent/38.8966/call-5.png",
     "worker_recorded": {
-     "slope": 3.066886983222112
-    },
-    "evidence_png": "agent/38.8966/call-5.png"
+     "slope": 3.0928360135932915
+    }
    },
-   "at": "2026-10-22T04:53:14Z"
+   "at": "2026-10-25T22:38:19Z"
   },
   {
    "n": 6,
@@ -329,13 +330,13 @@
      "slope": {
       "coherence": 1.0,
       "n": 108,
-      "n_moving": 107,
-      "median_direction_deg": 26.32066535949707,
-      "median_magnitude_px": 3.06880259513855
+      "n_moving": 108,
+      "median_direction_deg": 25.607046127319336,
+      "median_magnitude_px": 3.093466281890869
      }
     }
    },
-   "at": "2026-10-22T04:53:14Z"
+   "at": "2026-10-25T22:38:19Z"
   },
   {
    "n": 7,
@@ -347,24 +348,26 @@
    "result": {
     "epochs_per_day": 24,
     "reason": "confirmed motion; tighten forecast",
-    "set_at": "2026-10-22T04:53:14Z",
+    "set_at": "2026-10-25T22:38:19Z",
     "by": "agent"
    },
-   "at": "2026-10-22T04:53:14Z"
+   "at": "2026-10-25T22:38:19Z"
   },
   {
    "n": 8,
    "tool": "request_human_approval",
    "args": {
     "t": 38.89655172413793,
-    "summary": "remeasure vs reference {\"slope\": 3.067}, coherence {\"slope\": 1.0}"
+    "summary": "remeasure vs reference {\"slope\": 3.093}, coherence {\"slope\": 1.0}"
    },
    "result": {
     "t": 38.89655172413793,
     "paged": false,
-    "links_issued": false
+    "links_issued": false,
+    "state": "ACCELERATING",
+    "why": "first page of this episode"
    },
-   "at": "2026-10-22T04:53:14Z"
+   "at": "2026-10-25T22:38:19Z"
   },
   {
    "n": 9,
@@ -379,9 +382,9 @@
     "verdict": "CONFIRMED",
     "reason": "consistent across references and coherent"
    },
-   "at": "2026-10-22T04:53:14Z"
+   "at": "2026-10-25T22:38:19Z"
   }
  ],
  "summary": "Rule policy: motion confirmed; human paged.",
- "seconds": 0.54
+ "seconds": 0.65
 }
