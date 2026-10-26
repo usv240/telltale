@@ -1,5 +1,41 @@
 # Five-minute video: shot list and script
 
+## The fast path: the draft is built, record two things
+
+`video/` builds a silent 4:50 draft at 1080p from the live product. It is assembled from:
+
+- the replay;
+- a real live run on AWS;
+- the investigation evidence, the Mukilteo record, the setup page and the architecture;
+- the real `verify_claims.py` output;
+- text cards for the opening stories, the results and the limits.
+
+The team adds faces and a voice.
+
+```bash
+python video/cards.py --out .build/video/cards          # text cards (already rendered)
+python video/assemble.py                                # .build/video/telltale_draft.mp4 + .srt
+```
+
+1. **Record the team clip (about 12 s, landscape).** Both of you on camera, one line each:
+   *"We're Ground Truth. We built TellTale, which reads that warning with a camera a village
+   can afford."* Any phone works.
+2. **Record the voice-over.** Play `telltale_draft.mp4` and read the captions in
+   `telltale_draft.srt` as each shot appears. Stay silent from 0:28 to 0:40; that part is the
+   team clip's own sound. A phone voice memo is fine.
+3. **Optional outro (up to 7 s):** both of you saying "Thank you".
+4. **Finish:**
+   ```bash
+   python video/finish.py --team team.mp4 --voice voice.m4a [--outro outro.mp4] --out telltale_final.mp4
+   ```
+5. **Upload.** Put it on YouTube as unlisted, add `telltale_draft.srt` as captions, and paste
+   the link into Devpost.
+
+The cut contains no third-party photographs: only the project's own screens, public-domain USGS
+frames, and text cards with their sources on screen.
+
+## The script, shot by shot
+
 Rules: at most five minutes; it must show the team, the application working, the architecture
 and the principal results. Target 4:30 so the upload never clips. Record the screen at 1080p
 and the team on camera at 1080p, and add the voice after the cut. No music under speech.

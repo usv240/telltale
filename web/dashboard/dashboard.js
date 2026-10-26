@@ -543,6 +543,13 @@
         loadSite(sel.value);
       });
       await loadSite(want);
+      // ?epoch=<n> opens the replay at the n-th epoch, so a moment in the record can be linked
+      const ep = qs.get("epoch");
+      if (ep !== null && lastData && lastData.series.records.length > 1) {
+        const i = Math.max(0, Math.min(lastData.series.records.length - 1, parseInt(ep, 10) || 0));
+        $("scrub").value = String(i);
+        await showEpoch(i);
+      }
       let tick = 0;
       setInterval(() => {
         tick++;
