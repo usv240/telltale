@@ -13,7 +13,7 @@ a month in a 50-slope district, or about 10.50 USD for one slope alone (report s
 Check every number on this page yourself, in about 20 seconds and without AWS:
 
 ```bash
-python evaluation/verify_claims.py      # 10 claims against the result files, plus a live re-run of the accuracy sweep
+python evaluation/verify_claims.py      # 11 claims against the result files, plus a live re-run of the accuracy sweep
 ```
 
 Team Ground Truth, OpenCV AI Competition 2026, powered by AWS.
@@ -102,6 +102,7 @@ claude mcp add telltale -- python -m agent.mcp_server   # or use the repo's .mcp
 | E2 physical metrology | not claimed (harness shipped) | synthetic self-test at 20, 50, 100 m: slope 1.00, RMS 0.01 to 0.05 mm; printable target in `evaluation/e2/` |
 | E4 real landslide imagery (USGS Mukilteo) | done | documented Dec 9 2015 movement measured at 4 to 7x the quiet baseline with coherent downslope vectors; wet-lens period from Feb 10 correctly rejected |
 | E4c real landslide in the product | done | the whole USGS record through the unmodified worker with the Claude agent; December 9 2015 verdict CONFIRMED; live as site `mukilteo-usgs` on the dashboard |
+| E7 forecast on real slope failures (open collection, 6 sites) | done | CRITICAL before all 6 failures (Preonzo, Arvigo, Vajont, Hogarth, Veslemannen); last window contained the failure at 3 of 4 sites, median within 2 days at 3; 12 early false CRITICAL spells reported, which is why a person approves |
 | E4b negative control on real data | done | 0 false acceleration alarms on 147 quiet days x 3 zones (was 371 before the onset gates); 2 of 2 observable movement periods flagged by the jump detector |
 | E1 public benchmark (SEM 2D DIC Challenge 1.0) | done | MAE 0.0047 px on Sample 1, best of TellTale, Farneback and pyramidal LK; within 0.01 px of the best on the noisier sets |
 | E1 named baselines | done | TellTale 0.004 px median vs Farneback 0.010, pyramidal LK 0.034, phase correlation 0.67 on the synthetic sweep |

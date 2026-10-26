@@ -1,0 +1,488 @@
+{
+ "data": "Leinauer et al. 2023, mediaTUM doi:10.14459/2023mp1688868 (CC BY 4.0); Kristensen et al. 2021 ESM 6 (CC BY 4.0)",
+ "config": {
+  "sma_window": 3,
+  "lma_window": 7,
+  "ooa_k": 3,
+  "noise_floor": 0.05,
+  "min_points_fit": 4,
+  "bootstrap": 500,
+  "min_r2": 0.5,
+  "critical_horizon": 5.0,
+  "alpha_grid": [
+   1.5,
+   2.2,
+   0.05
+  ],
+  "ooa_min_snr": 3.0,
+  "ooa_min_tstat": 4.0,
+  "noise_window": 14
+ },
+ "sites": [
+  {
+   "site": "Preonzo 2012 (extensometers)",
+   "file": "Preonzo_extensometers",
+   "failure": "2012-05-15 02:45",
+   "step_d": 0.16666666666666666,
+   "window_d": 120.0,
+   "sensors": 5,
+   "epochs": 720,
+   "first_warning_lead_d": 13.59375,
+   "first_critical_lead_d": 13.427050000000008,
+   "window_at_first_critical": {
+    "sensor": "ext5_mm",
+    "tf": 854.556574112989,
+    "t_lo": 854.266869873178,
+    "t_hi": 857.7197203861695,
+    "contains_failure": false,
+    "median_error_d": -10.537175887011017
+   },
+   "last_forecast_before_failure": {
+    "sensor": "ext2_mm",
+    "t": 865.0,
+    "tf": 866.9608385329393,
+    "t_lo": 865.8120267432515,
+    "t_hi": 873.2210391845813,
+    "contains_failure": false,
+    "median_error_d": 1.8670885329393059
+   },
+   "false_critical_episodes": 2,
+   "per_sensor": {
+    "ext1_mm": {
+     "epochs": 720,
+     "noise_sigma": 0.041934260551568056,
+     "final_state": "ACCELERATING",
+     "first_acc_lead_d": 8.59375,
+     "first_crit_lead_d": 8.427083333333371
+    },
+    "ext2_mm": {
+     "epochs": 720,
+     "noise_sigma": 0.03145069541358665,
+     "final_state": "CRITICAL",
+     "first_acc_lead_d": 12.760416666666742,
+     "first_crit_lead_d": 12.427083333333371
+    },
+    "ext3_mm": {
+     "epochs": 720,
+     "noise_sigma": 0.028934639780533095,
+     "final_state": "CRITICAL",
+     "first_acc_lead_d": 12.760416666666742,
+     "first_crit_lead_d": 8.427083333333371
+    },
+    "ext4_mm": {
+     "epochs": 719,
+     "noise_sigma": 0.05241782568931108,
+     "final_state": "CRITICAL",
+     "first_acc_lead_d": 12.927083333333371,
+     "first_crit_lead_d": 12.760416666666742
+    },
+    "ext5_mm": {
+     "epochs": 719,
+     "noise_sigma": 0.0524178256892515,
+     "final_state": "CRITICAL",
+     "first_acc_lead_d": 13.59375,
+     "first_crit_lead_d": 13.427083333333371
+    }
+   }
+  },
+  {
+   "site": "Preonzo 2012 (total station)",
+   "file": "Preonzo_reflectors",
+   "failure": "2012-05-15 02:45",
+   "step_d": 0.16666666666666666,
+   "window_d": 120.0,
+   "sensors": 13,
+   "epochs": 1440,
+   "first_warning_lead_d": 103.94097222222217,
+   "first_critical_lead_d": 68.77427222222218,
+   "window_at_first_critical": {
+    "sensor": "ref3_m",
+    "tf": 604.0141263750216,
+    "t_lo": 603.399884259835,
+    "t_hi": 606.0833333261759,
+    "contains_failure": false,
+    "median_error_d": -67.42684584720052
+   },
+   "last_forecast_before_failure": {
+    "sensor": "ref4_m",
+    "t": 671.3333,
+    "tf": 673.3199642451866,
+    "t_lo": 670.7585149253767,
+    "t_hi": 674.1748325008363,
+    "contains_failure": true,
+    "median_error_d": 1.8789920229644395
+   },
+   "false_critical_episodes": 3,
+   "per_sensor": {
+    "ref1_m": {
+     "epochs": 686,
+     "noise_sigma": 0.001,
+     "final_state": "ACCELERATING",
+     "first_acc_lead_d": 55.94097222222217,
+     "first_crit_lead_d": 8.607638888888914
+    },
+    "ref2_m": {
+     "epochs": 720,
+     "noise_sigma": 0.0010483565135240163,
+     "final_state": "CRITICAL",
+     "first_acc_lead_d": 103.94097222222217,
+     "first_crit_lead_d": 55.77430555555554
+    },
+    "ref3_m": {
+     "epochs": 720,
+     "noise_sigma": 0.0010483565135240163,
+     "final_state": "CRITICAL",
+     "first_acc_lead_d": 68.77430555555554,
+     "first_crit_lead_d": 68.77430555555554
+    },
+    "ref4_m": {
+     "epochs": 720,
+     "noise_sigma": 0.0010483565135240163,
+     "final_state": "CRITICAL",
+     "first_acc_lead_d": 34.607638888888914,
+     "first_crit_lead_d": 8.440972222222172
+    },
+    "ref5_m": {
+     "epochs": 720,
+     "noise_sigma": 0.0010483565135240163,
+     "final_state": "CRITICAL",
+     "first_acc_lead_d": 8.607638888888914,
+     "first_crit_lead_d": 8.440972222222172
+    },
+    "ref6_m": {
+     "epochs": 630,
+     "noise_sigma": 0.001,
+     "final_state": "MOVING",
+     "first_acc_lead_d": null,
+     "first_crit_lead_d": null
+    },
+    "ref7_m": {
+     "epochs": 720,
+     "noise_sigma": 0.001,
+     "final_state": "MOVING",
+     "first_acc_lead_d": null,
+     "first_crit_lead_d": null
+    },
+    "ref8_m": {
+     "epochs": 720,
+     "noise_sigma": 0.0010483565135240163,
+     "final_state": "CRITICAL",
+     "first_acc_lead_d": 8.440972222222172,
+     "first_crit_lead_d": 8.274305555555543
+    },
+    "ref9_m": {
+     "epochs": 720,
+     "noise_sigma": 0.0010483565135240163,
+     "final_state": "CRITICAL",
+     "first_acc_lead_d": 8.607638888888914,
+     "first_crit_lead_d": 8.440972222222172
+    },
+    "ref11_m": {
+     "epochs": 720,
+     "noise_sigma": 0.001,
+     "final_state": "QUIET",
+     "first_acc_lead_d": null,
+     "first_crit_lead_d": null
+    },
+    "ref12_m": {
+     "epochs": 720,
+     "noise_sigma": 0.001,
+     "final_state": "QUIET",
+     "first_acc_lead_d": null,
+     "first_crit_lead_d": null
+    },
+    "ref13_m": {
+     "epochs": 720,
+     "noise_sigma": 0.001,
+     "final_state": "QUIET",
+     "first_acc_lead_d": null,
+     "first_crit_lead_d": null
+    },
+    "ref14_m": {
+     "epochs": 720,
+     "noise_sigma": 0.001,
+     "final_state": "QUIET",
+     "first_acc_lead_d": null,
+     "first_crit_lead_d": null
+    }
+   }
+  },
+  {
+   "site": "Arvigo 2007",
+   "file": "Arvigo",
+   "failure": "2007-05-28 20:00",
+   "step_d": 1.0,
+   "window_d": 120.0,
+   "sensors": 6,
+   "epochs": 63,
+   "first_warning_lead_d": 51.47916666666667,
+   "first_critical_lead_d": 50.47916666666667,
+   "window_at_first_critical": {
+    "sensor": "POT6",
+    "tf": 29.679459867490888,
+    "t_lo": 28.621001153767363,
+    "t_hi": 33.956599857351165,
+    "contains_failure": false,
+    "median_error_d": -46.79970679917578
+   },
+   "last_forecast_before_failure": {
+    "sensor": "POT5_3",
+    "t": 76.0,
+    "tf": 76.34033583836742,
+    "t_lo": 75.57710394493512,
+    "t_hi": 79.341288355234,
+    "contains_failure": true,
+    "median_error_d": -0.1388308282992483
+   },
+   "false_critical_episodes": 2,
+   "per_sensor": {
+    "POT1": {
+     "epochs": 57,
+     "noise_sigma": 0.041934260551487045,
+     "final_state": "MOVING",
+     "first_acc_lead_d": null,
+     "first_crit_lead_d": null
+    },
+    "POT2": {
+     "epochs": 57,
+     "noise_sigma": 0.010483565137869667,
+     "final_state": "ACCELERATING",
+     "first_acc_lead_d": 19.47916666666667,
+     "first_crit_lead_d": null
+    },
+    "POT5_3": {
+     "epochs": 63,
+     "noise_sigma": 0.04892330397673458,
+     "final_state": "CRITICAL",
+     "first_acc_lead_d": 1.4791666666666714,
+     "first_crit_lead_d": 0.4791666666666714
+    },
+    "POT6": {
+     "epochs": 57,
+     "noise_sigma": 0.02096713027574678,
+     "final_state": "ACCELERATING",
+     "first_acc_lead_d": 51.47916666666667,
+     "first_crit_lead_d": 50.47916666666667
+    },
+    "POT7": {
+     "epochs": 24,
+     "noise_sigma": 0.020967130275743057,
+     "final_state": "CRITICAL",
+     "first_acc_lead_d": 21.47916666666667,
+     "first_crit_lead_d": 19.47916666666667
+    },
+    "POT8_1": {
+     "epochs": 22,
+     "noise_sigma": 0.8596523413054822,
+     "final_state": "ACCELERATING",
+     "first_acc_lead_d": 21.47916666666667,
+     "first_crit_lead_d": null
+    }
+   }
+  },
+  {
+   "site": "Vajont 1963",
+   "file": "Vaiont",
+   "failure": "1963-10-09 22:39",
+   "step_d": 1.0,
+   "window_d": 120.0,
+   "sensors": 4,
+   "epochs": 119,
+   "first_warning_lead_d": 119.94374999999991,
+   "first_critical_lead_d": 8.943749999999909,
+   "window_at_first_critical": {
+    "sensor": "displ_2_cm",
+    "tf": 1214.6574087467754,
+    "t_lo": 1207.484966460656,
+    "t_hi": 1269.3541861021106,
+    "contains_failure": true,
+    "median_error_d": -8.286341253224464
+   },
+   "last_forecast_before_failure": null,
+   "false_critical_episodes": 0,
+   "per_sensor": {
+    "displ_2_cm": {
+     "epochs": 119,
+     "noise_sigma": 0.026733091101566533,
+     "final_state": "ACCELERATING",
+     "first_acc_lead_d": 119.94374999999991,
+     "first_crit_lead_d": 8.943749999999909
+    },
+    "displ_6_cm": {
+     "epochs": 119,
+     "noise_sigma": 0.03302323018427492,
+     "final_state": "ACCELERATING",
+     "first_acc_lead_d": 119.94374999999991,
+     "first_crit_lead_d": null
+    },
+    "displ_4_cm": {
+     "epochs": 119,
+     "noise_sigma": 0.0073384955965005725,
+     "final_state": "ACCELERATING",
+     "first_acc_lead_d": 119.94374999999991,
+     "first_crit_lead_d": null
+    },
+    "displ_58_cm": {
+     "epochs": 119,
+     "noise_sigma": 0.003145069541376543,
+     "final_state": "ACCELERATING",
+     "first_acc_lead_d": 119.94374999999991,
+     "first_crit_lead_d": null
+    }
+   }
+  },
+  {
+   "site": "Hogarth pit 1975",
+   "file": "Hogarth",
+   "failure": "1975-06-23 12:00",
+   "step_d": 1.0,
+   "window_d": 120.0,
+   "sensors": 5,
+   "epochs": 111,
+   "first_warning_lead_d": 119.5,
+   "first_critical_lead_d": 68.5,
+   "window_at_first_critical": {
+    "sensor": "J1",
+    "tf": 226.6951363617583,
+    "t_lo": 225.96447201636778,
+    "t_hi": 229.34740873366943,
+    "contains_failure": false,
+    "median_error_d": -66.8048636382417
+   },
+   "last_forecast_before_failure": {
+    "sensor": "J2",
+    "t": 284.0,
+    "tf": 284.7848034353879,
+    "t_lo": 283.3757135945815,
+    "t_hi": 308.13243495335576,
+    "contains_failure": true,
+    "median_error_d": -8.715196564612086
+   },
+   "false_critical_episodes": 1,
+   "per_sensor": {
+    "J1": {
+     "epochs": 110,
+     "noise_sigma": 0.002620891284467882,
+     "final_state": "CRITICAL",
+     "first_acc_lead_d": 69.5,
+     "first_crit_lead_d": 68.5
+    },
+    "J2": {
+     "epochs": 111,
+     "noise_sigma": 0.005189364743246528,
+     "final_state": "CRITICAL",
+     "first_acc_lead_d": 79.5,
+     "first_crit_lead_d": 53.5
+    },
+    "J3": {
+     "epochs": 110,
+     "noise_sigma": 0.002620891284467882,
+     "final_state": "CRITICAL",
+     "first_acc_lead_d": 67.5,
+     "first_crit_lead_d": 66.5
+    },
+    "J4": {
+     "epochs": 111,
+     "noise_sigma": 0.0015201169449925171,
+     "final_state": "CRITICAL",
+     "first_acc_lead_d": 119.5,
+     "first_crit_lead_d": 20.5
+    },
+    "J6": {
+     "epochs": 111,
+     "noise_sigma": 0.001624952596370059,
+     "final_state": "CRITICAL",
+     "first_acc_lead_d": 119.5,
+     "first_crit_lead_d": 24.5
+    }
+   }
+  },
+  {
+   "site": "Veslemannen 2019 (ground radar)",
+   "file": "Veslemannen",
+   "failure": "2019-09-05 20:58",
+   "step_d": 1.0,
+   "window_d": 2000.0,
+   "sensors": 9,
+   "epochs": 1781,
+   "first_warning_lead_d": 1772.9368055555556,
+   "first_critical_lead_d": 1771.9368055555556,
+   "window_at_first_critical": {
+    "sensor": "Pts_02",
+    "tf": 26.808987487741643,
+    "t_lo": 23.89631447111701,
+    "t_hi": 34.02468022464892,
+    "contains_failure": false,
+    "median_error_d": -1768.127818067814
+   },
+   "last_forecast_before_failure": null,
+   "false_critical_episodes": 4,
+   "per_sensor": {
+    "Pts_01": {
+     "epochs": 1781,
+     "noise_sigma": 0.5449549734323749,
+     "final_state": "ACCELERATING",
+     "first_acc_lead_d": 1772.9368055555556,
+     "first_crit_lead_d": 1458.9368055555556
+    },
+    "Pts_02": {
+     "epochs": 1781,
+     "noise_sigma": 0.3072818379946029,
+     "final_state": "ACCELERATING",
+     "first_acc_lead_d": 1772.9368055555556,
+     "first_crit_lead_d": 1771.9368055555556
+    },
+    "Pts_03": {
+     "epochs": 1781,
+     "noise_sigma": 0.305474990450509,
+     "final_state": "ACCELERATING",
+     "first_acc_lead_d": 1459.9368055555556,
+     "first_crit_lead_d": 1458.9368055555556
+    },
+    "Pts_04": {
+     "epochs": 1781,
+     "noise_sigma": 0.2566609121199089,
+     "final_state": "ACCELERATING",
+     "first_acc_lead_d": 1065.9368055555556,
+     "first_crit_lead_d": 1064.9368055555556
+    },
+    "Pts_05": {
+     "epochs": 1781,
+     "noise_sigma": 0.33050135991937707,
+     "final_state": "ACCELERATING",
+     "first_acc_lead_d": 1460.9368055555556,
+     "first_crit_lead_d": 1459.9368055555556
+    },
+    "Pts_06": {
+     "epochs": 1781,
+     "noise_sigma": 0.3247173172775813,
+     "final_state": "ACCELERATING",
+     "first_acc_lead_d": 1771.9368055555556,
+     "first_crit_lead_d": null
+    },
+    "Pts_07": {
+     "epochs": 1781,
+     "noise_sigma": 0.190692244927192,
+     "final_state": "ACCELERATING",
+     "first_acc_lead_d": 1133.9368055555556,
+     "first_crit_lead_d": 61.936805555555566
+    },
+    "Pts_08": {
+     "epochs": 1781,
+     "noise_sigma": 0.2268002217561006,
+     "final_state": "MOVING",
+     "first_acc_lead_d": 1229.9368055555556,
+     "first_crit_lead_d": null
+    },
+    "Pts_09": {
+     "epochs": 1781,
+     "noise_sigma": 1.11245937539191,
+     "final_state": "ACCELERATING",
+     "first_acc_lead_d": 1553.9368055555556,
+     "first_crit_lead_d": 1067.9368055555556
+    }
+   },
+   "note": "whole record, daily; radar phase wrapping underestimates the final day (Kristensen et al. 2021)"
+  }
+ ]
+}

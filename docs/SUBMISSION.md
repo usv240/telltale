@@ -64,6 +64,17 @@ office without a geotechnical team can run. It adds three things the prior work 
 
 Report section 1b has the comparison table.
 
+### The forecast on real failures
+
+We replayed the unchanged forecaster on six real slope failures with open monitoring records:
+Preonzo 2012, Arvigo 2007, Vajont 1963, Hogarth 1975 and Veslemannen 2019.
+
+- It reached CRITICAL before every one.
+- At the four sites with a forecast at the end, the median landed within two days of the
+  collapse at three.
+- It also raised twelve early CRITICAL spells on accelerations that settled. That is why
+  TellTale publishes a window, the agent re-measures, and a person decides.
+
 ### How we built it
 
 OpenCV 5, classical vision only, no neural network:

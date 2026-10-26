@@ -334,6 +334,8 @@ Resources:
       SecurityGroupIds: [!Ref WorkerSecurityGroup]
       # The worker's idle shutdown stops (never terminates) the instance; WakeFunction restarts it.
       InstanceInitiatedShutdownBehavior: stop
+      # IMDSv2 only: instance credentials cannot be read through a forwarded request (SSRF).
+      MetadataOptions: { HttpTokens: required, HttpPutResponseHopLimit: 1 }
       BlockDeviceMappings:
         - DeviceName: /dev/sda1
           # COOL AMIs ship 50 to 80 GB root snapshots and a smaller volume fails the launch, so

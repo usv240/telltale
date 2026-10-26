@@ -78,6 +78,18 @@ def main(argv=None) -> int:
           and arms["off"]["creep+bump"]["pages"] == 1,
           f"first confirmed page at t = {first:.2f}, true failure {llm['true_tf']}, lead {lead:.1f}" if lead else "none")
 
+    # 3b. The forecast replayed on real slopes that failed (E7, Leinauer et al. 2023 collection).
+    e7 = [s for s in load("e7_real_failures.json")["sites"] if "error" not in s]
+    crit = sum(s["first_critical_lead_d"] is not None and s["first_critical_lead_d"] > 0 for s in e7)
+    lasts = [s["last_forecast_before_failure"] for s in e7 if s["last_forecast_before_failure"]]
+    hit = sum(l["contains_failure"] for l in lasts)
+    false_eps = sum(s["false_critical_episodes"] for s in e7)
+    claim("On 6 real slope failures the unmodified forecaster reached CRITICAL before every one; the last "
+          "window before failure contained it at 3 of 4 sites; 12 false CRITICAL spells are reported as such",
+          "e7_real_failures.json", len(e7) == 6 and crit == 6 and len(lasts) == 4 and hit == 3 and false_eps == 12,
+          f"{crit} of {len(e7)} reached CRITICAL first; last window contained the failure {hit} of {len(lasts)}; "
+          f"false CRITICAL spells {false_eps}")
+
     # 4. Cost on Graviton, and COOL verified on the production path.
     st = load("e6_stock-arm_1080p.json")
     x86 = load("e6_stock-x86_1080p.json")

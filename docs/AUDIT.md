@@ -7,13 +7,13 @@ state, the gap, the risk if left, and the fix. Status: **open**, **in progress**
 
 | # | Requirement (Rules.md) | State | Gap and risk | Fix | Status |
 |---|---|---|---|---|---|
-| A1 | Technical report: problem, users, architecture, OpenCV 5, AWS, evaluation, limitations, responsible use | `docs/REPORT.md` draft with measured numbers | Draft; no figures embedded; E2/E3-physical/E6-COOL pending. Risk: documentation 10 % | Finish after E6 and rig; embed figures; export PDF | in progress |
+| A1 | Technical report: problem, users, architecture, OpenCV 5, AWS, evaluation, limitations, responsible use | `docs/REPORT.md`, every number measured, figures embedded, verified by `evaluation/verify_claims.py` | none | - | closed |
 | A2 | Judge-accessible repository | Private GitHub repo | Judges cannot see it. Risk: everything | Make public on submission day, or add judge handles when Devpost provides them | open |
 | A3 | Pinned dependencies plus build, deploy, test instructions | Pinned; READMEs | No CI proves a clean clone works. Risk: reproducibility 10 % | GitHub Actions: tests on x86 now, arm64 runner when public | closed |
 | A4 | Architecture diagram with OpenCV 5, AWS, COOL/agent components | `docs/architecture.svg` | Not visually verified; agent box marked optional | Verify render; update when agent lands | closed (agent box updated; agent_workflow.svg added) |
-| A5 | Working web endpoint or live screen-share | CloudFront dashboard live | Worker stopped between sessions; must run Oct 27 to Nov 9. Risk: judges see stale data | Start worker before submission; schedule nothing that stops it | open |
-| A6 | Video, 5 min max, shows team, app working, architecture, results | Shot list only | Needs rig footage and both members on camera. Risk: documentation 10 % and overall impression | Film after rig run | open |
-| A7 | Evaluation evidence incl. failure cases | E1, E3-synthetic, E4, E5, E6-baseline | E2 and physical E3 pending. Failure cases documented | Rig runs; E2 if time | in progress |
+| A5 | Working web endpoint or live screen-share | CloudFront dashboard live; scale-to-zero worker wakes on demand; judges can start a live run | worker must stay deployed through judging (stack left up until Nov 9) | keep the stack | closed |
+| A6 | Video, 5 min max, shows team, app working, architecture, results | Script in `docs/VIDEO.md`, works without the rig | must be recorded by the team | record and upload | open (team) |
+| A7 | Evaluation evidence incl. failure cases | E1 to E7: synthetic, public benchmark, real landslide record, confounders, agent ablation, COOL, real failures replayed | physical E2 and E3 not claimed (harness and rig shipped) | - | closed |
 | A8 | Both members registered on the Devpost team; project submitted before Oct 26 11:59 PM PT | Unknown | Risk: ineligible | Confirm on Devpost | open |
 
 ## B. Things that can cost points or trigger rejection
@@ -62,7 +62,7 @@ state, the gap, the risk if left, and the fix. Status: **open**, **in progress**
 | Site setup tool (`setup.html`) | real operators can configure a site without JSON; usability | closed |
 | Metric scale across an oblique slope (`scale.py`) | correct millimetres anywhere in the frame; geometry depth | closed |
 | Motion magnification (`telltale magnify`) | "seeing the invisible" clip for the video; innovation | closed |
-| E2 kit: printable target, harness, synthetic self-test | physical metrology becomes a half-day task | closed, photos pending |
+| E2 kit: printable target, harness, synthetic self-test | physical metrology becomes a half-day task for an operator | closed; physical photos not claimed |
 | CloudWatch ops dashboard, teardown script | cloud delivery and responsible operation | closed |
 | Worker and agent tests (32 total) | reliability | closed |
 | `docs/JUDGES.md`, `docs/DEPLOYMENT.md`, `docs/PUBLISHED-RECORD.md`, social drafts | documentation, impact | closed |

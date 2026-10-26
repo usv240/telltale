@@ -2,6 +2,20 @@
 
 Everything below works without contacting us. Times are what it took us on a laptop.
 
+## 0. The rubric, criterion by criterion
+
+Each row names what to look at and the number it rests on. `python evaluation/verify_claims.py`
+checks every number below against the result files.
+
+| Criterion (weight) | What a judge sees | The evidence |
+|---|---|---|
+| Technical execution (30) | OpenCV 5 pipeline: burst stacking, model-selecting stabilizer (ORB + USAC_MAGSAC + DIC refinement), sub-pixel ZNCC DIC with a coarse-to-fine pyramid, inverse-velocity forecast with gates and a bootstrap window | 0.005 px on the public SEM DIC Challenge, ahead of Farneback and pyramidal LK; 0 false alarms in 147 real quiet days; CRITICAL before 6 of 6 real slope failures (E7); 33 tests, CI on x86 and arm64 |
+| Innovation (20) | An agent that may only decide by re-running OpenCV, with the re-measured fields shown as evidence; onset gates that took real-data false alarms from 371 to 0 | Report section 1b compares prior work; E5 ablation: page 41.9 time units before failure against 3.0, zero false pages |
+| Real-world impact (20) | About 1.40 USD per slope per month; a window, not a date; a person decides | `docs/PUBLISHED-RECORD.md`: 30 opened sources (Sendai Framework, NDMA, World Risk Poll: half of landslide survivors got no warning); E7 on real failures |
+| User experience (10) | One sentence, the failure window as the largest figure, approve and dismiss, replay, setup from one photo, a live-run button | WCAG AA contrast in both themes (lowest 5.78:1); layout inspector 0 failures, 0 warnings at 1440, 768 and 390 px |
+| Documentation and presentation (10) | This path, the report with figures, the architecture diagram, the video | Every number measured and checked by one command; limits stated as measured properties (report section 8) |
+| Cloud delivery, reproducibility, responsible operation (10) | One CloudFormation template; COOL on Graviton4; scale to zero; alarms to SNS; signed approval links; IMDSv2; no inbound ports | Live run from the dashboard through the real stack; offline demo from a clone; teardown script; report section 9 |
+
 ## 1. See it working (2 minutes)
 
 **Run it yourself, live:** open https://d30le2uwgaimao.cloudfront.net/?site=live-demo and press

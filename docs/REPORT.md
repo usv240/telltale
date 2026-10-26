@@ -12,7 +12,7 @@ Repository: https://github.com/usv240/telltale (CI on x86 and arm64)
 
 > Every number in this report is **measured**: it comes from a script in `evaluation/` or from
 > the deployed system. `python evaluation/verify_claims.py` checks the headline numbers against
-> the result files and re-runs the accuracy sweep live (nine claims, about 20 seconds).
+> the result files and re-runs the accuracy sweep live (ten claims, about 20 seconds).
 > What was not measured is named as not claimed, in section 8.
 
 ## 1. Problem
@@ -97,10 +97,12 @@ LeClerc and Joslyn 2015). Those are TellTale's design choices: a camera, a windo
 
 ## 3. Architecture
 
-See `docs/architecture.svg`. Field camera, burst upload to S3 (frames first, manifest last), S3
+![TellTale architecture: camera to S3, an ordered SQS queue, a Graviton4 worker on COOL, the supervising agent on Bedrock, SNS and a human approval link, CloudFront dashboard](architecture.svg)
+
+Field camera, burst upload to S3 (frames first, manifest last), S3
 event to SQS with a dead-letter queue, one Graviton EC2 worker running the OpenCV 5 pipeline,
-artifacts published to a `public/` prefix served by CloudFront, CloudWatch metrics and three
-alarms (queue age, dead-letter queue, worker stopped) that publish to an SNS topic with an
+artifacts published to a `public/` prefix served by CloudFront, CloudWatch metrics and alarms
+(queue age and dead-letter queue; a worker-stopped alarm when scale to zero is off) that publish to an SNS topic with an
 optional e-mail subscriber. A Lambda function URL records human approve / dismiss decisions
 from HMAC-signed links. The supervising agent runs on the worker and calls Claude on Amazon
 Bedrock. One CloudFormation template; one deploy script; one code path for laptop and cloud
@@ -377,7 +379,11 @@ tool calls, 21k to 31k input tokens, and 30 to 42 seconds.
 
 ## 6b. Supervising agent (Agentic Vision path)
 
-Workflow diagram: `docs/agent_workflow.svg`. Code: `agent/tools.py`, `agent/supervisor.py`.
+![Agent workflow: an event triggers OpenCV perception tools, a bounded decision by Claude, and actions limited to cadence, a page and closing the event](agent_workflow.svg)
+
+![An investigation on the dashboard: the two displacement fields the agent re-measured, against the previous epoch and against the reference, with its verdict](gallery/03-agent-evidence.png)
+
+Code: `agent/tools.py`, `agent/supervisor.py`.
 
 The worker raises an event when a zone's state rises to ACCELERATING or CRITICAL (E_ANOMALY),
 when the stabilizer returns CAMERA_EVENT (E_CAMERA), or when the cross-check flags REVIEW or
@@ -468,6 +474,49 @@ each is the other's backup, and neither can send a public alert. `agent/mcp_smok
 the server, lists its tools and re-measures the demo's CRITICAL epoch (0.835 px against the
 previous epoch, 5.600 px against the reference, coherence 1.0, stabilization OK); `.mcp.json`
 registers it for Claude Code in the repository.
+
+### E7 the forecast on real slopes that failed (measured)
+
+`python evaluation/e7_real_failures.py`. The forecaster the worker runs, unchanged (default
+`ForecastConfig`, onset gates on, CRITICAL within 5 days at R2 >= 0.5), replayed causally on
+displacement records that ran up to a real failure. The records come from the open collection of
+Leinauer et al. (2023, mediaTUM doi:10.14459/2023mp1688868, CC BY 4.0; extensometers, total
+stations, benchmarks) and the Veslemannen ground-radar record (Kristensen et al. 2021, ESM 6,
+CC BY 4.0). These are not camera data: they test the forecast, which E4 cannot, because the
+Mukilteo bluff never failed.
+
+- **Setup.** Each sensor is resampled to the camera's cadence: every 4 hours, or daily where the
+  record is daily. Each replay sees 60 days of history and then the 120 days before the failure.
+  Veslemannen is replayed over its whole five-year record, daily.
+- **Nothing is tuned per site.** The true failure time is used only to score.
+- **Scoring.** A site's state is the highest state among its sensors. A false CRITICAL spell is a
+  CRITICAL state that ended more than two days before the failure.
+
+| Site | Sensors | First ACCELERATING, days before failure | First CRITICAL, days before failure | Last forecast before failure (error of the median, window) | False CRITICAL spells |
+|---|---|---|---|---|---|
+| Preonzo 2012 (extensometers) | 5 | 13.6 | 13.4 | +1.9 d, misses it | 2 |
+| Preonzo 2012 (total station) | 13 | 103.9 | 68.8 | +1.9 d, contains it | 3 |
+| Arvigo 2007 | 6 | 51.5 | 50.5 | -0.1 d, contains it | 2 |
+| Vajont 1963 | 4 | 119.9 | 8.9 | no CRITICAL at the last epoch | 0 |
+| Hogarth pit 1975 | 5 | 119.5 | 68.5 | -8.7 d, contains it | 1 |
+| Veslemannen 2019 (ground radar) | 9 | 1772.9 | 1771.9 | no CRITICAL at the last epoch | 4 |
+
+What this shows, plainly:
+
+- **The forecast warned before every one of the six failures.** All six reached CRITICAL first.
+- **The late forecasts are accurate.** At the four sites with a CRITICAL forecast at the last
+  epoch, the median landed within 2 days of the failure at three, and the window contained the
+  failure at three of the four.
+- **Early CRITICAL spells are often wrong.** There were twelve false CRITICAL spells in total.
+  - Most are earlier accelerations that settled, which a slope does before it fails.
+  - Veslemannen's four match its documented history: several red-alert crises from 2014 to 2019
+    did not end in failure.
+  - This is the known weakness of inverse velocity on real data (Carlà et al. 2017; Loew et al.
+    2025 report short-term deviations at Brienz).
+- **That is why TellTale never sends a public alert from the forecast.** It shows a window, the
+  agent re-measures, and a person decides.
+- **Where it falls short.** At Vajont the first CRITICAL window, 8.9 days out, was 62 days wide.
+  At Preonzo the extensometers' final window ended 1.9 days before the collapse.
 
 ### E6 COOL benchmark (measured, October 23, 2026)
 
@@ -563,6 +612,8 @@ vegetated Mukilteo bluff.
 
 ### E4 real landslide imagery: USGS Mukilteo bluff (measured)
 
+![USGS Mukilteo bluff on 9 December 2015, a documented movement day: blue is the ground TellTale measured moving, arrows its direction](figures/e4_mukilteo_2015-12-09_movement.jpg)
+
 `python evaluation/e4_mukilteo.py`. Public-domain USGS time-lapse of an active coastal-bluff
 landslide at Mukilteo, Washington (ScienceBase 5ef2388382ced62aaae3bbbe, DOI 10.5066/P99QOYL2):
 843 frames, three per day, August 20, 2015 to May 25, 2016, camera installed in the landslide
@@ -630,6 +681,14 @@ collapse through the full cloud path (E3), on large motion (E3b) and on a real l
 
 ## 7. User experience
 
+![The dashboard at CRITICAL: the failure window as the largest figure, one sentence for the duty officer, approve and dismiss](gallery/01-forecast.png)
+
+**Accessibility, measured.** Every text colour meets WCAG 2.1 AA in both themes (lowest: secondary
+text on the page ground, 5.78:1; data blue 6.10:1; dark theme 6.40:1 and above). Each page sets
+its language, has a skip link and visible focus rings, every image has alt text, every control has
+a label, live regions announce state changes, and animation respects reduced-motion settings. A
+browser inspector measured layout at 1440, 768 and 390 px on every page: 0 failures, 0 warnings.
+
 One static page, no framework, light and dark themes, keyboard-reachable controls, a "How it
 works" page, a "How to read this" disclosure on every panel, and a site-setup page
 (`setup.html`) where an operator loads one reference photo, draws the stable regions and target
@@ -693,6 +752,26 @@ is logged with time and source), and the dashboard shows the decision state. Unu
 alarmed (queue age, dead-letter queue) so that a silent monitor cannot pass for a quiet slope.
 Raw imagery expires after 30 days; derived series are small and auditable. The report states
 every limitation above on the dashboard footer and in the README.
+
+**Security posture.**
+
+- **No inbound access.** The worker opens no inbound ports and has no SSH key; operators reach
+  it through SSM Session Manager.
+- **IMDSv2 required.** Instance credentials cannot be read through a forwarded request.
+- **Least-privilege roles.** Each IAM role is scoped to its own prefixes, queue and instance; the
+  live-run function, for example, can write only `ingest/live-demo/` and its own run log.
+- **Private bucket.** The bucket is encrypted, blocks all public access, keeps every version, and
+  is read through CloudFront with origin access control.
+- **The two public function URLs are bounded.**
+  - The approval link is signed with HMAC-SHA256 per site, epoch and action.
+  - The live-run button is limited to one run per 20 minutes and twelve a day. A conditional
+    write means two presses cannot start two runs.
+- **Known gap.** The signing secret lives in an SSM String parameter and the approval function's
+  environment, not in Secrets Manager. That is acceptable for a pilot; a production deployment
+  would move it.
+
+**Cost control.** The worker stops itself when idle, so a quiet site costs only its disk.
+`infra/scripts/teardown.sh` removes every resource, including bucket versions.
 
 ## 10. Reproducibility
 
