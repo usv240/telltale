@@ -79,6 +79,13 @@ python -m agent.mcp_smoke                       # lists 9 tools, investigates th
 claude mcp add telltale -- python -m agent.mcp_server   # or use the repo's .mcp.json
 ```
 
+## How this was built
+
+The team used Claude Code as a coding assistant. The Agentic Vision claim rests on the agent
+inside the product, Claude on Amazon Bedrock re-running OpenCV before it may page anyone
+(`agent/`), not on the coding assistant. Every number is produced by a script in `evaluation/`
+and checked by `evaluation/verify_claims.py`.
+
 ## Repository map
 
 | Folder | What | Doc |

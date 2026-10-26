@@ -24,7 +24,8 @@ while [ $# -gt 0 ]; do
 done
 
 # Approval-link signing secret: keep the existing one across redeploys, create on first deploy.
-SECRET=$(aws ssm get-parameter --region "$REGION" --name "/${STACK}/approval-secret"   --query Parameter.Value --output text 2>/dev/null || true)
+SECRET=$(aws secretsmanager get-secret-value --region "$REGION" --secret-id "${STACK}/approval-secret" --query SecretString --output text 2>/dev/null \
+  || aws ssm get-parameter --region "$REGION" --name "/${STACK}/approval-secret" --query Parameter.Value --output text 2>/dev/null || true)
 if [ -z "$SECRET" ] || [ "$SECRET" = "None" ]; then SECRET=$(openssl rand -hex 24); fi
 
 echo "== packaging release"
@@ -67,7 +68,7 @@ QUEUE=$(aws cloudformation describe-stacks --region "$REGION" --stack-name "$STA
 echo "== refreshing worker code on ${INSTANCE} via SSM (no-op on first boot; user-data does it)"
 aws ssm send-command --region "$REGION" --instance-ids "$INSTANCE" \
   --document-name AWS-RunShellScript --comment "telltale update" \
-  --parameters "commands=[\"set -e\",\"export TELLTALE_BUCKET=${BUCKET} TELLTALE_QUEUE_URL=${QUEUE} TELLTALE_REGION=${REGION} TELLTALE_ALERT_TOPIC=${TOPIC} TELLTALE_APPROVAL_URL=${APPROVAL} TELLTALE_SECRET_PARAM=/${STACK}/approval-secret TELLTALE_AGENT=llm\",\"cd /opt/telltale && aws s3 cp s3://${BUCKET}/release/pipeline.tar.gz . && tar xzf pipeline.tar.gz && bash infra/worker/bootstrap.sh\"]" \
+  --parameters "commands=[\"set -e\",\"export TELLTALE_BUCKET=${BUCKET} TELLTALE_QUEUE_URL=${QUEUE} TELLTALE_REGION=${REGION} TELLTALE_ALERT_TOPIC=${TOPIC} TELLTALE_APPROVAL_URL=${APPROVAL} TELLTALE_SECRET_ARN=${STACK}/approval-secret TELLTALE_AGENT=llm\",\"cd /opt/telltale && aws s3 cp s3://${BUCKET}/release/pipeline.tar.gz . && tar xzf pipeline.tar.gz && bash infra/worker/bootstrap.sh\"]" \
   --query "Command.CommandId" --output text 2>/dev/null || echo "   (SSM not ready yet; worker installs itself on first boot)"
 
 echo

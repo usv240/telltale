@@ -14,7 +14,7 @@ checks every number below against the result files.
 | Real-world impact (20) | About 1.40 USD per slope per month; a window, not a date; a person decides | `docs/PUBLISHED-RECORD.md`: 30 opened sources (Sendai Framework, NDMA, World Risk Poll: half of landslide survivors got no warning); E7 on real failures |
 | User experience (10) | One sentence, the failure window as the largest figure, approve and dismiss, replay, setup from one photo, a live-run button | WCAG AA contrast in both themes (lowest 5.78:1); layout inspector 0 failures, 0 warnings at 1440, 768 and 390 px |
 | Documentation and presentation (10) | This path, the report with figures, the architecture diagram, the video | Every number measured and checked by one command; limits stated as measured properties (report section 8) |
-| Cloud delivery, reproducibility, responsible operation (10) | One CloudFormation template; COOL on Graviton4; scale to zero; alarms to SNS; signed approval links; IMDSv2; no inbound ports | Live run from the dashboard through the real stack; offline demo from a clone; teardown script; report section 9 |
+| Cloud delivery, reproducibility, responsible operation (10) | One CloudFormation template; COOL on Graviton4; scale to zero; alarms to SNS; HMAC-signed approval links with the key in Secrets Manager; IMDSv2; no inbound ports; least-privilege roles | Live run from the dashboard through the real stack; offline demo from a clone; teardown script; report section 9 |
 
 ## 1. See it working (2 minutes)
 

@@ -41,11 +41,14 @@ person.
 
 What that buys, in the units a district office pays in:
 
-- **14 times earlier warning.** On a simulated collapse, the agent's verified page reached a
-  person 41.9 time units before failure; thresholds alone paged 3.0 before. Zero false pages
-  in five quiet scenarios, in every arm.
-- **About 1.40 USD per slope per month** for a district of 50 slopes sharing one Graviton
-  worker, or about 10.50 USD for a single slope with the worker sleeping between photos. A
+- **Warning before real collapses.** Replayed on six published records that ran to failure, the
+  unchanged forecast reached CRITICAL before every one. It also raised early alarms that
+  settled, and we report those too.
+- **A person woken earlier, and only for real motion.** On a simulated collapse, the agent's
+  verified page reached the duty officer 41.9 time units before failure; thresholds alone paged
+  3.0 before. Zero false pages in five quiet scenarios, in every arm.
+- **About 1.40 USD of cloud cost per slope per month** for a district of 50 slopes sharing one
+  Graviton worker, or about 10.50 USD for a single slope with the worker sleeping between photos. A
   single chain inclinometer starts at about 5,000 EUR before drilling and watches one borehole.
 - **A forecast window, not a date.** At Brienz in 2023 the evacuation letter gave "between May
   15 and June 1"; TellTale's demo, a simulated collapse on a real USGS photograph, publishes days

@@ -391,12 +391,18 @@ class Alerting:
         self.url = (os.environ.get("TELLTALE_APPROVAL_URL") or "").rstrip("/") or None
         self.dashboard = (os.environ.get("TELLTALE_DASHBOARD_URL") or "").rstrip("/") or None
         self.secret = os.environ.get("TELLTALE_APPROVAL_SECRET") or None
-        param = os.environ.get("TELLTALE_SECRET_PARAM")
-        if self.secret is None and param:
+        arn = os.environ.get("TELLTALE_SECRET_ARN")
+        param = os.environ.get("TELLTALE_SECRET_PARAM")      # older stacks kept it in SSM
+        if self.secret is None and (arn or param):
             try:
                 import boto3
-                ssm = boto3.client("ssm", region_name=os.environ.get("TELLTALE_REGION"))
-                self.secret = ssm.get_parameter(Name=param)["Parameter"]["Value"]
+                region = os.environ.get("TELLTALE_REGION")
+                if arn:
+                    sm = boto3.client("secretsmanager", region_name=region)
+                    self.secret = sm.get_secret_value(SecretId=arn)["SecretString"]
+                else:
+                    ssm = boto3.client("ssm", region_name=region)
+                    self.secret = ssm.get_parameter(Name=param)["Parameter"]["Value"]
             except Exception as e:
                 log.warning("approval secret unavailable: %s", e)
         self._sns = None

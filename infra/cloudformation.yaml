@@ -67,13 +67,15 @@ Resources:
       Protocol: email
       Endpoint: !Ref AlertEmail
 
-  ApprovalSecretParameter:
-    Type: AWS::SSM::Parameter
+  # Signs approve / dismiss links. Kept in Secrets Manager (encrypted at rest with KMS) and read at
+  # run time by the worker and the approval function; it is in no environment variable or plain
+  # parameter.
+  ApprovalSigningSecret:
+    Type: AWS::SecretsManager::Secret
     Properties:
-      Name: !Sub /${AWS::StackName}/approval-secret
-      Type: String
-      Value: !Ref ApprovalSecret
-      Description: Signs approve / dismiss links; read by the worker and the approval function
+      Name: !Sub ${AWS::StackName}/approval-secret
+      Description: Signs TellTale approve / dismiss links
+      SecretString: !Ref ApprovalSecret
 
   ApprovalRole:
     Type: AWS::IAM::Role
@@ -95,6 +97,9 @@ Resources:
               - Effect: Allow
                 Action: [sns:Publish]
                 Resource: !Ref AlertTopic
+              - Effect: Allow
+                Action: [secretsmanager:GetSecretValue]
+                Resource: !Ref ApprovalSigningSecret
 
   ApprovalFunction:
     Type: AWS::Lambda::Function
@@ -108,15 +113,20 @@ Resources:
       Environment:
         Variables:
           BUCKET: !Sub telltale-${AWS::AccountId}
-          SECRET: !Ref ApprovalSecret
+          SECRET_ARN: !Ref ApprovalSigningSecret
           TOPIC: !Ref AlertTopic
       Code:
         ZipFile: |
           import json, os, hmac, hashlib, time, boto3
-          s3 = boto3.client("s3"); sns = boto3.client("sns")
-          B, S, T = os.environ["BUCKET"], os.environ["SECRET"], os.environ["TOPIC"]
+          s3 = boto3.client("s3"); sns = boto3.client("sns"); sm = boto3.client("secretsmanager")
+          B, T = os.environ["BUCKET"], os.environ["TOPIC"]
+          _S = []
+          def secret():
+              if not _S:
+                  _S.append(sm.get_secret_value(SecretId=os.environ["SECRET_ARN"])["SecretString"])
+              return _S[0]
           def sign(site, t, action):
-              return hmac.new(S.encode(), f"{site}|{t}|{action}".encode(), hashlib.sha256).hexdigest()[:32]
+              return hmac.new(secret().encode(), f"{site}|{t}|{action}".encode(), hashlib.sha256).hexdigest()[:32]
           def page(title, body, code=200):
               return {"statusCode": code, "headers": {"content-type": "text/html; charset=utf-8"},
                       "body": f"<!doctype html><meta name=viewport content='width=device-width'><body style='font-family:system-ui;max-width:40em;margin:3em auto'><h2>{title}</h2><p>{body}</p></body>"}
@@ -297,8 +307,8 @@ Resources:
                 Action: [sns:Publish]
                 Resource: !Ref AlertTopic
               - Effect: Allow
-                Action: [ssm:GetParameter]
-                Resource: !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AWS::StackName}/approval-secret
+                Action: [secretsmanager:GetSecretValue]
+                Resource: !Ref ApprovalSigningSecret
               - Effect: Allow
                 Action: [bedrock:InvokeModel, bedrock:InvokeModelWithResponseStream]
                 Resource:
@@ -353,7 +363,7 @@ Resources:
           export TELLTALE_STACK=${AWS::StackName}
           export TELLTALE_ALERT_TOPIC=${AlertTopic}
           export TELLTALE_APPROVAL_URL=${ApprovalUrl.FunctionUrl}
-          export TELLTALE_SECRET_PARAM=/${AWS::StackName}/approval-secret
+          export TELLTALE_SECRET_ARN=${ApprovalSigningSecret}
           export TELLTALE_AGENT=${AgentMode}
           export TELLTALE_IDLE_STOP_MIN=${IdleStopMinutes}
           export TELLTALE_DASHBOARD_URL=https://${Distribution.DomainName}

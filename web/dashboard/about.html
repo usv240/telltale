@@ -154,7 +154,8 @@
         <tr><td>Synthetic sub-pixel accuracy</td><td>0.006 to 0.010 px mean absolute error across noise and lighting, with bias under 0.003 px.</td></tr>
         <tr><td>Synthetic collapse, through the cloud path</td><td>True failure at t = 50; forecast 50.3. With a fixed reference, coarse-to-fine correlation follows 28 px of motion at 0.007 px error.</td></tr>
         <tr><td>Confounders and the agent</td><td>Camera bump, lighting step and fog raise no false alarm. The agent closes every camera-distortion event as a false alarm and pages a person 42 time units before failure, where thresholds alone page at 3.</td></tr>
-        <tr><td>Cost on AWS Graviton</td><td>2,094 epochs an hour on one c8g.large, about 0.038 USD per 1,000 epochs: 1.6 times faster and 44 percent cheaper than the matched x86 instance.</td></tr>
+        <tr><td>Real slopes that failed</td><td>Replayed on six published monitoring records that ran to failure (Preonzo, Arvigo, Vajont, Hogarth, Veslemannen), the unchanged forecast reached CRITICAL before every one; its last window contained the failure at three of four sites. It also raised twelve early alarms that settled, which is why a person decides.</td></tr>
+        <tr><td>Cost on AWS Graviton</td><td>On one c8g.large, COOL's OpenCV 5.1 processes 1,964 epochs an hour (0.041 USD per 1,000 epochs) and the stock OpenCV 5.0 wheel 2,094 (0.038 USD). Either is about 1.5 times faster and 40 percent cheaper than a matched x86 instance. About 1.40 USD of cloud cost per slope per month in a 50-slope district.</td></tr>
       </tbody>
     </table>
     <div class="pair">

@@ -1,4 +1,4 @@
-# TellTale: technical report (October 23, 2026)
+# TellTale: technical report (October 26, 2026)
 
 TellTale stacks bursts from any fixed camera, removes the camera's own motion, measures ground creep to a hundredth of a pixel, forecasts the failure window, re-measures to verify it, and pages a person.
 
@@ -12,7 +12,7 @@ Repository: https://github.com/usv240/telltale (CI on x86 and arm64)
 
 > Every number in this report is **measured**: it comes from a script in `evaluation/` or from
 > the deployed system. `python evaluation/verify_claims.py` checks the headline numbers against
-> the result files and re-runs the accuracy sweep live (ten claims, about 20 seconds).
+> the result files and re-runs the accuracy sweep live (eleven claims, about 20 seconds).
 > What was not measured is named as not claimed, in section 8.
 
 ## 1. Problem
@@ -585,8 +585,13 @@ and the venv's `activate` script adds them; `bootstrap.sh` copies those two path
 service environment, which the first deployment did not do (it silently fell back to the stock
 wheel, and `runtime.cool = false` in the worker log is what caught it).
 
-Graviton4 against matched-vCPU x86 with the stock wheel: 1.6x faster per epoch and 44 percent
-cheaper per 1,000 epochs at on-demand list prices.
+**What COOL on Graviton buys against the usual deployment.** The baseline most teams would ship
+is the pip wheel on a general-purpose x86 instance. Against it, the production path (COOL on a
+Graviton4 c8g.large) is 1.49x faster per epoch (1.833 s against 2.732 s on c7i.large) and 40
+percent cheaper per 1,000 epochs (0.041 against 0.068 USD), with identical fields. Most of that
+gain comes from Graviton4, not from COOL: the stock wheel on the same Graviton instance is 6
+percent faster than COOL on this workload. We report both comparisons so neither is mistaken
+for the other.
 
 ### E3b large motion: coarse-to-fine DIC against chaining (measured)
 
@@ -766,9 +771,10 @@ every limitation above on the dashboard footer and in the README.
   - The approval link is signed with HMAC-SHA256 per site, epoch and action.
   - The live-run button is limited to one run per 20 minutes and twelve a day. A conditional
     write means two presses cannot start two runs.
-- **Known gap.** The signing secret lives in an SSM String parameter and the approval function's
-  environment, not in Secrets Manager. That is acceptable for a pilot; a production deployment
-  would move it.
+- **The signing secret is in Secrets Manager.** It is encrypted with KMS and read at run time by
+  the worker and the approval function, through IAM grants scoped to that one secret. It is in
+  no environment variable, plain parameter or file. Tested on October 26: a valid signed link
+  returns 200 and is logged, and a forged one returns 403.
 
 **Cost control.** The worker stops itself when idle, so a quiet site costs only its disk.
 `infra/scripts/teardown.sh` removes every resource, including bucket versions.
