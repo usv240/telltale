@@ -30,7 +30,7 @@
 
   --radius-card: 8px; --radius-control: 6px; --radius-chip: 4px;
   --gap: 12px; --pad: 20px; --control-height: 36px;
-  --fs-title: 24px; --fs-section: 15px; --fs-kpi: 26px; --fs-kpi-lead: 30px; --fs-body: 14px; --fs-small: 12px;
+  --fs-title: 24px; --fs-section: 15px; --fs-kpi: 26px; --fs-kpi-lead: 30px; --fs-body: 14px; --fs-small: 13px;
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --rail: 56px;
   /* aliases kept for the setup and about pages */
@@ -181,9 +181,11 @@ h1 { font-size: var(--fs-title); line-height: 1.25; font-weight: 600; letter-spa
 /* ---------------------------------------------------------------- panels and grid */
 .grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--gap); align-items: stretch; }
 .panel.fit-content { align-self: start; }
+/* beside a long open investigation, the instrument's health stays in view while reading it */
+@media (min-width: 1281px) { .panel.fit-content { position: sticky; top: 16px; } }
 .span-3 { grid-column: span 3; } .span-4 { grid-column: span 4; } .span-5 { grid-column: span 5; } .span-6 { grid-column: span 6; } .span-7 { grid-column: span 7; } .span-12 { grid-column: span 12; }
 .panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-card); padding: 16px var(--pad) 14px; min-width: 0; display: flex; flex-direction: column; }
-.panel-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 8px; }
+.panel-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 12px; margin-bottom: 8px; }
 .panel h2 { font-size: var(--fs-section); line-height: 1.4; font-weight: 600; }
 .panel-meta { color: var(--muted); font-size: var(--fs-small); text-align: right; font-variant-numeric: tabular-nums; }
 .empty { color: var(--muted); font-size: 14px; padding: 12px 0; }
@@ -229,13 +231,15 @@ details.help p { max-width: 70ch; }
   min-height: 44px; padding: 6px 0; cursor: pointer; list-style: none;
 }
 .event-list details > summary::-webkit-details-marker { display: none; }
+.event-list details > summary .pill { justify-self: start; }
 .event-title { font-weight: 500; }
 .event-meta { color: var(--muted); font-size: var(--fs-small); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
 .event-body { padding: 0 0 12px 102px; }
 .event-summary { font-size: 14px; line-height: 1.5; max-width: 72ch; }
 .evidence { margin: 12px 0 4px; }
 .evidence-title { font-size: 13px; color: var(--muted); margin: 0 0 8px; }
-.evidence-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+/* the two re-measurements are a comparison, so they always sit side by side */
+.evidence-row { display: grid; grid-template-columns: repeat(2, minmax(0, 260px)); gap: 12px; }
 .evidence figure { margin: 0; }
 .evidence img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 6px; background: var(--raised); }
 .evidence figcaption { margin-top: 6px; font-size: 13px; color: var(--muted); line-height: 1.4; }
@@ -261,7 +265,7 @@ details.help p { max-width: 70ch; }
 .trace { margin: 8px 0 0; padding: 0 0 0 18px; color: var(--muted); font-size: var(--fs-small); }
 .trace li { margin: 3px 0; }
 .trace b { color: var(--text); font-weight: 500; }
-.trace code { font-size: 11px; word-break: break-all; }
+.trace code { font-size: 12px; word-break: break-all; }
 @media (hover: hover) and (pointer: fine) { .event-list details > summary:hover .event-title { text-decoration: underline; text-decoration-color: var(--control); text-underline-offset: 3px; } }
 
 /* health */
@@ -347,6 +351,9 @@ body:not(.app) > footer { max-width: 1100px; margin: 0 auto; padding: 8px 24px 3
   .event-list details > summary { grid-template-columns: 1fr auto; }
   .event-list details > summary .event-meta { grid-column: 1 / -1; text-align: left; }
   .event-body { padding-left: 0; }
+  .panel-meta { text-align: left; }
+  #epochs .opt { display: none; }          /* a phone shows t, result, displacement, coverage */
+  .evidence-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   body:not(.app) main { padding: 16px; }
   header.top { padding: 8px 16px; }
 }

@@ -98,6 +98,10 @@
 
   // ------------------------------------------------------------------ run it live
   let LIVE = null, liveActive = false;
+  const cleanSummary = (s) => String(s || "").replace(/\*\*/g, "").trim()
+    .replace(/^(investigation\s+(complete|completed|closed)\s*[:.\-–]?\s*)/i, "")
+    .replace(/^(event\s+)?(confirmed|false[_ ]alarm|inconclusive)\b(\s+(as\s+)?real ground motion)?\s*[:.\-–]?\s*/i, "")
+    .replace(/^./, (c) => c.toUpperCase());
   const ago = (s) => s < 90 ? `${Math.round(s)} s` : `${Math.round(s / 60)} min`;
   function renderWaiting(site, run, series) {
     document.getElementById("main").classList.add("is-waiting");
@@ -292,10 +296,10 @@
       const disp = has ? (metric ? `${fmt(zz.magnitude * mm, 2)} mm` : `${fmt(zz.magnitude, 3)} px`) : "–";
       const sig = has ? (metric ? fmt(zz.sigma * mm, 2) : fmt(zz.sigma, 3)) : "–";
       return `<tr class="${r.usable ? "" : "unusable"}"><td>${fmt(r.t, 1)}${ctx.date ? ` <span class="hint">${ctx.date(r.t)}</span>` : ""}</td>` +
-        `<td>${pill(REASON[r.reason], r.reason)}</td><td class="num">${disp}</td><td class="num">${sig}</td>` +
+        `<td>${pill(REASON[r.reason], r.reason)}</td><td class="num">${disp}</td><td class="num opt">${sig}</td>` +
         `<td class="num">${r.field ? fmt(100 * r.field.coverage, 0) + " %" : "–"}</td>` +
-        `<td>${r.stabilize && r.stabilize.refine_model ? esc(r.stabilize.refine_model) : "–"}</td>` +
-        `<td class="num">${r.timing ? fmt(r.timing.total_s, 2) : "–"}</td></tr>`;
+        `<td class="opt">${r.stabilize && r.stabilize.refine_model ? esc(r.stabilize.refine_model) : "–"}</td>` +
+        `<td class="num opt">${r.timing ? fmt(r.timing.total_s, 2) : "–"}</td></tr>`;
     }).join("");
     const em = $("epochs-more");
     em.hidden = rows.length <= 6;
@@ -375,7 +379,7 @@
       const when = `t = ${fmt(e.t, 1)}${ctx.date ? " · " + ctx.date(e.t) : ""}`;
       det.innerHTML = `<summary>${pill(VERDICT[e.verdict], e.verdict)}<span class="event-title">${esc(EVENT[e.event] || e.event)} at ${esc(when)}</span>` +
         `<span class="event-meta">${e.n_tool_calls} calls · ${e.paged_human ? "person paged" : e.page_attached ? "added to the open page" : "no page"} · ${fmt(e.seconds, 0)} s</span></summary>` +
-        `<div class="event-body"><p class="event-summary">${esc((e.summary || "").replace(/\*\*/g, ""))}</p><div class="evidence" hidden></div><details class="calls"><summary>Every tool call, with its arguments and result</summary><ol class="trace"><li>Loading the trace…</li></ol></details></div>`;
+        `<div class="event-body"><p class="event-summary">${esc(cleanSummary(e.summary))}</p><div class="evidence" hidden></div><details class="calls"><summary>Every tool call, with its arguments and result</summary><ol class="trace"><li>Loading the trace…</li></ol></details></div>`;
       det.addEventListener("toggle", async () => {
         if (!det.open || det.dataset.loaded) return;
         det.dataset.loaded = "1";
