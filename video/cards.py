@@ -95,7 +95,13 @@ CARDS = {
     "04_team": ("", f"""<div class="mark">{MARK}<span class="name">Team Ground Truth</span></div>
 <h2>Ujwal Suresh Vanjare<br>Arpita Madhukar Kalburgi</h2>
 <p class="lead">We built TellTale for the OpenCV AI Competition 2026, powered by AWS: classical OpenCV 5 vision, a Claude agent on Amazon Bedrock, and a human who always decides.</p>"""),
-    "05_real_failures": ("", """<div class="eyebrow">The forecast, replayed on six real slopes that failed</div>
+    # the team card with the left third left empty for a webcam portrait (video/team_slot.py)
+    "04_team_cam": ("", f"""<div style="margin-left:780px">
+<div class="mark">{MARK}<span class="name">Team Ground Truth</span></div>
+<h2>Ujwal Suresh Vanjare<br>Arpita Madhukar Kalburgi</h2>
+<p class="lead" style="font-size:34px">We built TellTale for the OpenCV AI Competition 2026, powered by AWS: classical OpenCV 5 vision, a Claude agent on Amazon Bedrock, and a human who always decides.</p>
+</div>"""),
+    "05_real_failures": ("","""<div class="eyebrow">The forecast, replayed on six real slopes that failed</div>
 <div class="big">6 of 6</div>
 <p class="lead">reached CRITICAL before the collapse: Preonzo 2012, Arvigo 2007, Vajont 1963, Hogarth 1975, Veslemannen 2019. It also raised twelve early alarms that settled, so a person always decides.</p>
 <div class="src">Leinauer et al. 2023, mediaTUM doi:10.14459/2023mp1688868; Kristensen et al. 2021</div>"""),

@@ -1,0 +1,139 @@
+1
+00:00:00,000 --> 00:00:06,350
+In 2013 a copper mine in Utah knew when its slope would collapse.
+
+2
+00:00:06,500 --> 00:00:12,850
+It cleared the pit in time. No one was hurt.
+
+3
+00:00:13,000 --> 00:00:19,350
+In 2024 nobody was measuring the hills above Wayanad, India.
+
+4
+00:00:19,500 --> 00:00:25,850
+Hundreds of people died. The slopes had given the same warning.
+
+5
+00:00:26,000 --> 00:00:37,850
+We're Ground Truth. We built TellTale, which reads that warning with a camera a village can afford.
+
+6
+00:00:38,000 --> 00:00:43,850
+A slope that is about to fail creeps first, and speeds up.
+
+7
+00:00:44,000 --> 00:00:49,850
+TellTale watches it with an ordinary camera and measures the movement with OpenCV.
+
+8
+00:00:50,000 --> 00:00:55,850
+It forecasts when the slope will fail, checks itself, and asks a person to decide.
+
+9
+00:00:56,000 --> 00:01:02,850
+This is a real landslide, filmed by the US Geological Survey on a day it moved.
+
+10
+00:01:03,000 --> 00:01:09,850
+TellTale coloured the ground that moved blue, measured to a hundredth of a pixel.
+
+11
+00:01:10,000 --> 00:01:17,850
+Now a slope from quiet to failure, one photo at a time.
+
+12
+00:01:18,000 --> 00:01:25,850
+Each photo, TellTale measures how far the ground has moved.
+
+13
+00:01:26,000 --> 00:01:34,850
+The blue block is creeping downhill, a few millimetres at a time.
+
+14
+00:01:35,000 --> 00:01:41,350
+As it speeds up, the dots fall in a straight line toward zero.
+
+15
+00:01:41,500 --> 00:01:47,850
+Where the line hits zero is the failure. TellTale gives a window, not a guess.
+
+16
+00:01:48,000 --> 00:01:53,850
+Here: the slope will fail between day 49 and day 51. It failed on day 50.
+
+17
+00:01:54,000 --> 00:01:59,850
+Nothing reaches the public unless a person presses Approve.
+
+18
+00:02:00,000 --> 00:02:07,850
+Before waking anyone, an AI agent, Claude on Amazon Bedrock, checks the warning.
+
+19
+00:02:08,000 --> 00:02:15,850
+It measures again two different ways. Real movement gives the same answer both times.
+
+20
+00:02:16,000 --> 00:02:23,850
+Only then does it page the duty officer, once, with these pictures as evidence.
+
+21
+00:02:24,000 --> 00:02:31,850
+This is a live run on AWS, started from the dashboard.
+
+22
+00:02:32,000 --> 00:02:39,850
+Anyone can press the button and watch it happen, in about three minutes.
+
+23
+00:02:40,000 --> 00:02:49,850
+On the real landslide record it also knows when to stay quiet.
+
+24
+00:02:50,000 --> 00:02:59,850
+147 quiet days, zero false alarms. Both movement periods the camera could see were flagged.
+
+25
+00:03:00,000 --> 00:03:05,850
+We replayed it on six real slopes that collapsed.
+
+26
+00:03:06,000 --> 00:03:11,850
+It warned before every one. It also raised early alarms, so a person always decides.
+
+27
+00:03:12,000 --> 00:03:21,850
+On a public benchmark it measures to five thousandths of a pixel, ahead of OpenCV's standard methods.
+
+28
+00:03:22,000 --> 00:03:29,850
+Every number in this video is checked by one command in the code.
+
+29
+00:03:30,000 --> 00:03:38,850
+Photos go to Amazon S3, a queue feeds a Graviton server running COOL, the cloud-optimised OpenCV.
+
+30
+00:03:39,000 --> 00:03:47,850
+When there's nothing to do, it switches itself off. A watched slope costs cents a day.
+
+31
+00:03:48,000 --> 00:03:57,850
+Setting up a slope takes one photo: mark the stable ground, and the slope to watch.
+
+32
+00:03:58,000 --> 00:04:04,850
+Today, one sensor in one borehole costs five thousand euros or more.
+
+33
+00:04:05,000 --> 00:04:11,850
+TellTale watches a whole slope for about a dollar forty a month.
+
+34
+00:04:12,000 --> 00:04:20,850
+It can't warn of sudden collapses, and it can't see at night. It says so.
+
+35
+00:04:21,000 --> 00:04:27,850
+TellTale. The dashboard is live. Try it yourself.

@@ -77,7 +77,9 @@ def main(argv=None) -> int:
     mix = "[ta]"
     k = 1
     if a.voice:
-        au.append("[2:a]asetpts=PTS-STARTPTS[va]")
+        # the narration may voice the team caption; the team clip speaks for itself there
+        au.append(f"[2:a]asetpts=PTS-STARTPTS,"
+                  f"volume=enable='between(t,{TEAM_AT},{TEAM_AT + TEAM_LEN})':volume=0[va]")
         mix += "[va]"; k += 1
     if a.outro:
         au.append(f"[{vi}:a]atrim=0:{OUTRO_LEN},asetpts=PTS-STARTPTS,adelay={int(end * 1000)}:all=1[oa]")

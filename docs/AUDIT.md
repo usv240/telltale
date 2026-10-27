@@ -82,7 +82,7 @@ state, the gap, the risk if left, and the fix. Status: **open**, **in progress**
 | 9 Practitioner or adoption | closed by published record | `docs/PUBLISHED-RECORD.md`: 30 opened sources mapping each stated need (Sendai 33(b) low-cost equipment, NDMA slope-scale timing gap, ISO 22327 district users, Brienz window plus political decision) to a TellTale feature; states plainly that no practitioner has evaluated TellTale |
 | 10 Shipped surface | pass | live URL, setup tool, offline demo |
 | 11 Limits as measured properties | closed except E2 photos | every limit has a number; COOL measured; E2 photos still await the user |
-| 12 Inspectable and rerunnable | pass | `evaluation/verify_claims.py` checks 10 headline claims and re-runs E1 live; 32 tests, CI, result JSON, traces with evidence images, MCP smoke test |
+| 12 Inspectable and rerunnable | pass | `evaluation/verify_claims.py` checks 11 headline claims and re-runs E1 live; 33 tests, CI, result JSON, traces with evidence images, MCP smoke test |
 
 | Coarse-to-fine DIC (`compute_field_pyramid`) | fixed reference follows 28 px of motion at 0.007 px MAE; removes the random-walk cost of chaining on textured scenes | closed |
 | Real landslide inside the product (`mukilteo-usgs` live site, Claude traces) | judges scrub a real slide and read the agent on a documented day | closed |

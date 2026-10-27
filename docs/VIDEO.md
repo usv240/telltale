@@ -9,6 +9,10 @@ The narration is synthetic. To use your own voice instead, record the captions a
 recording to `video/finish.py --voice`. Upload it to YouTube as unlisted;
 `TellTale_demo_4K.srt` can be added as closed captions.
 
+`TellTale_demo_4K_team.mp4` is the same cut with a webcam portrait of the team beside the
+names from 0:26 to 0:38, made by `python video/team_slot.py --cam <clip>`. The clip has no
+sound, so the narration plays over it unchanged and the captions stay visible.
+
 ## The 4K cut (use this one)
 
 `.build/v4k/telltale_4k.mp4` runs 4:28 at 3840x2160, built by `python video/assemble4k.py`. It
@@ -31,14 +35,15 @@ What you record:
 - **The team clip,** about 12 s, both of you, for the slot at 0:26 to 0:38. Say: *"We're
   Ground Truth. We built TellTale, which reads that warning with a camera a village can
   afford."*
-- **Optional voice-over:** read the captions in `telltale_4k.srt` while the video plays. Leave
-  0:26 to 0:38 silent, because that slot uses the team clip's own sound.
+- **Optional voice-over:** read the captions in `telltale_4k.srt` while the video plays, or
+  reuse the generated narration. Either way `finish.py` silences the voice from 0:26 to 0:38,
+  because that slot uses the team clip's own sound.
 - **Optional outro,** up to 7 s.
 
-Then finish it:
+Then finish it (this one keeps the generated narration):
 
 ```bash
-python video/finish.py --draft .build/v4k/telltale_4k.mp4 --team team.mp4 [--voice voice.m4a] [--outro outro.mp4] --out telltale_final.mp4
+python video/finish.py --draft .build/v4k/telltale_4k.mp4 --team team.mp4 --voice .build/v4k/telltale_4k_voiced.m4a [--outro outro.mp4] --out TellTale_demo_4K.mp4
 ```
 
 ## The fast path: the draft is built, record two things

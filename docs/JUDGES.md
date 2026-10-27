@@ -46,7 +46,7 @@ accuracy sweep live: `python evaluation/verify_claims.py` (prints PASS or FAIL p
 git clone https://github.com/usv240/telltale && cd telltale/pipeline
 python -m venv ../.venv && ../.venv/Scripts/activate      # or source ../.venv/bin/activate
 pip install -r requirements.txt                           # pinned
-python -m pytest -q                                       # 32 tests, ~15 s
+python -m pytest -q                                       # 33 tests, ~15 s
 python -m telltale e1                                     # sub-pixel accuracy sweep, prints the gate
 python -m telltale simulate --jitter 1.0 --out ../out/sim # collapse through the full pipeline
 cd .. && python infra/scripts/seed_demo.py --local web/dashboard/demo-data   # the worker path, no AWS

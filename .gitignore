@@ -14,5 +14,5 @@ docs/figures/magnified/*.png
 evaluation/results/e3_large_motion/
 .taste-skill/
 .build/
-TellTale_demo_4K.mp4
+TellTale_demo_4K*.mp4
 *.m4a

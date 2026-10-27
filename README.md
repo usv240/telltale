@@ -55,7 +55,7 @@ Everything the cloud worker does, the laptop does too, from the same package.
 cd pipeline
 python -m venv ../.venv && ../.venv/Scripts/activate        # or source ../.venv/bin/activate
 pip install -r requirements.txt
-python -m pytest -q                                          # 32 tests, ~15 s
+python -m pytest -q                                          # 33 tests, ~15 s
 python -m telltale e1                                        # sub-pixel accuracy sweep
 python -m telltale simulate --jitter 1.0 --out ../out/sim    # synthetic collapse, forecast
 cd ..
