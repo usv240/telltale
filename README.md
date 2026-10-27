@@ -1,137 +1,195 @@
-# TellTale
+# TellTale: a camera that forecasts landslides
 
 [![tests and claims](https://github.com/usv240/telltale/actions/workflows/tests.yml/badge.svg)](https://github.com/usv240/telltale/actions/workflows/tests.yml)
 
-**TellTale stacks bursts from any fixed camera, removes the camera's own motion, measures ground creep to a hundredth of a pixel, forecasts the failure window, re-measures to verify it, and pages a person.**
+**TellTale turns any fixed camera pointed at a slope into a landslide early-warning instrument.**
+OpenCV 5 measures how far the ground moves, a physics forecast gives a window for when it will
+fail, an AI agent re-checks the evidence, and a person decides whether to warn the public.
 
-On the public USGS time-lapse of an active coastal bluff, TellTale flagged 2 of 2 documented movement periods the camera could see and raised 0 false acceleration alarms across 147 quiet days in each of three zones; on the controlled sweep it measures displacement to 0.008 px, and on the public SEM DIC Challenge images to 0.005 px.
+Team Ground Truth (Ujwal Suresh Vanjare, Arpita Madhukar Kalburgi) · OpenCV AI Competition 2026, powered by AWS
 
-Classical OpenCV 5 computer vision, established geotechnical physics, and AWS. No neural
-network anywhere; a person approves every public alert. Watching a slope costs about 1.40 USD
-a month in a 50-slope district, or about 10.50 USD for one slope alone (report section 5).
+| | |
+|---|---|
+| **Live dashboard** | https://d30le2uwgaimao.cloudfront.net/ |
+| **Run it live on AWS** | https://d30le2uwgaimao.cloudfront.net/?site=live-demo, then press **Start a new collapse on AWS** |
+| **Demo video (4:28)** | https://youtu.be/LnuL2fgPYDc |
+| **Technical report** | [docs/REPORT.md](docs/REPORT.md) |
+| **Ten-minute judges' path** | [docs/JUDGES.md](docs/JUDGES.md) |
 
-Check every number on this page yourself, in about 20 seconds and without AWS:
+## The problem
 
-```bash
-python evaluation/verify_claims.py      # 11 claims against the result files, plus a live re-run of the accuracy sweep
-```
+In April 2013 the Bingham Canyon copper mine in Utah saw its pit wall creep and speed up. It
+cleared the pit, about 65 million cubic metres came down, and no one was hurt [1]. In July 2024
+nobody was measuring the hills above Wayanad, India, and about 290 to 400 people died [2].
 
-Team Ground Truth, OpenCV AI Competition 2026, powered by AWS.
-Live dashboard: https://d30le2uwgaimao.cloudfront.net/
-
-## Why
-
-Creep-type slope failures give warning: for days or weeks the surface moves a few millimetres
-per day and keeps accelerating. Mines watch for this with ground-based radar, which costs enough that most sites run a single unit
-(CSIRO), and evacuate in time (Bingham Canyon 2013, Brienz 2023). Communities that cannot afford
-monitoring do not get the warning: half the people hit by landslides in the last five years had
-none (World Risk Poll 2023), and in Wayanad in 2024 about 290 to 400 people died. TellTale applies the same
-physics to a 30 to 50 USD camera and cents of cloud compute per day. It is not a radar: it
-measures what a camera can see, in daylight, on creep-type failures, and it says so when it
-cannot see.
+Many slopes creep for days or weeks before they fail, and that warning can be read. Mines read it
+with radar and survey instruments that most communities cannot afford: one borehole sensor starts
+at about €5,000 before drilling and watches a single point [3]. Worldwide, **half of the people
+hit by a landslide in the last five years received no warning at all** [4]. The UN's Sendai
+Framework asks for *"simple and low-cost early warning equipment"* [5]. TellTale is an attempt
+at that: a camera a village can buy, and cents of cloud compute per day.
 
 ## How it works
 
-1. **Capture.** A camera photographs the slope in short bursts, several times a day.
-2. **Stack.** Each burst is registered and median-stacked; atmospheric shimmer averages out,
-   real displacement does not.
-3. **Stabilise.** ORB features in operator-marked stable regions plus USAC/MAGSAC give a coarse
-   camera model; dense sub-pixel correlation refines it; the simplest model that explains the
-   stable ground is chosen. If the stable ground still appears to move, the epoch is a
-   CAMERA_EVENT and no ground displacement is recorded.
-4. **Measure.** Zero-normalised cross-correlation on thousands of subsets, a Gaussian sub-pixel
-   peak fit, one re-sampling refinement pass, per-subset quality control. Accuracy on the
-   synthetic sweep: about 0.01 px mean absolute error.
-5. **Forecast.** Velocity, onset of acceleration, and the inverse-velocity method
-   (Fukuzono 1985; Carlà et al. 2017) with a bootstrap window and a three-method ensemble.
-   The alarm ladder is QUIET, MOVING, ACCELERATING, CRITICAL. A public alert always needs a
-   human.
+1. **Watch.** A fixed camera photographs the slope in short bursts, a few times a day.
+2. **Measure.** OpenCV 5 removes the camera's own shake using ground the operator marked as
+   stable, then measures surface movement at about 3,000 points to a hundredth of a pixel.
+3. **Forecast.** When movement accelerates, the inverse-velocity method used in mining [6, 7]
+   gives a **failure window** (for example "day 49.2 to 51.0"), never a single date.
+4. **Check, then ask a person.** Before anyone is woken, an agent (Claude on Amazon Bedrock)
+   re-runs OpenCV on the stored photos to make sure the motion is real. Only then does it page the
+   duty officer, once per episode, with the evidence images. **Nothing reaches the public unless
+   a person presses Approve.**
 
-Everything the cloud worker does, the laptop does too, from the same package.
+If the camera moves, or it is dark, foggy or the lens is wet, TellTale says so (CAMERA_EVENT,
+BLIND, BLURRED) instead of reporting "no movement".
 
-## Quickstart
+## Architecture
 
-```bash
-cd pipeline
-python -m venv ../.venv && ../.venv/Scripts/activate        # or source ../.venv/bin/activate
-pip install -r requirements.txt
-python -m pytest -q                                          # 33 tests, ~15 s
-python -m telltale e1                                        # sub-pixel accuracy sweep
-python -m telltale simulate --jitter 1.0 --out ../out/sim    # synthetic collapse, forecast
-cd ..
-python infra/scripts/seed_demo.py --local web/dashboard/demo-data   # full worker path, offline
-python -m http.server 8765 -d web/dashboard                          # then open
-#   http://127.0.0.1:8765/?root=demo-data/public/sites  (use the Replay slider)
-python evaluation/e2_target.py                 # printable speckle target for the metrology test
-python evaluation/e2_metrology.py --captures evaluation/e2/captures   # your photos -> mm table
+Everything is one CloudFormation template ([infra/cloudformation.yaml](infra/cloudformation.yaml)).
+
+```mermaid
+flowchart LR
+    CAM["Fixed camera<br/>photo bursts"] --> S3[("Amazon S3<br/>photos")]
+    S3 -- new photos --> SQS["Amazon SQS<br/>queue + dead-letter queue"]
+    SQS --> W
+
+    subgraph W["EC2 Graviton4 worker, c8g.large, running COOL"]
+        CV["OpenCV 5<br/>stack, stabilize, measure"] --> FC["Forecast<br/>inverse velocity"]
+        FC -- "acceleration, jump<br/>or camera problem" --> AG["Agent: Claude on Amazon Bedrock<br/>re-runs OpenCV tools"]
+    end
+
+    AG -- "confirmed" --> SNS["Amazon SNS<br/>page the duty officer"]
+    SNS --> P(("Person"))
+    P -- "Approve or Dismiss<br/>signed link" --> AP["AWS Lambda<br/>approval"]
+    W -- results --> PUB[("S3 public results")] --> CF["Amazon CloudFront<br/>dashboard"]
+    WAKE["AWS Lambda<br/>wakes the worker"] -. "photos waiting" .-> W
 ```
 
-Deploy to AWS with `infra/scripts/deploy.sh` (see `infra/README.md`), then
-`python infra/scripts/seed_demo.py --s3 <bucket> --wait`. Judges: start with `docs/JUDGES.md`.
-Operators: `docs/DEPLOYMENT.md` and the setup page on the dashboard.
-Motion-magnified video of the demo creep: `python -m telltale magnify --site-dir ... --video`.
+- **Scale to zero:** the worker switches itself off after 20 idle minutes; a scheduled Lambda
+  starts it when photos arrive.
+- **Observability:** CloudWatch alarms on queue age, the dead-letter queue and a stopped worker,
+  plus an ops dashboard. Every result records the OpenCV build and instance that produced it.
+- **Security:** private S3 behind CloudFront, approval links signed with a key in AWS Secrets
+  Manager, IMDSv2 only, no inbound ports, least-privilege roles.
 
-The agent's OpenCV tools are also an MCP server, so any MCP client can investigate a site:
+The agent's loop (perception, decision, action):
+
+```mermaid
+flowchart LR
+    E["Event from the forecast"] --> T["Agent calls OpenCV tools<br/>re-measure against another photo,<br/>check camera stability, image quality"]
+    T --> D{"Claude decides"}
+    D -- "motion is real" --> PG["Page a person once<br/>with evidence images"]
+    D -- "camera artefact" --> CL["Close as false alarm"]
+    D -- "unsure" --> CA["Photograph more often"]
+    PG --> H(("Person approves<br/>or dismisses"))
+```
+
+Full diagrams: [docs/architecture.svg](docs/architecture.svg) and
+[docs/agent_workflow.svg](docs/agent_workflow.svg).
+
+## What it measured
+
+Wherever possible on data we did not make.
+
+| Test | Data | Result |
+|---|---|---|
+| Quiet days on a real landslide | USGS time-lapse of the Mukilteo bluff, Washington [8] | **0 false acceleration alarms in 147 quiet days** in each of three zones; 2 of 2 movement periods the camera could see were flagged |
+| Real slopes that failed | Six published monitoring records [9]: Preonzo 2012 (two instrument sets), Arvigo 2007, Vajont 1963, Hogarth 1975, Veslemannen 2019 | **CRITICAL before all 6**; also 12 early alarms that settled, which is why a person decides |
+| Measurement accuracy | Public SEM DIC Challenge images [10] | **0.005 px** mean error, ahead of OpenCV's Farneback and pyramidal Lucas-Kanade |
+| Agent against thresholds alone | Simulated collapse with camera bumps, lighting changes and fog | Agent paged a person **41.9 time units before failure** (thresholds alone: 3.0), with no false pages |
+| Graviton against x86 | Same workload, c8g.large against c7i.large | **1.6x faster**, 0.038 USD per 1,000 photos processed |
+| COOL against stock OpenCV | Same Graviton instance | COOL 5.1.0-dev runs the workload and gives identical results; **5.7 to 6.6 % slower** per photo here, faster on ORB (1.45x) and corner response (1.52x). Reported as measured |
+| Cost | 50 slopes sharing one worker | **About 1.40 USD per slope per month** (about 10.50 USD for a single slope) |
+
+Every number above is checked against the saved results by one command (see Testing). Method
+and limits for each test: [docs/REPORT.md](docs/REPORT.md), section 6.
+
+## Testing
+
+Needs Python 3.11 or newer. No AWS account or network is needed.
+
+```bash
+git clone https://github.com/usv240/telltale && cd telltale
+python -m venv .venv
+source .venv/bin/activate                 # Windows: .venv\Scripts\activate
+pip install -r pipeline/requirements.txt  # pinned: opencv-python 5.0.0.93, numpy 2.5.2, pytest 9.1.1
+
+python evaluation/verify_claims.py        # checks every headline number, re-runs the accuracy test (~20 s)
+cd pipeline && python -m pytest -q && cd ..   # unit and end-to-end tests (~15 s)
+```
+
+Run the whole worker path and the dashboard on your laptop:
+
+```bash
+python infra/scripts/seed_demo.py --local web/dashboard/demo-data
+python -m http.server 8765 -d web/dashboard
+# open http://127.0.0.1:8765/?root=demo-data/public/sites and use the replay slider
+```
+
+CI runs the tests, the accuracy gate and the claims check on both x86 and arm64
+([.github/workflows/tests.yml](.github/workflows/tests.yml)).
+
+## Deploy to AWS
+
+Needs the AWS CLI v2 with credentials and `bash`.
+
+```bash
+infra/scripts/deploy.sh                         # stock OpenCV 5 on Graviton
+infra/scripts/deploy.sh --cool ami-xxxxxxxx     # COOL AMI from AWS Marketplace, once subscribed
+python infra/scripts/seed_demo.py --s3 telltale-<account-id> --wait
+infra/scripts/teardown.sh                       # remove everything
+```
+
+Details: [infra/README.md](infra/README.md). Operators: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+
+The agent's nine OpenCV tools are also an MCP server, so any MCP client can investigate a site:
 
 ```bash
 pip install -r agent/requirements-mcp.txt
-python -m agent.mcp_smoke                       # lists 9 tools, investigates the demo site over stdio
-claude mcp add telltale -- python -m agent.mcp_server   # or use the repo's .mcp.json
+python -m agent.mcp_smoke        # lists the tools and investigates the demo site
 ```
 
-## How this was built
+## Repository
 
-The team used Claude Code as a coding assistant. The Agentic Vision claim rests on the agent
-inside the product, Claude on Amazon Bedrock re-running OpenCV before it may page anyone
-(`agent/`), not on the coding assistant. Every number is produced by a script in `evaluation/`
-and checked by `evaluation/verify_claims.py`.
+| Folder | What is in it |
+|---|---|
+| [pipeline/](pipeline/) | The OpenCV 5 pipeline and the forecast, with a command line and tests |
+| [agent/](agent/) | The supervising agent: OpenCV tools, the Claude-on-Bedrock loop, the MCP server |
+| [infra/](infra/) | CloudFormation template, Graviton worker, deploy and camera upload scripts |
+| [web/dashboard/](web/dashboard/) | The dashboard, the "How it works" page and the site setup tool |
+| [evaluation/](evaluation/) | One script per test (E1 to E7), the saved results, and `verify_claims.py` |
+| [docs/](docs/) | Report, judges' path, deployment guide, diagrams, sources |
+| [demo-rig/](demo-rig/) | A tabletop collapse rig and its capture script (not claimed as a result) |
 
-## Repository map
+## Limits and responsible use
 
-| Folder | What | Doc |
-|---|---|---|
-| `pipeline/` | OpenCV 5 pipeline and physics, CLI, tests | `pipeline/README.md`, `pipeline/DESIGN.md` |
-| `infra/` | CloudFormation stack, Graviton worker, deploy and camera scripts | `infra/README.md`, `infra/DESIGN.md` |
-| `web/dashboard/` | Static dashboard, about page, site setup tool, bundled demo data | `web/DESIGN.md` |
-| `docs/` | Report, audit, judges' path, deployment guide, video shot list, published evidence of need, diagrams, figures | `docs/JUDGES.md` first |
-| `evaluation/` | E1 to E6 harnesses and results | `evaluation/DESIGN.md` |
-| `demo-rig/` | Tabletop collapse rig: build, capture script, run log | `demo-rig/DESIGN.md` |
-| `agent/` | Supervising agent: OpenCV tools, Claude-on-Bedrock loop, rule policy, MCP server | `agent/DESIGN.md`, `docs/agent_workflow.svg` |
+- **Creep-type failures only.** Brittle collapses that do not creep first can fail with little
+  warning on the surface.
+- **Daylight and a clear view.** Night, fog, heavy rain and a wet lens are reported as gaps, never
+  as "no movement".
+- **Not yet calibrated in the field.** Results are in pixels and on the public records above; a
+  printable calibration target and harness are in `evaluation/e2/`.
+- **A person decides.** TellTale never sends a public alert on its own.
+- **No surveillance.** Cameras point at ground. There is no person or face detection anywhere in
+  the code. All data used is public or openly licensed.
 
-## Evidence status
-
-| Test | Status | Headline |
-|---|---|---|
-| E1 synthetic sub-pixel accuracy | done | MAE 0.006 to 0.010 px, bias under 0.003 px, p95 under 0.025 px |
-| E3 synthetic collapse through the full cloud path | done | forecast 50.26, window [48.9, 61.9], truth 50.0, R² 0.98 |
-| E3b large motion (28 px collapse, 16 px search) | done | fixed reference + coarse-to-fine DIC: MAE 0.007 px, forecast t = 49.78; chaining 0.079 px; single-level fixed loses the slope |
-| E3 tabletop physical collapse | not claimed | rig design and capture script shipped in `demo-rig/` |
-| E2 physical metrology | not claimed (harness shipped) | synthetic self-test at 20, 50, 100 m: slope 1.00, RMS 0.01 to 0.05 mm; printable target in `evaluation/e2/` |
-| E4 real landslide imagery (USGS Mukilteo) | done | documented Dec 9 2015 movement measured at 4 to 7x the quiet baseline with coherent downslope vectors; wet-lens period from Feb 10 correctly rejected |
-| E4c real landslide in the product | done | the whole USGS record through the unmodified worker with the Claude agent; December 9 2015 verdict CONFIRMED; live as site `mukilteo-usgs` on the dashboard |
-| E7 forecast on real slope failures (open collection, 6 sites) | done | CRITICAL before all 6 failures (Preonzo, Arvigo, Vajont, Hogarth, Veslemannen); last window contained the failure at 3 of 4 sites, median within 2 days at 3; 12 early false CRITICAL spells reported, which is why a person approves |
-| E4b negative control on real data | done | 0 false acceleration alarms on 147 quiet days x 3 zones (was 371 before the onset gates); 2 of 2 observable movement periods flagged by the jump detector |
-| E1 public benchmark (SEM 2D DIC Challenge 1.0) | done | MAE 0.0047 px on Sample 1, best of TellTale, Farneback and pyramidal LK; within 0.01 px of the best on the noisier sets |
-| E1 named baselines | done | TellTale 0.004 px median vs Farneback 0.010, pyramidal LK 0.034, phase correlation 0.67 on the synthetic sweep |
-| E5 confounders (thresholds only) | done | zero false alarms under camera bump, lighting step, fog; non-rigid lens distortion partially caught |
-| E5 agent ablation (off / rules / Claude on Bedrock) | done | zero false pages in every arm; agent closes all seven camera-distortion events as false alarms and pages a person at confirmed acceleration, 42 time units before failure against 3 for thresholds alone |
-| E6 Graviton vs x86, COOL vs stock | done | c8g.large 1.72 s per epoch vs c7i.large 2.73 s, 44 percent cheaper per 1,000 epochs; COOL (OpenCV 5.1.0-dev, Marketplace AMI) verified in production, passes all tests with identical fields, 5.7 to 6.6 percent slower per epoch on this workload, faster on ORB (1.45x) and corner response (1.52x) |
-
-## Scope and responsible use
-
-- Creep-type failures only. Brittle and liquefaction collapses can fail with little surface
-  precursor (Brumadinho 2019); this is stated, not hidden.
-- Night, fog and heavy rain create measurement gaps. Gaps widen the forecast uncertainty and are
-  shown as unusable epochs, never silence.
-- Cameras point at ground and structures. There is no person detection or face processing
-  anywhere in the code.
-- The system never sends a public alert on its own; CRITICAL requests human approval.
+**How this was built.** We used Claude Code as a coding assistant. The Agentic Vision entry rests
+on the agent inside the product (Claude on Amazon Bedrock re-running OpenCV before it may page
+anyone, in `agent/`), not on the coding assistant.
 
 ## References
 
-Fukuzono (1985) inverse-velocity method; Carlà, Intrieri et al., Landslides 14:517 (2017)
-alarm-threshold guidelines; Geosciences 13:371 (2023) DIC for landslide monitoring;
-Remote Sensing 13:893 (2021) low-cost time-lapse slope monitoring; Froude and Petley, NHESS
-18:2161 (2018) global fatal landslides. Who needs this, with 30 opened sources (UN Sendai
-Framework, India's NDMA strategy, field camera studies, Brienz and Preonzo forecasts):
-`docs/PUBLISHED-RECORD.md`.
+1. Pankow, K.L., Moore, J.R., Hale, J.M., et al. (2014). Massive landslide at Utah copper mine generates wealth of geophysical data. *GSA Today* 24(1), 4. [doi:10.1130/GSATG191A.1](https://doi.org/10.1130/GSATG191A.1)
+2. Petley, D. (2024). The 30 July 2024 Wayanad landslides in Kerala, India. *The Landslide Blog*, Eos. [eos.org](https://eos.org/thelandslideblog/wayanad-landslides)
+3. Gamperl, M., Singer, J., Thuro, K. (2021). Internet of Things geosensor network for cost-effective landslide early warning systems. *Sensors* 21, 2609. [doi:10.3390/s21082609](https://pmc.ncbi.nlm.nih.gov/articles/PMC8068166/)
+4. UNDRR and WMO (2024). *Global Status of Multi-Hazard Early Warning Systems 2024*, Box 24, citing the Lloyd's Register Foundation World Risk Poll 2023. [PDF](https://www.mhewc.org/wp-content/uploads/2025/12/Global-Status-of-EWS-2024-_opt.pdf)
+5. United Nations (2015). *Sendai Framework for Disaster Risk Reduction 2015-2030*, para. 33(b). [PDF](https://documents.un.org/doc/undoc/gen/n15/167/16/pdf/n1516716.pdf)
+6. Fukuzono, T. (1985). A new method for predicting the failure time of a slope. *Proc. 4th International Conference and Field Workshop on Landslides*, Tokyo.
+7. Carlà, T., Intrieri, E., Di Traglia, F., et al. (2017). Guidelines on the use of inverse velocity method as a tool for setting alarm thresholds and forecasting landslides and structure collapses. *Landslides* 14, 517. [doi:10.1007/s10346-016-0731-5](https://doi.org/10.1007/s10346-016-0731-5)
+8. Smith, J.B., Delius, I., Mirus, B.B., Baum, R.L. (2020). Time-lapse photography of an active coastal-bluff landslide, Mukilteo, Washington, August 2015 to May 2016. USGS data release. [doi:10.5066/P99QOYL2](https://doi.org/10.5066/P99QOYL2)
+9. Leinauer, J., Weber, S., Cicoira, A., Beutel, J., Krautblatter, M. (2023). An approach for prospective forecasting of rock slope failure time. *Communications Earth & Environment* 4, 253. [doi:10.1038/s43247-023-00909-z](https://doi.org/10.1038/s43247-023-00909-z). Data, CC BY 4.0: [doi:10.14459/2023mp1688868](https://doi.org/10.14459/2023mp1688868)
+10. Reu, P.L., Toussaint, E., Jones, E., et al. (2018). DIC Challenge: developing images and guidelines for evaluating accuracy and resolution of 2D analyses. *Experimental Mechanics* 58, 1067. [doi:10.1007/s11340-017-0349-0](https://doi.org/10.1007/s11340-017-0349-0)
+
+More sources on the need for low-cost warning, each opened and quoted (WHO, India's NDMA, ISO
+22327, WMO, CSIRO, the Brienz 2023 evacuation and others): [docs/PUBLISHED-RECORD.md](docs/PUBLISHED-RECORD.md).

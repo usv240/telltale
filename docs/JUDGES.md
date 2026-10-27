@@ -78,7 +78,6 @@ t = 47 and watch it call `remeasure`, `motion_coherence` and `check_stabilizatio
 | Human control works | approval links in `forecast.json`, `decisions.json`, section 9 of the report |
 
 Full report: `docs/REPORT.md`. Diagrams: `docs/architecture.svg`, `docs/agent_workflow.svg`.
-Audit of our own gaps: `docs/AUDIT.md`.
 
 ## 4. Deploy it (10 minutes, optional)
 
