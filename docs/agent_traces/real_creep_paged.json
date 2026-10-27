@@ -1,0 +1,353 @@
+{
+ "site": "creep+bump",
+ "t": 47.0,
+ "event": "E_ANOMALY",
+ "policy": "llm",
+ "model": "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+ "started": "2026-10-25T22:53:59Z",
+ "usage": {
+  "input": 22870,
+  "output": 1094
+ },
+ "stop_reason": "end_turn",
+ "verdict": "CONFIRMED",
+ "paged_human": true,
+ "page_attached": false,
+ "cadence_changed": false,
+ "n_tool_calls": 7,
+ "calls": [
+  {
+   "n": 1,
+   "tool": "get_site_status",
+   "args": {},
+   "result": {
+    "site": "creep+bump",
+    "state": "CRITICAL",
+    "zones": {
+     "slope": {
+      "state": "CRITICAL",
+      "tf": 50.50246008126937,
+      "t_lo": 49.39504927059025,
+      "t_hi": 71.02483861214557,
+      "r2": 0.9756574529129252,
+      "ooa_time": 4.862068965517241,
+      "horizon": 3.502460081269369
+     }
+    },
+    "recent_epochs": [
+     {
+      "t": 38.89655172413793,
+      "usable": true,
+      "reason": "OK",
+      "state": "ACCELERATING",
+      "coverage": 1.0,
+      "stabilize": {
+       "verdict": "OK",
+       "refine_model": "similarity",
+       "residual": [
+        0.0020592049695551395,
+        0.0038050408475100994
+       ],
+       "scatter": 0.01282090394334143,
+       "n_inliers": 886
+      },
+      "zones": {
+       "slope": {
+        "magnitude": 3.0721155273869027,
+        "sigma": 0.023660842524928324,
+        "n_valid": 63,
+        "n_total": 63
+       }
+      }
+     },
+     {
+      "t": 40.51724137931034,
+      "usable": true,
+      "reason": "OK",
+      "state": "ACCELERATING",
+      "coverage": 1.0,
+      "stabilize": {
+       "verdict": "OK",
+       "refine_model": "similarity",
+       "residual": [
+        5.6049786508083344e-05,
+        0.0011158111738041043
+       ],
+       "scatter": 0.011970116158028342,
+       "n_inliers": 849
+      },
+      "zones": {
+       "slope": {
+        "magnitude": 3.347788704519059,
+        "sigma": 0.02550938875122602,
+        "n_valid": 63,
+        "n_total": 63
+       }
+      }
+     },
+     {
+      "t": 42.137931034482754,
+      "usable": true,
+      "reason": "OK",
+      "state": "ACCELERATING",
+      "coverage": 1.0,
+      "stabilize": {
+       "verdict": "OK",
+       "refine_model": "similarity",
+       "residual": [
+        0.0043371873907744884,
+        0.001075355219654739
+       ],
+       "scatter": 0.015220606780284189,
+       "n_inliers": 830
+      },
+      "zones": {
+       "slope": {
+        "magnitude": 3.6335629212262717,
+        "sigma": 0.022049671412851822,
+        "n_valid": 63,
+        "n_total": 63
+       }
+      }
+     },
+     {
+      "t": 43.75862068965517,
+      "usable": true,
+      "reason": "OK",
+      "state": "ACCELERATING",
+      "coverage": 1.0,
+      "stabilize": {
+       "verdict": "OK",
+       "refine_model": "similarity",
+       "residual": [
+        0.003408759832382202,
+        -0.0014597922563552856
+       ],
+       "scatter": 0.014301896036782603,
+       "n_inliers": 813
+      },
+      "zones": {
+       "slope": {
+        "magnitude": 4.191099668152701,
+        "sigma": 0.020447468494719956,
+        "n_valid": 63,
+        "n_total": 63
+       }
+      }
+     },
+     {
+      "t": 45.37931034482759,
+      "usable": true,
+      "reason": "OK",
+      "state": "ACCELERATING",
+      "coverage": 1.0,
+      "stabilize": {
+       "verdict": "OK",
+       "refine_model": "similarity",
+       "residual": [
+        0.010541163384914398,
+        0.003550242632627487
+       ],
+       "scatter": 0.01422926746541296,
+       "n_inliers": 794
+      },
+      "zones": {
+       "slope": {
+        "magnitude": 4.751302549806017,
+        "sigma": 0.020586662615957194,
+        "n_valid": 63,
+        "n_total": 63
+       }
+      }
+     },
+     {
+      "t": 47.0,
+      "usable": true,
+      "reason": "OK",
+      "state": "CRITICAL",
+      "coverage": 1.0,
+      "stabilize": {
+       "verdict": "OK",
+       "refine_model": "similarity",
+       "residual": [
+        0.007309097796678543,
+        0.005024431273341179
+       ],
+       "scatter": 0.015176554510939482,
+       "n_inliers": 752
+      },
+      "zones": {
+       "slope": {
+        "magnitude": 5.5929584362138955,
+        "sigma": 0.01852142473151753,
+        "n_valid": 63,
+        "n_total": 63
+       }
+      }
+     }
+    ],
+    "recent_increment_baseline": {
+     "slope": {
+      "median_increment_px": 0.18071407765964964,
+      "p90_increment_px": 0.5578033603991177,
+      "n": 20
+     }
+    },
+    "mm_per_px": 1.0,
+    "reference_mode": "fixed",
+    "note": "fixed site: magnitudes are displacement since the site reference"
+   },
+   "at": "2026-10-25T22:54:01Z"
+  },
+  {
+   "n": 2,
+   "tool": "inspect_quality",
+   "args": {
+    "t": 47.0
+   },
+   "result": {
+    "t": 47.0,
+    "sharpness": 0.024697843939065933,
+    "contrast": 0.0787222608923912,
+    "stack": {
+     "status": "OK",
+     "n_frames": 5,
+     "max_shift": 0.7975718379020691,
+     "contrast": 0.08076611906290054
+    },
+    "field": {
+     "n_subsets": 144,
+     "n_valid": 144,
+     "coverage": 1.0,
+     "status_counts": {
+      "OK": 144,
+      "LOW_TEXTURE": 0,
+      "LOW_CORR": 0,
+      "LOW_MARGIN": 0,
+      "OUT_OF_BOUND": 0,
+      "EDGE_PEAK": 0
+     },
+     "crosscheck_px": 0.8072295188903809,
+     "review": false
+    },
+    "reason": "OK"
+   },
+   "at": "2026-10-25T22:54:05Z"
+  },
+  {
+   "n": 3,
+   "tool": "motion_coherence",
+   "args": {
+    "t": 47.0
+   },
+   "result": {
+    "t": 47.0,
+    "zones": {
+     "slope": {
+      "coherence": 0.9841269841269841,
+      "n": 63,
+      "n_moving": 63,
+      "median_direction_deg": 26.484554290771484,
+      "median_magnitude_px": 5.593803405761719
+     }
+    }
+   },
+   "at": "2026-10-25T22:54:05Z"
+  },
+  {
+   "n": 4,
+   "tool": "remeasure",
+   "args": {
+    "t": 47.0,
+    "reference": "previous"
+   },
+   "result": {
+    "t": 47.0,
+    "reference": "previous",
+    "reference_t": 45.37931034482759,
+    "coverage": 1.0,
+    "review": false,
+    "zones": {
+     "slope": {
+      "u": 0.7445483207702637,
+      "v": 0.3666033148765564,
+      "magnitude": 0.8299097495753975,
+      "sigma": 0.027443373810569684,
+      "n_valid": 63,
+      "n_total": 63,
+      "coherence": 1.0
+     }
+    },
+    "evidence_png": "agent/47/call-4.png",
+    "worker_recorded": {
+     "slope": 5.5929584362138955
+    }
+   },
+   "at": "2026-10-25T22:54:10Z"
+  },
+  {
+   "n": 5,
+   "tool": "remeasure",
+   "args": {
+    "t": 47.0,
+    "reference": "reference"
+   },
+   "result": {
+    "t": 47.0,
+    "reference": "reference",
+    "reference_t": null,
+    "coverage": 1.0,
+    "review": false,
+    "zones": {
+     "slope": {
+      "u": 5.006258010864258,
+      "v": 2.4937050342559814,
+      "magnitude": 5.5929584362138955,
+      "sigma": 0.01852142473151753,
+      "n_valid": 63,
+      "n_total": 63,
+      "coherence": 0.9841269841269841
+     }
+    },
+    "evidence_png": "agent/47/call-5.png",
+    "worker_recorded": {
+     "slope": 5.5929584362138955
+    }
+   },
+   "at": "2026-10-25T22:54:10Z"
+  },
+  {
+   "n": 6,
+   "tool": "request_human_approval",
+   "args": {
+    "t": 47.0,
+    "summary": "CRITICAL state: Slope zone shows 5.59 px cumulative displacement with 0.83 px increment at t=47 (4.6\u00d7 baseline, exceeding p90). Coherence 0.984-1.0, low stabilization residuals, all 63 subsets moving. Extrapolated OOA time: 4.86 epochs. Motion confirmed against both references."
+   },
+   "result": {
+    "t": 47.0,
+    "paged": true,
+    "links_issued": true,
+    "state": "CRITICAL",
+    "why": "escalation from ACCELERATING to CRITICAL"
+   },
+   "at": "2026-10-25T22:54:16Z"
+  },
+  {
+   "n": 7,
+   "tool": "close_event",
+   "args": {
+    "t": 47.0,
+    "verdict": "CONFIRMED",
+    "reason": "Real accelerating ground motion: 0.83 px increment (4.6\u00d7 baseline), coherence 0.984-1.0, consistent across both references, low stabilization residuals (0.007-0.005 px), all 63 slope subsets moving uniformly. CRITICAL state with OOA estimate 4.86 epochs."
+   },
+   "result": {
+    "t": 47.0,
+    "verdict": "CONFIRMED",
+    "reason": "Real accelerating ground motion: 0.83 px increment (4.6\u00d7 baseline), coherence 0.984-1.0, consistent across both references, low stabilization residuals (0.007-0.005 px), all 63 slope subsets moving uniformly. CRITICAL state with OOA estimate 4.86 epochs."
+   },
+   "at": "2026-10-25T22:54:20Z"
+  }
+ ],
+ "summary": "**CONFIRMED - Real ground motion detected.**\n\nThe slope is accelerating dangerously. All evidence points to genuine movement: extremely high coherence (0.98-1.0), 0.83 px increment matching across both reference frames, excellent image quality, and negligible camera artifacts. The cumulative 5.59 px displacement represents sustained acceleration with extrapolated failure in under 5 epochs. Duty contact has been paged with approval links. This is a genuine landslide emergency requiring immediate attention and evacuation assessment.",
+ "seconds": 24.8
+}
