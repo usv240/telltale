@@ -1,5 +1,14 @@
 # Five-minute video: shot list and script
 
+## The finished video
+
+`TellTale_demo_4K.mp4` (4:28, 3840x2160, 30 fps, H.264, AAC 48 kHz stereo) is the 4K cut with
+a narration made by `python video/narrate.py`. The narration reads the burned-in captions with
+a neural voice (en-US-AndrewNeural, through edge-tts), and every line fits inside its caption.
+The narration is synthetic. To use your own voice instead, record the captions and pass the
+recording to `video/finish.py --voice`. Upload it to YouTube as unlisted;
+`TellTale_demo_4K.srt` can be added as closed captions.
+
 ## The 4K cut (use this one)
 
 `.build/v4k/telltale_4k.mp4` runs 4:28 at 3840x2160, built by `python video/assemble4k.py`. It

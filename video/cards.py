@@ -92,9 +92,9 @@ CARDS = {
     "03_title": ("", f"""<div class="mark">{MARK}<span class="name">TellTale</span></div>
 <h2>A camera that forecasts landslides.</h2>
 <p class="lead">Stacks bursts from any fixed camera, removes the camera's own motion, measures ground creep to a hundredth of a pixel, forecasts the failure window, re-measures to verify it, and pages a person.</p>"""),
-    "04_team": ("", """<div class="eyebrow">Team Ground Truth</div>
+    "04_team": ("", f"""<div class="mark">{MARK}<span class="name">Team Ground Truth</span></div>
 <h2>Ujwal Suresh Vanjare<br>Arpita Madhukar Kalburgi</h2>
-<p class="lead">Placeholder: replace with both of you on camera, one line each.</p>"""),
+<p class="lead">We built TellTale for the OpenCV AI Competition 2026, powered by AWS: classical OpenCV 5 vision, a Claude agent on Amazon Bedrock, and a human who always decides.</p>"""),
     "05_real_failures": ("", """<div class="eyebrow">The forecast, replayed on six real slopes that failed</div>
 <div class="big">6 of 6</div>
 <p class="lead">reached CRITICAL before the collapse: Preonzo 2012, Arvigo 2007, Vajont 1963, Hogarth 1975, Veslemannen 2019. It also raised twelve early alarms that settled, so a person always decides.</p>
