@@ -1,0 +1,390 @@
+{
+ "site": "creep+bump",
+ "t": 47.0,
+ "event": "E_ANOMALY",
+ "policy": "rules",
+ "model": null,
+ "started": "2026-10-25T22:49:37Z",
+ "verdict": "CONFIRMED",
+ "paged_human": true,
+ "page_attached": false,
+ "cadence_changed": true,
+ "n_tool_calls": 9,
+ "calls": [
+  {
+   "n": 1,
+   "tool": "get_site_status",
+   "args": {},
+   "result": {
+    "site": "creep+bump",
+    "state": "CRITICAL",
+    "zones": {
+     "slope": {
+      "state": "CRITICAL",
+      "tf": 50.50246008126937,
+      "t_lo": 49.39504927059025,
+      "t_hi": 71.02483861214557,
+      "r2": 0.9756574529129252,
+      "ooa_time": 4.862068965517241,
+      "horizon": 3.502460081269369
+     }
+    },
+    "recent_epochs": [
+     {
+      "t": 38.89655172413793,
+      "usable": true,
+      "reason": "OK",
+      "state": "ACCELERATING",
+      "coverage": 1.0,
+      "stabilize": {
+       "verdict": "OK",
+       "refine_model": "similarity",
+       "residual": [
+        0.0020592049695551395,
+        0.0038050408475100994
+       ],
+       "scatter": 0.01282090394334143,
+       "n_inliers": 886
+      },
+      "zones": {
+       "slope": {
+        "magnitude": 3.0721155273869027,
+        "sigma": 0.023660842524928324,
+        "n_valid": 63,
+        "n_total": 63
+       }
+      }
+     },
+     {
+      "t": 40.51724137931034,
+      "usable": true,
+      "reason": "OK",
+      "state": "ACCELERATING",
+      "coverage": 1.0,
+      "stabilize": {
+       "verdict": "OK",
+       "refine_model": "similarity",
+       "residual": [
+        5.6049786508083344e-05,
+        0.0011158111738041043
+       ],
+       "scatter": 0.011970116158028342,
+       "n_inliers": 849
+      },
+      "zones": {
+       "slope": {
+        "magnitude": 3.347788704519059,
+        "sigma": 0.02550938875122602,
+        "n_valid": 63,
+        "n_total": 63
+       }
+      }
+     },
+     {
+      "t": 42.137931034482754,
+      "usable": true,
+      "reason": "OK",
+      "state": "ACCELERATING",
+      "coverage": 1.0,
+      "stabilize": {
+       "verdict": "OK",
+       "refine_model": "similarity",
+       "residual": [
+        0.0043371873907744884,
+        0.001075355219654739
+       ],
+       "scatter": 0.015220606780284189,
+       "n_inliers": 830
+      },
+      "zones": {
+       "slope": {
+        "magnitude": 3.6335629212262717,
+        "sigma": 0.022049671412851822,
+        "n_valid": 63,
+        "n_total": 63
+       }
+      }
+     },
+     {
+      "t": 43.75862068965517,
+      "usable": true,
+      "reason": "OK",
+      "state": "ACCELERATING",
+      "coverage": 1.0,
+      "stabilize": {
+       "verdict": "OK",
+       "refine_model": "similarity",
+       "residual": [
+        0.003408759832382202,
+        -0.0014597922563552856
+       ],
+       "scatter": 0.014301896036782603,
+       "n_inliers": 813
+      },
+      "zones": {
+       "slope": {
+        "magnitude": 4.191099668152701,
+        "sigma": 0.020447468494719956,
+        "n_valid": 63,
+        "n_total": 63
+       }
+      }
+     },
+     {
+      "t": 45.37931034482759,
+      "usable": true,
+      "reason": "OK",
+      "state": "ACCELERATING",
+      "coverage": 1.0,
+      "stabilize": {
+       "verdict": "OK",
+       "refine_model": "similarity",
+       "residual": [
+        0.010541163384914398,
+        0.003550242632627487
+       ],
+       "scatter": 0.01422926746541296,
+       "n_inliers": 794
+      },
+      "zones": {
+       "slope": {
+        "magnitude": 4.751302549806017,
+        "sigma": 0.020586662615957194,
+        "n_valid": 63,
+        "n_total": 63
+       }
+      }
+     },
+     {
+      "t": 47.0,
+      "usable": true,
+      "reason": "OK",
+      "state": "CRITICAL",
+      "coverage": 1.0,
+      "stabilize": {
+       "verdict": "OK",
+       "refine_model": "similarity",
+       "residual": [
+        0.007309097796678543,
+        0.005024431273341179
+       ],
+       "scatter": 0.015176554510939482,
+       "n_inliers": 752
+      },
+      "zones": {
+       "slope": {
+        "magnitude": 5.5929584362138955,
+        "sigma": 0.01852142473151753,
+        "n_valid": 63,
+        "n_total": 63
+       }
+      }
+     }
+    ],
+    "recent_increment_baseline": {
+     "slope": {
+      "median_increment_px": 0.18071407765964964,
+      "p90_increment_px": 0.5578033603991177,
+      "n": 20
+     }
+    },
+    "mm_per_px": 1.0,
+    "reference_mode": "fixed",
+    "note": "fixed site: magnitudes are displacement since the site reference"
+   },
+   "at": "2026-10-25T22:49:37Z"
+  },
+  {
+   "n": 2,
+   "tool": "inspect_quality",
+   "args": {
+    "t": 47.0
+   },
+   "result": {
+    "t": 47.0,
+    "sharpness": 0.024697843939065933,
+    "contrast": 0.0787222608923912,
+    "stack": {
+     "status": "OK",
+     "n_frames": 5,
+     "max_shift": 0.7975718379020691,
+     "contrast": 0.08076611906290054
+    },
+    "field": {
+     "n_subsets": 144,
+     "n_valid": 144,
+     "coverage": 1.0,
+     "status_counts": {
+      "OK": 144,
+      "LOW_TEXTURE": 0,
+      "LOW_CORR": 0,
+      "LOW_MARGIN": 0,
+      "OUT_OF_BOUND": 0,
+      "EDGE_PEAK": 0
+     },
+     "crosscheck_px": 0.8072295188903809,
+     "review": false
+    },
+    "reason": "OK"
+   },
+   "at": "2026-10-25T22:49:37Z"
+  },
+  {
+   "n": 3,
+   "tool": "check_stabilization",
+   "args": {
+    "t": 47.0
+   },
+   "result": {
+    "t": 47.0,
+    "verdict": "OK",
+    "camera_model": "similarity",
+    "coarse_method": "orb",
+    "n_inliers": 752,
+    "residual_px": [
+     0.00620387215167284,
+     0.005637131631374359
+    ],
+    "scatter_px": 0.014306837976547403,
+    "translation_px": [
+     -1.38463294938746,
+     1.3602500399695228
+    ],
+    "rotation_deg": 0.3984033828146982,
+    "scale": 0.998011308703621,
+    "mount_moved": true
+   },
+   "at": "2026-10-25T22:49:37Z"
+  },
+  {
+   "n": 4,
+   "tool": "remeasure",
+   "args": {
+    "t": 47.0,
+    "reference": "previous"
+   },
+   "result": {
+    "t": 47.0,
+    "reference": "previous",
+    "reference_t": 45.37931034482759,
+    "coverage": 1.0,
+    "review": false,
+    "zones": {
+     "slope": {
+      "u": 0.7445483207702637,
+      "v": 0.3666033148765564,
+      "magnitude": 0.8299097495753975,
+      "sigma": 0.027443373810569684,
+      "n_valid": 63,
+      "n_total": 63,
+      "coherence": 1.0
+     }
+    },
+    "evidence_png": "agent/47/call-4.png",
+    "worker_recorded": {
+     "slope": 5.5929584362138955
+    }
+   },
+   "at": "2026-10-25T22:49:37Z"
+  },
+  {
+   "n": 5,
+   "tool": "remeasure",
+   "args": {
+    "t": 47.0,
+    "reference": "reference"
+   },
+   "result": {
+    "t": 47.0,
+    "reference": "reference",
+    "reference_t": null,
+    "coverage": 1.0,
+    "review": false,
+    "zones": {
+     "slope": {
+      "u": 5.006258010864258,
+      "v": 2.4937050342559814,
+      "magnitude": 5.5929584362138955,
+      "sigma": 0.01852142473151753,
+      "n_valid": 63,
+      "n_total": 63,
+      "coherence": 0.9841269841269841
+     }
+    },
+    "evidence_png": "agent/47/call-5.png",
+    "worker_recorded": {
+     "slope": 5.5929584362138955
+    }
+   },
+   "at": "2026-10-25T22:49:37Z"
+  },
+  {
+   "n": 6,
+   "tool": "motion_coherence",
+   "args": {
+    "t": 47.0
+   },
+   "result": {
+    "t": 47.0,
+    "zones": {
+     "slope": {
+      "coherence": 0.9841269841269841,
+      "n": 63,
+      "n_moving": 63,
+      "median_direction_deg": 26.484554290771484,
+      "median_magnitude_px": 5.593803405761719
+     }
+    }
+   },
+   "at": "2026-10-25T22:49:37Z"
+  },
+  {
+   "n": 7,
+   "tool": "set_capture_cadence",
+   "args": {
+    "epochs_per_day": 24,
+    "reason": "confirmed motion; tighten forecast"
+   },
+   "result": {
+    "epochs_per_day": 24,
+    "reason": "confirmed motion; tighten forecast",
+    "set_at": "2026-10-25T22:49:37Z",
+    "by": "agent"
+   },
+   "at": "2026-10-25T22:49:37Z"
+  },
+  {
+   "n": 8,
+   "tool": "request_human_approval",
+   "args": {
+    "t": 47.0,
+    "summary": "remeasure vs reference {\"slope\": 5.593}, coherence {\"slope\": 0.9841269841269841}"
+   },
+   "result": {
+    "t": 47.0,
+    "paged": true,
+    "links_issued": true,
+    "state": "CRITICAL",
+    "why": "escalation from ACCELERATING to CRITICAL"
+   },
+   "at": "2026-10-25T22:49:37Z"
+  },
+  {
+   "n": 9,
+   "tool": "close_event",
+   "args": {
+    "t": 47.0,
+    "verdict": "CONFIRMED",
+    "reason": "consistent across references and coherent"
+   },
+   "result": {
+    "t": 47.0,
+    "verdict": "CONFIRMED",
+    "reason": "consistent across references and coherent"
+   },
+   "at": "2026-10-25T22:49:37Z"
+  }
+ ],
+ "summary": "Rule policy: motion confirmed; human paged.",
+ "seconds": 0.44
+}

@@ -1,0 +1,95 @@
+{
+ "events": [
+  {
+   "t": 16.206896551724135,
+   "event": "E_CAMERA",
+   "policy": "llm",
+   "verdict": "FALSE_ALARM",
+   "paged_human": false,
+   "page_attached": false,
+   "cadence_changed": false,
+   "n_tool_calls": 5,
+   "seconds": 23.17,
+   "started": "2026-10-25T22:50:14Z",
+   "summary": "**FALSE_ALARM confirmed.** This is a clear camera artefact, not ground motion. The camera mount moved at t=16.2069, causing 2.78\u00b0 rotation and requiring an affine stabilization model. Post-correction residual is 0.64 px with 1.20 px scatter\u2014both far above acceptable thresholds (>0.3 px). The system correctly flagged CAMERA_EVENT and couldn't compute a displacement field. This optical disturbance has no connection to slope movement. The site remains QUIET."
+  },
+  {
+   "t": 24.310344827586206,
+   "event": "E_JUMP",
+   "policy": "llm",
+   "verdict": "FALSE_ALARM",
+   "paged_human": false,
+   "page_attached": false,
+   "cadence_changed": false,
+   "n_tool_calls": 7,
+   "seconds": 29.04,
+   "started": "2026-10-25T22:50:39Z",
+   "summary": "**Investigation closed: FALSE_ALARM**\n\nThe apparent 0.57 px jump is an artifact, not real ground motion. Key evidence: (1) Re-stabilization flagged this as a CAMERA_EVENT with 1.6 px camera translation and mount movement, (2) exceptionally poor sharpness (0.046) degrades correlation reliability, (3) this follows five consecutive camera events, and (4) the timing\u2014sudden large displacement after camera disturbance\u2014is classic artifact behavior. Despite high directional coherence, the optical conditions and camera state make this displacement spurious."
+  },
+  {
+   "t": 25.93103448275862,
+   "event": "E_CAMERA",
+   "policy": "llm",
+   "verdict": "FALSE_ALARM",
+   "paged_human": false,
+   "page_attached": false,
+   "cadence_changed": false,
+   "n_tool_calls": 4,
+   "seconds": 13.71,
+   "started": "2026-10-25T22:51:08Z",
+   "summary": "**Investigation complete: FALSE_ALARM**\n\nThis was a camera/lens movement event, not ground motion. Stabilization analysis showed excessive residual (0.73 px), scatter (1.17 px), and a 2.43\u00b0 rotation with mount displacement. The system correctly flagged it as unusable. Four consecutive epochs before this were also camera events, with only one usable measurement at t=24.31. The camera instability prevented reliable DIC measurement\u2014no ground displacement can be determined. This is a textbook camera artefact."
+  },
+  {
+   "t": 34.03448275862069,
+   "event": "E_JUMP",
+   "policy": "llm",
+   "verdict": "FALSE_ALARM",
+   "paged_human": false,
+   "page_attached": false,
+   "cadence_changed": false,
+   "n_tool_calls": 7,
+   "seconds": 25.18,
+   "started": "2026-10-25T22:51:23Z",
+   "summary": "**Investigation Complete: FALSE_ALARM**\n\nThe apparent 4.22 px jump is a camera artifact. Re-stabilization revealed a camera event with 0.61 px residual, 1.06 px scatter, and 3.06\u00b0 mount rotation. Five consecutive camera events preceded this epoch. Crucially, remeasuring against different references gave incompatible results (6.70 px vs. previous, 4.22 px vs. reference), proving the displacement isn't real ground motion. Low image sharpness (0.049) further confirms camera disturbance. No ground movement occurred."
+  },
+  {
+   "t": 35.6551724137931,
+   "event": "E_CAMERA",
+   "policy": "llm",
+   "verdict": "FALSE_ALARM",
+   "paged_human": false,
+   "page_attached": false,
+   "cadence_changed": false,
+   "n_tool_calls": 6,
+   "seconds": 20.09,
+   "started": "2026-10-25T22:51:48Z",
+   "summary": "**Investigation complete: FALSE_ALARM**\n\nThis E_CAMERA event is a camera mount artifact, not ground motion. The mount moved significantly (3.09\u00b0 rotation), producing high stabilization scatter (1.22 px) and residual (0.87 px) well above the 0.3 px artifact threshold. No displacement field was measured because the stabilization algorithm correctly flagged it as CAMERA_EVENT. The site has experienced multiple camera events recently, suggesting ongoing mount instability. No ground motion is evident."
+  },
+  {
+   "t": 40.51724137931034,
+   "event": "E_JUMP",
+   "policy": "llm",
+   "verdict": "FALSE_ALARM",
+   "paged_human": false,
+   "page_attached": false,
+   "cadence_changed": false,
+   "n_tool_calls": 7,
+   "seconds": 22.08,
+   "started": "2026-10-25T22:52:09Z",
+   "summary": "**FALSE_ALARM verdict issued.**\n\nThis E_JUMP was a camera artefact, not real ground motion. The smoking gun: remeasuring against the previous epoch showed 6.76 px movement, but measuring from the site reference showed only 0.30 px total displacement\u2014physically impossible on a fixed-reference site. Stabilization re-check confirmed a CAMERA_EVENT with elevated scatter (0.32 px). The site experienced three consecutive camera events immediately before this epoch, indicating persistent instability. Low image sharpness (0.047) and high crosscheck error (0.71 px) further support the artefact diagnosis. No action required."
+  },
+  {
+   "t": 42.137931034482754,
+   "event": "E_CAMERA",
+   "policy": "llm",
+   "verdict": "FALSE_ALARM",
+   "paged_human": false,
+   "page_attached": false,
+   "cadence_changed": false,
+   "n_tool_calls": 6,
+   "seconds": 22.37,
+   "started": "2026-10-25T22:52:31Z",
+   "summary": "**Investigation closed: FALSE_ALARM**\n\nThe camera mount shifted approximately 1.3 pixels at epoch 42.1379, triggering an E_CAMERA event. However, stabilization successfully corrected this movement, leaving only a 0.15 px residual with 0.37 px scatter\u2014well within acceptable limits. Crucially, no displacement field was computed for this epoch, so no false motion measurement was generated. The system correctly flagged the epoch as unusable and prevented any artefactual readings. This represents proper functioning of the quality control system, not a genuine ground movement event."
+  }
+ ]
+}

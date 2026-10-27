@@ -1,0 +1,14 @@
+{
+ "pages": [
+  {
+   "t": 8.103448275862068,
+   "state": "ACCELERATING",
+   "why": "first page of this episode"
+  },
+  {
+   "t": 47.0,
+   "state": "CRITICAL",
+   "why": "escalation from ACCELERATING to CRITICAL"
+  }
+ ]
+}

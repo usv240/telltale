@@ -1,0 +1,254 @@
+{
+ "site": "quiet+lens",
+ "t": 16.206896551724135,
+ "event": "E_CAMERA",
+ "policy": "rules",
+ "model": null,
+ "started": "2026-10-25T22:49:23Z",
+ "verdict": "FALSE_ALARM",
+ "paged_human": false,
+ "page_attached": false,
+ "cadence_changed": false,
+ "n_tool_calls": 4,
+ "calls": [
+  {
+   "n": 1,
+   "tool": "get_site_status",
+   "args": {},
+   "result": {
+    "site": "quiet+lens",
+    "state": "QUIET",
+    "zones": {
+     "slope": {
+      "state": "QUIET",
+      "tf": null,
+      "t_lo": null,
+      "t_hi": null,
+      "r2": null,
+      "ooa_time": null,
+      "horizon": null
+     }
+    },
+    "recent_epochs": [
+     {
+      "t": 8.103448275862068,
+      "usable": true,
+      "reason": "OK",
+      "state": "QUIET",
+      "coverage": 1.0,
+      "stabilize": {
+       "verdict": "OK",
+       "refine_model": "translation",
+       "residual": [
+        -0.008025525137782097,
+        -0.01612677052617073
+       ],
+       "scatter": 0.013449922014835759,
+       "n_inliers": 1004
+      },
+      "zones": {
+       "slope": {
+        "magnitude": 0.022856684789613987,
+        "sigma": 0.016530235833598434,
+        "n_valid": 63,
+        "n_total": 63
+       }
+      }
+     },
+     {
+      "t": 9.724137931034482,
+      "usable": true,
+      "reason": "OK",
+      "state": "QUIET",
+      "coverage": 1.0,
+      "stabilize": {
+       "verdict": "OK",
+       "refine_model": "translation",
+       "residual": [
+        -0.007631565444171429,
+        -0.0051911212503910065
+       ],
+       "scatter": 0.011205051207640817,
+       "n_inliers": 996
+      },
+      "zones": {
+       "slope": {
+        "magnitude": 0.016962261465075696,
+        "sigma": 0.015275148851516533,
+        "n_valid": 63,
+        "n_total": 63
+       }
+      }
+     },
+     {
+      "t": 11.344827586206897,
+      "usable": true,
+      "reason": "OK",
+      "state": "QUIET",
+      "coverage": 1.0,
+      "stabilize": {
+       "verdict": "OK",
+       "refine_model": "translation",
+       "residual": [
+        -0.0029826448298990726,
+        -0.016708500683307648
+       ],
+       "scatter": 0.00962603045375078,
+       "n_inliers": 1044
+      },
+      "zones": {
+       "slope": {
+        "magnitude": 0.017316050204755122,
+        "sigma": 0.013116504031990507,
+        "n_valid": 63,
+        "n_total": 63
+       }
+      }
+     },
+     {
+      "t": 12.96551724137931,
+      "usable": true,
+      "reason": "OK",
+      "state": "QUIET",
+      "coverage": 1.0,
+      "stabilize": {
+       "verdict": "OK",
+       "refine_model": "translation",
+       "residual": [
+        0.004408230073750019,
+        -0.006951149553060532
+       ],
+       "scatter": 0.009741910076102834,
+       "n_inliers": 1365
+      },
+      "zones": {
+       "slope": {
+        "magnitude": 0.015357845978521762,
+        "sigma": 0.015650801517155706,
+        "n_valid": 63,
+        "n_total": 63
+       }
+      }
+     },
+     {
+      "t": 14.586206896551722,
+      "usable": true,
+      "reason": "OK",
+      "state": "QUIET",
+      "coverage": 1.0,
+      "stabilize": {
+       "verdict": "OK",
+       "refine_model": "translation",
+       "residual": [
+        0.010529931634664536,
+        0.014906669035553932
+       ],
+       "scatter": 0.008650355779654373,
+       "n_inliers": 1050
+      },
+      "zones": {
+       "slope": {
+        "magnitude": 0.02214483467393626,
+        "sigma": 0.014750249674524691,
+        "n_valid": 63,
+        "n_total": 63
+       }
+      }
+     },
+     {
+      "t": 16.206896551724135,
+      "usable": false,
+      "reason": "CAMERA_EVENT",
+      "state": "QUIET",
+      "coverage": null,
+      "stabilize": {
+       "verdict": "CAMERA_EVENT",
+       "refine_model": "affine",
+       "residual": [
+        0.1550823599100113,
+        0.01307952031493187
+       ],
+       "scatter": 0.5271588828507482,
+       "n_inliers": 631
+      },
+      "zones": {}
+     }
+    ],
+    "recent_increment_baseline": {
+     "slope": {
+      "median_increment_px": 0.005894423324538291,
+      "p90_increment_px": 0.017539227357298823,
+      "n": 9
+     }
+    },
+    "mm_per_px": 1.0,
+    "reference_mode": "fixed",
+    "note": "fixed site: magnitudes are displacement since the site reference"
+   },
+   "at": "2026-10-25T22:49:23Z"
+  },
+  {
+   "n": 2,
+   "tool": "inspect_quality",
+   "args": {
+    "t": 16.206896551724135
+   },
+   "result": {
+    "t": 16.206896551724135,
+    "stack": {
+     "status": "OK",
+     "n_frames": 5,
+     "max_shift": 0.6985364556312561,
+     "contrast": 0.09691384434700012
+    },
+    "field": null,
+    "reason": "CAMERA_EVENT"
+   },
+   "at": "2026-10-25T22:49:23Z"
+  },
+  {
+   "n": 3,
+   "tool": "check_stabilization",
+   "args": {
+    "t": 16.206896551724135
+   },
+   "result": {
+    "t": 16.206896551724135,
+    "verdict": "CAMERA_EVENT",
+    "camera_model": "affine",
+    "coarse_method": "orb",
+    "n_inliers": 631,
+    "residual_px": [
+     0.6421229839324951,
+     0.022443801164627075
+    ],
+    "scatter_px": 1.203744320982146,
+    "translation_px": [
+     1.082396544798155,
+     -2.5079389340280707
+    ],
+    "rotation_deg": 2.7847733964079295,
+    "scale": 0.9985463728171173,
+    "mount_moved": true
+   },
+   "at": "2026-10-25T22:49:23Z"
+  },
+  {
+   "n": 4,
+   "tool": "close_event",
+   "args": {
+    "t": 16.206896551724135,
+    "verdict": "FALSE_ALARM",
+    "reason": "stabilization verdict CAMERA_EVENT, scatter 1.203744320982146"
+   },
+   "result": {
+    "t": 16.206896551724135,
+    "verdict": "FALSE_ALARM",
+    "reason": "stabilization verdict CAMERA_EVENT, scatter 1.203744320982146"
+   },
+   "at": "2026-10-25T22:49:23Z"
+  }
+ ],
+ "summary": "Rule policy: camera motion not explained; false alarm.",
+ "seconds": 0.15
+}

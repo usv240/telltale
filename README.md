@@ -121,8 +121,8 @@ and limits for each test: [docs/REPORT.md](docs/REPORT.md), section 6.
 | Requirement | Evidence |
 |---|---|
 | Agent workflow diagram | The agent-loop diagram above, and [docs/agent_workflow.svg](docs/agent_workflow.svg) (perception tools, Claude's decision, actions) |
-| OpenCV output changes the next action | Same agent, same tools, opposite actions, decided by what OpenCV measured. **Real creep** ([trace](docs/agent_traces/real_creep_paged.json)): `motion_coherence` 0.98, `remeasure` against the previous photo and against the reference agree, so Claude calls `request_human_approval`. **Camera artefact** ([trace](docs/agent_traces/camera_artefact_closed.json)): `check_stabilization` returns CAMERA_EVENT (the mount moved 1.6 px), so Claude calls `close_event` as FALSE_ALARM and nobody is woken |
-| Live traces | Every investigation on the production stack: [agentlog.json](https://d30le2uwgaimao.cloudfront.net/sites/demo-slope/agentlog.json); click any row in the dashboard's Agent investigations panel to see the re-measured images and every tool call |
+| OpenCV output changes the next action | Same agent, same tools, opposite actions, decided by what OpenCV measured. **Real creep** ([trace](docs/agent_traces/e5/llm/creep+bump/47.json)): `motion_coherence` 0.98, `remeasure` against the previous photo and against the reference agree, so Claude calls `request_human_approval`. **Camera artefact** ([trace](docs/agent_traces/e5/llm/quiet+lens/24.3103.json)): `check_stabilization` returns CAMERA_EVENT (the mount moved 1.6 px), so Claude calls `close_event` as FALSE_ALARM and nobody is woken |
+| All traces | **In the repo:** every E5 investigation, by arm (`rules`, `llm`) and scenario, in [docs/agent_traces/e5/](docs/agent_traces/e5/) (each file: tool calls, arguments, results, verdict; `agentlog.json` lists them, `pages.json` lists who was paged). **Live on AWS:** the real USGS landslide record, 34 investigations (12 confirmed, 20 closed as false alarms, 2 inconclusive): [agentlog.json](https://d30le2uwgaimao.cloudfront.net/sites/mukilteo-usgs/agentlog.json); the demo slope: [agentlog.json](https://d30le2uwgaimao.cloudfront.net/sites/demo-slope/agentlog.json). On the dashboard, click any row in Agent investigations to see the re-measured images and every tool call |
 | Task success | E5 ablation (agent off, rules only, Claude on Bedrock): Claude closed every camera-distortion event as a false alarm, paged a person **41.9 time units before failure** against 3.0 for thresholds alone, with **0 false pages** ([e5_agent.json](evaluation/results/e5_agent.json)) |
 | Failure handling | If Bedrock is unreachable, a rule policy drives the same tools. If the agent errors or is unsure, the worker's own CRITICAL page still fires, because a missed warning is worse than an extra one. Ten-call budget per event |
 | Observability | Each trace stores the tool calls, arguments, results, verdict and duration; pages are logged in `pages.json` and human decisions in `decisions.json`; CloudWatch alarms and an ops dashboard. The traces caught a real bug, written up in [REPORT.md](docs/REPORT.md) section 6b |
@@ -182,7 +182,7 @@ python -m agent.mcp_smoke        # lists the tools and investigates the demo sit
 | [infra/](infra/) | CloudFormation template, Graviton worker, deploy and camera upload scripts |
 | [web/dashboard/](web/dashboard/) | The dashboard, the "How it works" page and the site setup tool |
 | [evaluation/](evaluation/) | One script per test (E1 to E7), the saved results, and `verify_claims.py` |
-| [docs/](docs/) | Report, judges' path, deployment guide, diagrams, sources |
+| [docs/](docs/) | Report, judges' path, deployment guide, diagrams, agent traces, sources |
 | [demo-rig/](demo-rig/) | A tabletop collapse rig and its capture script (not claimed as a result) |
 
 ## Limits and responsible use

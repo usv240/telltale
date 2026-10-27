@@ -1,0 +1,43 @@
+{
+ "events": [
+  {
+   "t": 8.103448275862068,
+   "event": "E_ANOMALY",
+   "policy": "rules",
+   "verdict": "CONFIRMED",
+   "paged_human": true,
+   "page_attached": false,
+   "cadence_changed": true,
+   "n_tool_calls": 9,
+   "seconds": 0.42,
+   "started": "2026-10-25T22:49:29Z",
+   "summary": "Rule policy: motion confirmed; human paged."
+  },
+  {
+   "t": 11.344827586206897,
+   "event": "E_ANOMALY",
+   "policy": "rules",
+   "verdict": "CONFIRMED",
+   "paged_human": false,
+   "page_attached": true,
+   "cadence_changed": true,
+   "n_tool_calls": 9,
+   "seconds": 0.41,
+   "started": "2026-10-25T22:49:30Z",
+   "summary": "Rule policy: motion confirmed; human paged."
+  },
+  {
+   "t": 47.0,
+   "event": "E_ANOMALY",
+   "policy": "rules",
+   "verdict": "CONFIRMED",
+   "paged_human": true,
+   "page_attached": false,
+   "cadence_changed": true,
+   "n_tool_calls": 9,
+   "seconds": 0.44,
+   "started": "2026-10-25T22:49:37Z",
+   "summary": "Rule policy: motion confirmed; human paged."
+  }
+ ]
+}

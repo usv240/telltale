@@ -1,0 +1,233 @@
+{
+ "site": "quiet+lens",
+ "t": 42.137931034482754,
+ "event": "E_CAMERA",
+ "policy": "rules",
+ "model": null,
+ "started": "2026-10-25T22:49:27Z",
+ "verdict": "FALSE_ALARM",
+ "paged_human": false,
+ "page_attached": false,
+ "cadence_changed": false,
+ "n_tool_calls": 4,
+ "calls": [
+  {
+   "n": 1,
+   "tool": "get_site_status",
+   "args": {},
+   "result": {
+    "site": "quiet+lens",
+    "state": "MOVING",
+    "zones": {
+     "slope": {
+      "state": "MOVING",
+      "tf": null,
+      "t_lo": null,
+      "t_hi": null,
+      "r2": null,
+      "ooa_time": null,
+      "horizon": null
+     }
+    },
+    "recent_epochs": [
+     {
+      "t": 34.03448275862069,
+      "usable": true,
+      "reason": "OK",
+      "state": "MOVING",
+      "coverage": 0.6666666666666666,
+      "stabilize": {
+       "verdict": "OK",
+       "refine_model": "affine",
+       "residual": [
+        -0.10613016039133072,
+        0.043931324034929276
+       ],
+       "scatter": 0.26699862268194613,
+       "n_inliers": 640
+      },
+      "zones": {
+       "slope": {
+        "magnitude": 4.217410472133238,
+        "sigma": 0.8031467995645432,
+        "n_valid": 43,
+        "n_total": 63
+       }
+      }
+     },
+     {
+      "t": 35.6551724137931,
+      "usable": false,
+      "reason": "CAMERA_EVENT",
+      "state": "MOVING",
+      "coverage": null,
+      "stabilize": {
+       "verdict": "CAMERA_EVENT",
+       "refine_model": "affine",
+       "residual": [
+        -0.24280020594596863,
+        0.030757859349250793
+       ],
+       "scatter": 0.4598548984603717,
+       "n_inliers": 642
+      },
+      "zones": {}
+     },
+     {
+      "t": 37.275862068965516,
+      "usable": false,
+      "reason": "CAMERA_EVENT",
+      "state": "MOVING",
+      "coverage": null,
+      "stabilize": {
+       "verdict": "CAMERA_EVENT",
+       "refine_model": "affine",
+       "residual": [
+        -0.6821117401123047,
+        -0.15584592521190643
+       ],
+       "scatter": 1.120525456575487,
+       "n_inliers": 667
+      },
+      "zones": {}
+     },
+     {
+      "t": 38.89655172413793,
+      "usable": false,
+      "reason": "CAMERA_EVENT",
+      "state": "MOVING",
+      "coverage": null,
+      "stabilize": {
+       "verdict": "CAMERA_EVENT",
+       "refine_model": "affine",
+       "residual": [
+        -1.3391783237457275,
+        -0.26637542247772217
+       ],
+       "scatter": 0.7530164155683448,
+       "n_inliers": 633
+      },
+      "zones": {}
+     },
+     {
+      "t": 40.51724137931034,
+      "usable": true,
+      "reason": "OK",
+      "state": "MOVING",
+      "coverage": 0.6180555555555556,
+      "stabilize": {
+       "verdict": "OK",
+       "refine_model": "similarity",
+       "residual": [
+        0.019426479935646057,
+        -0.13855209946632385
+       ],
+       "scatter": 0.14421960321919783,
+       "n_inliers": 609
+      },
+      "zones": {
+       "slope": {
+        "magnitude": 0.30386040834800504,
+        "sigma": 0.7523956323602875,
+        "n_valid": 34,
+        "n_total": 63
+       }
+      }
+     },
+     {
+      "t": 42.137931034482754,
+      "usable": false,
+      "reason": "CAMERA_EVENT",
+      "state": "MOVING",
+      "coverage": null,
+      "stabilize": {
+       "verdict": "CAMERA_EVENT",
+       "refine_model": "similarity",
+       "residual": [
+        -0.09362506866455078,
+        -0.12735868990421295
+       ],
+       "scatter": 0.3683133413330473,
+       "n_inliers": 633
+      },
+      "zones": {}
+     }
+    ],
+    "recent_increment_baseline": {
+     "slope": {
+      "median_increment_px": 0.008812961950395087,
+      "p90_increment_px": 3.335530841954766,
+      "n": 12
+     }
+    },
+    "mm_per_px": 1.0,
+    "reference_mode": "fixed",
+    "note": "fixed site: magnitudes are displacement since the site reference"
+   },
+   "at": "2026-10-25T22:49:27Z"
+  },
+  {
+   "n": 2,
+   "tool": "inspect_quality",
+   "args": {
+    "t": 42.137931034482754
+   },
+   "result": {
+    "t": 42.137931034482754,
+    "stack": {
+     "status": "OK",
+     "n_frames": 5,
+     "max_shift": 0.4981338083744049,
+     "contrast": 0.09752092510461807
+    },
+    "field": null,
+    "reason": "CAMERA_EVENT"
+   },
+   "at": "2026-10-25T22:49:27Z"
+  },
+  {
+   "n": 3,
+   "tool": "check_stabilization",
+   "args": {
+    "t": 42.137931034482754
+   },
+   "result": {
+    "t": 42.137931034482754,
+    "verdict": "CAMERA_EVENT",
+    "camera_model": "similarity",
+    "coarse_method": "orb",
+    "n_inliers": 633,
+    "residual_px": [
+     -0.10325038433074951,
+     -0.11081413924694061
+    ],
+    "scatter_px": 0.3686189235710165,
+    "translation_px": [
+     -0.8030985874718045,
+     -1.0231630076384373
+    ],
+    "rotation_deg": -0.02382289616611717,
+    "scale": 1.0000070973385597,
+    "mount_moved": true
+   },
+   "at": "2026-10-25T22:49:27Z"
+  },
+  {
+   "n": 4,
+   "tool": "close_event",
+   "args": {
+    "t": 42.137931034482754,
+    "verdict": "FALSE_ALARM",
+    "reason": "stabilization verdict CAMERA_EVENT, scatter 0.3686189235710165"
+   },
+   "result": {
+    "t": 42.137931034482754,
+    "verdict": "FALSE_ALARM",
+    "reason": "stabilization verdict CAMERA_EVENT, scatter 0.3686189235710165"
+   },
+   "at": "2026-10-25T22:49:27Z"
+  }
+ ],
+ "summary": "Rule policy: camera motion not explained; false alarm.",
+ "seconds": 0.14
+}

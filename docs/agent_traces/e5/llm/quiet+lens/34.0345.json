@@ -1,0 +1,329 @@
+{
+ "site": "quiet+lens",
+ "t": 34.03448275862069,
+ "event": "E_JUMP",
+ "policy": "llm",
+ "model": "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+ "started": "2026-10-25T22:51:23Z",
+ "usage": {
+  "input": 21581,
+  "output": 1034
+ },
+ "stop_reason": "end_turn",
+ "verdict": "FALSE_ALARM",
+ "paged_human": false,
+ "page_attached": false,
+ "cadence_changed": false,
+ "n_tool_calls": 7,
+ "calls": [
+  {
+   "n": 1,
+   "tool": "get_site_status",
+   "args": {},
+   "result": {
+    "site": "quiet+lens",
+    "state": "MOVING",
+    "zones": {
+     "slope": {
+      "state": "MOVING",
+      "tf": null,
+      "t_lo": null,
+      "t_hi": null,
+      "r2": null,
+      "ooa_time": null,
+      "horizon": null
+     }
+    },
+    "recent_epochs": [
+     {
+      "t": 25.93103448275862,
+      "usable": false,
+      "reason": "CAMERA_EVENT",
+      "state": "MOVING",
+      "coverage": null,
+      "stabilize": {
+       "verdict": "CAMERA_EVENT",
+       "refine_model": "affine",
+       "residual": [
+        0.4110970199108124,
+        0.026281630620360374
+       ],
+       "scatter": 0.8195597653079197,
+       "n_inliers": 606
+      },
+      "zones": {}
+     },
+     {
+      "t": 27.551724137931032,
+      "usable": false,
+      "reason": "CAMERA_EVENT",
+      "state": "MOVING",
+      "coverage": null,
+      "stabilize": {
+       "verdict": "CAMERA_EVENT",
+       "refine_model": "affine",
+       "residual": [
+        -0.04403571039438248,
+        -0.0028856266289949417
+       ],
+       "scatter": 1.5665249469728535,
+       "n_inliers": 611
+      },
+      "zones": {}
+     },
+     {
+      "t": 29.172413793103445,
+      "usable": false,
+      "reason": "CAMERA_EVENT",
+      "state": "MOVING",
+      "coverage": null,
+      "stabilize": {
+       "verdict": "CAMERA_EVENT",
+       "refine_model": "affine",
+       "residual": [
+        0.1979517638683319,
+        0.04634670168161392
+       ],
+       "scatter": 0.5345850165642585,
+       "n_inliers": 641
+      },
+      "zones": {}
+     },
+     {
+      "t": 30.79310344827586,
+      "usable": false,
+      "reason": "CAMERA_EVENT",
+      "state": "MOVING",
+      "coverage": null,
+      "stabilize": {
+       "verdict": "CAMERA_EVENT",
+       "refine_model": "affine",
+       "residual": [
+        0.7901797294616699,
+        -0.03267848491668701
+       ],
+       "scatter": 1.3355069969762836,
+       "n_inliers": 644
+      },
+      "zones": {}
+     },
+     {
+      "t": 32.41379310344827,
+      "usable": false,
+      "reason": "CAMERA_EVENT",
+      "state": "MOVING",
+      "coverage": null,
+      "stabilize": {
+       "verdict": "CAMERA_EVENT",
+       "refine_model": "similarity",
+       "residual": [
+        -0.12316131591796875,
+        -0.16430291533470154
+       ],
+       "scatter": 0.3837813455062466,
+       "n_inliers": 630
+      },
+      "zones": {}
+     },
+     {
+      "t": 34.03448275862069,
+      "usable": true,
+      "reason": "OK",
+      "state": "MOVING",
+      "coverage": 0.6666666666666666,
+      "stabilize": {
+       "verdict": "OK",
+       "refine_model": "affine",
+       "residual": [
+        -0.10613016039133072,
+        0.043931324034929276
+       ],
+       "scatter": 0.26699862268194613,
+       "n_inliers": 640
+      },
+      "zones": {
+       "slope": {
+        "magnitude": 4.217410472133238,
+        "sigma": 0.8031467995645432,
+        "n_valid": 43,
+        "n_total": 63
+       }
+      }
+     }
+    ],
+    "recent_increment_baseline": {
+     "slope": {
+      "median_increment_px": 0.0067869886954144976,
+      "p90_increment_px": 0.5502602896982586,
+      "n": 11
+     }
+    },
+    "mm_per_px": 1.0,
+    "reference_mode": "fixed",
+    "note": "fixed site: magnitudes are displacement since the site reference"
+   },
+   "at": "2026-10-25T22:51:25Z"
+  },
+  {
+   "n": 2,
+   "tool": "inspect_quality",
+   "args": {
+    "t": 34.03448275862069
+   },
+   "result": {
+    "t": 34.03448275862069,
+    "sharpness": 0.04909306764602661,
+    "contrast": 0.09354177862405777,
+    "stack": {
+     "status": "OK",
+     "n_frames": 5,
+     "max_shift": 0.730917751789093,
+     "contrast": 0.09574095159769058
+    },
+    "field": {
+     "n_subsets": 144,
+     "n_valid": 96,
+     "coverage": 0.6666666666666666,
+     "status_counts": {
+      "OK": 96,
+      "LOW_TEXTURE": 0,
+      "LOW_CORR": 48,
+      "LOW_MARGIN": 0,
+      "OUT_OF_BOUND": 0,
+      "EDGE_PEAK": 0
+     },
+     "crosscheck_px": 0.6453510522842407,
+     "review": false
+    },
+    "reason": "OK"
+   },
+   "at": "2026-10-25T22:51:28Z"
+  },
+  {
+   "n": 3,
+   "tool": "motion_coherence",
+   "args": {
+    "t": 34.03448275862069
+   },
+   "result": {
+    "t": 34.03448275862069,
+    "zones": {
+     "slope": {
+      "coherence": 1.0,
+      "n": 43,
+      "n_moving": 43,
+      "median_direction_deg": 92.58548736572266,
+      "median_magnitude_px": 4.515312671661377
+     }
+    }
+   },
+   "at": "2026-10-25T22:51:28Z"
+  },
+  {
+   "n": 4,
+   "tool": "remeasure",
+   "args": {
+    "t": 34.03448275862069,
+    "reference": "previous"
+   },
+   "result": {
+    "t": 34.03448275862069,
+    "reference": "previous",
+    "reference_t": 24.310344827586206,
+    "coverage": 0.5347222222222222,
+    "review": false,
+    "zones": {
+     "slope": {
+      "u": -0.2500600516796112,
+      "v": 6.693066596984863,
+      "magnitude": 6.697736222121661,
+      "sigma": 2.4956657214004463,
+      "n_valid": 34,
+      "n_total": 63,
+      "coherence": 1.0
+     }
+    },
+    "evidence_png": "agent/34.0345/call-4.png",
+    "worker_recorded": {
+     "slope": 4.217410472133238
+    }
+   },
+   "at": "2026-10-25T22:51:31Z"
+  },
+  {
+   "n": 5,
+   "tool": "remeasure",
+   "args": {
+    "t": 34.03448275862069,
+    "reference": "reference"
+   },
+   "result": {
+    "t": 34.03448275862069,
+    "reference": "reference",
+    "reference_t": null,
+    "coverage": 0.6666666666666666,
+    "review": false,
+    "zones": {
+     "slope": {
+      "u": -0.2368512600660324,
+      "v": 4.21075439453125,
+      "magnitude": 4.217410472133238,
+      "sigma": 0.8031467995645432,
+      "n_valid": 43,
+      "n_total": 63,
+      "coherence": 1.0
+     }
+    },
+    "evidence_png": "agent/34.0345/call-5.png",
+    "worker_recorded": {
+     "slope": 4.217410472133238
+    }
+   },
+   "at": "2026-10-25T22:51:31Z"
+  },
+  {
+   "n": 6,
+   "tool": "check_stabilization",
+   "args": {
+    "t": 34.03448275862069
+   },
+   "result": {
+    "t": 34.03448275862069,
+    "verdict": "CAMERA_EVENT",
+    "camera_model": "affine",
+    "coarse_method": "orb",
+    "n_inliers": 640,
+    "residual_px": [
+     -0.6112561225891113,
+     0.022324813529849052
+    ],
+    "scatter_px": 1.0641192665771786,
+    "translation_px": [
+     -0.9109449404354065,
+     -2.713428297777946
+    ],
+    "rotation_deg": 3.0581560655504108,
+    "scale": 1.000553629906213,
+    "mount_moved": true
+   },
+   "at": "2026-10-25T22:51:36Z"
+  },
+  {
+   "n": 7,
+   "tool": "close_event",
+   "args": {
+    "t": 34.03448275862069,
+    "verdict": "FALSE_ALARM",
+    "reason": "Re-stabilization shows CAMERA_EVENT verdict with 0.61 px residual, 1.06 px scatter, and mount_moved=true (3.06\u00b0 rotation). Remeasure results incompatible: 6.70 px vs previous, 4.22 px vs reference. Low sharpness (0.049) and five consecutive camera events immediately preceding. Artifact from camera disturbance."
+   },
+   "result": {
+    "t": 34.03448275862069,
+    "verdict": "FALSE_ALARM",
+    "reason": "Re-stabilization shows CAMERA_EVENT verdict with 0.61 px residual, 1.06 px scatter, and mount_moved=true (3.06\u00b0 rotation). Remeasure results incompatible: 6.70 px vs previous, 4.22 px vs reference. Low sharpness (0.049) and five consecutive camera events immediately preceding. Artifact from camera disturbance."
+   },
+   "at": "2026-10-25T22:51:43Z"
+  }
+ ],
+ "summary": "**Investigation Complete: FALSE_ALARM**\n\nThe apparent 4.22 px jump is a camera artifact. Re-stabilization revealed a camera event with 0.61 px residual, 1.06 px scatter, and 3.06\u00b0 mount rotation. Five consecutive camera events preceded this epoch. Crucially, remeasuring against different references gave incompatible results (6.70 px vs. previous, 4.22 px vs. reference), proving the displacement isn't real ground motion. Low image sharpness (0.049) further confirms camera disturbance. No ground movement occurred.",
+ "seconds": 25.18
+}

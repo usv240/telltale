@@ -1,0 +1,95 @@
+{
+ "events": [
+  {
+   "t": 16.206896551724135,
+   "event": "E_CAMERA",
+   "policy": "rules",
+   "verdict": "FALSE_ALARM",
+   "paged_human": false,
+   "page_attached": false,
+   "cadence_changed": false,
+   "n_tool_calls": 4,
+   "seconds": 0.15,
+   "started": "2026-10-25T22:49:23Z",
+   "summary": "Rule policy: camera motion not explained; false alarm."
+  },
+  {
+   "t": 24.310344827586206,
+   "event": "E_JUMP",
+   "policy": "rules",
+   "verdict": "FALSE_ALARM",
+   "paged_human": false,
+   "page_attached": false,
+   "cadence_changed": false,
+   "n_tool_calls": 4,
+   "seconds": 0.17,
+   "started": "2026-10-25T22:49:24Z",
+   "summary": "Rule policy: camera motion not explained; false alarm."
+  },
+  {
+   "t": 25.93103448275862,
+   "event": "E_CAMERA",
+   "policy": "rules",
+   "verdict": "FALSE_ALARM",
+   "paged_human": false,
+   "page_attached": false,
+   "cadence_changed": false,
+   "n_tool_calls": 4,
+   "seconds": 0.17,
+   "started": "2026-10-25T22:49:24Z",
+   "summary": "Rule policy: camera motion not explained; false alarm."
+  },
+  {
+   "t": 34.03448275862069,
+   "event": "E_JUMP",
+   "policy": "rules",
+   "verdict": "FALSE_ALARM",
+   "paged_human": false,
+   "page_attached": false,
+   "cadence_changed": false,
+   "n_tool_calls": 4,
+   "seconds": 0.15,
+   "started": "2026-10-25T22:49:25Z",
+   "summary": "Rule policy: camera motion not explained; false alarm."
+  },
+  {
+   "t": 35.6551724137931,
+   "event": "E_CAMERA",
+   "policy": "rules",
+   "verdict": "FALSE_ALARM",
+   "paged_human": false,
+   "page_attached": false,
+   "cadence_changed": false,
+   "n_tool_calls": 4,
+   "seconds": 0.15,
+   "started": "2026-10-25T22:49:26Z",
+   "summary": "Rule policy: camera motion not explained; false alarm."
+  },
+  {
+   "t": 40.51724137931034,
+   "event": "E_JUMP",
+   "policy": "rules",
+   "verdict": "FALSE_ALARM",
+   "paged_human": false,
+   "page_attached": false,
+   "cadence_changed": false,
+   "n_tool_calls": 4,
+   "seconds": 0.15,
+   "started": "2026-10-25T22:49:26Z",
+   "summary": "Rule policy: camera motion not explained; false alarm."
+  },
+  {
+   "t": 42.137931034482754,
+   "event": "E_CAMERA",
+   "policy": "rules",
+   "verdict": "FALSE_ALARM",
+   "paged_human": false,
+   "page_attached": false,
+   "cadence_changed": false,
+   "n_tool_calls": 4,
+   "seconds": 0.14,
+   "started": "2026-10-25T22:49:27Z",
+   "summary": "Rule policy: camera motion not explained; false alarm."
+  }
+ ]
+}

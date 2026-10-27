@@ -1,0 +1,43 @@
+{
+ "events": [
+  {
+   "t": 8.103448275862068,
+   "event": "E_ANOMALY",
+   "policy": "llm",
+   "verdict": "CONFIRMED",
+   "paged_human": true,
+   "page_attached": false,
+   "cadence_changed": true,
+   "n_tool_calls": 8,
+   "seconds": 31.03,
+   "started": "2026-10-25T22:52:56Z",
+   "summary": "**CONFIRMED: Real ground motion detected.**\n\nThe slope is genuinely accelerating. All 63 subsets show perfectly coherent movement (coherence 1.0) at 17\u00b0 with 0.13 px increment\u20141.5\u00d7 the recent baseline. Both reference measurements agree (0.137 px day-to-day vs 0.395 px cumulative). Camera stabilization is clean (0.017 px residual), quality metrics are excellent (full coverage, all subsets valid), and no artefacts present.\n\nDuty contact paged for ACCELERATING state. Capture cadence increased to 48 epochs/day for better temporal resolution of this confirmed slope movement."
+  },
+  {
+   "t": 11.344827586206897,
+   "event": "E_ANOMALY",
+   "policy": "llm",
+   "verdict": "CONFIRMED",
+   "paged_human": false,
+   "page_attached": true,
+   "cadence_changed": true,
+   "n_tool_calls": 8,
+   "seconds": 25.91,
+   "started": "2026-10-25T22:53:27Z",
+   "summary": "**Event closed: CONFIRMED**\n\nThis is real ground motion. The slope shows perfect directional coherence (1.0) across both reference measurements, with a 0.123 px increment that's consistent with ongoing acceleration. All quality indicators are excellent: full subset coverage, low stabilization scatter (0.01 px), and no camera artefacts. The cumulative displacement has reached 0.548 px with accelerating behavior. Capture cadence increased to 48 epochs/day for closer monitoring. Duty officer was previously paged at t=8.10 for this ACCELERATING episode."
+  },
+  {
+   "t": 47.0,
+   "event": "E_ANOMALY",
+   "policy": "llm",
+   "verdict": "CONFIRMED",
+   "paged_human": true,
+   "page_attached": false,
+   "cadence_changed": false,
+   "n_tool_calls": 7,
+   "seconds": 24.8,
+   "started": "2026-10-25T22:53:59Z",
+   "summary": "**CONFIRMED - Real ground motion detected.**\n\nThe slope is accelerating dangerously. All evidence points to genuine movement: extremely high coherence (0.98-1.0), 0.83 px increment matching across both reference frames, excellent image quality, and negligible camera artifacts. The cumulative 5.59 px displacement represents sustained acceleration with extrapolated failure in under 5 epochs. Duty contact has been paged with approval links. This is a genuine landslide emergency requiring immediate attention and evacuation assessment."
+  }
+ ]
+}

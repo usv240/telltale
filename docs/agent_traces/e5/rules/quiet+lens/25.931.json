@@ -1,0 +1,226 @@
+{
+ "site": "quiet+lens",
+ "t": 25.93103448275862,
+ "event": "E_CAMERA",
+ "policy": "rules",
+ "model": null,
+ "started": "2026-10-25T22:49:24Z",
+ "verdict": "FALSE_ALARM",
+ "paged_human": false,
+ "page_attached": false,
+ "cadence_changed": false,
+ "n_tool_calls": 4,
+ "calls": [
+  {
+   "n": 1,
+   "tool": "get_site_status",
+   "args": {},
+   "result": {
+    "site": "quiet+lens",
+    "state": "MOVING",
+    "zones": {
+     "slope": {
+      "state": "MOVING",
+      "tf": null,
+      "t_lo": null,
+      "t_hi": null,
+      "r2": null,
+      "ooa_time": null,
+      "horizon": null
+     }
+    },
+    "recent_epochs": [
+     {
+      "t": 17.82758620689655,
+      "usable": false,
+      "reason": "CAMERA_EVENT",
+      "state": "QUIET",
+      "coverage": null,
+      "stabilize": {
+       "verdict": "CAMERA_EVENT",
+       "refine_model": "similarity",
+       "residual": [
+        0.14440156519412994,
+        -0.15895545482635498
+       ],
+       "scatter": 0.4709741824408354,
+       "n_inliers": 635
+      },
+      "zones": {}
+     },
+     {
+      "t": 19.448275862068964,
+      "usable": false,
+      "reason": "CAMERA_EVENT",
+      "state": "QUIET",
+      "coverage": null,
+      "stabilize": {
+       "verdict": "CAMERA_EVENT",
+       "refine_model": "affine",
+       "residual": [
+        0.43292850255966187,
+        -0.08711244910955429
+       ],
+       "scatter": 0.7263122926957801,
+       "n_inliers": 640
+      },
+      "zones": {}
+     },
+     {
+      "t": 21.068965517241377,
+      "usable": false,
+      "reason": "CAMERA_EVENT",
+      "state": "QUIET",
+      "coverage": null,
+      "stabilize": {
+       "verdict": "CAMERA_EVENT",
+       "refine_model": "affine",
+       "residual": [
+        0.946995198726654,
+        -0.14548395574092865
+       ],
+       "scatter": 1.2367265006781887,
+       "n_inliers": 618
+      },
+      "zones": {}
+     },
+     {
+      "t": 22.689655172413794,
+      "usable": false,
+      "reason": "CAMERA_EVENT",
+      "state": "QUIET",
+      "coverage": null,
+      "stabilize": {
+       "verdict": "CAMERA_EVENT",
+       "refine_model": "similarity",
+       "residual": [
+        -0.020765362307429314,
+        -0.11806966364383698
+       ],
+       "scatter": 0.3318972408179629,
+       "n_inliers": 635
+      },
+      "zones": {}
+     },
+     {
+      "t": 24.310344827586206,
+      "usable": true,
+      "reason": "OK",
+      "state": "MOVING",
+      "coverage": 0.6458333333333334,
+      "stabilize": {
+       "verdict": "OK",
+       "refine_model": "similarity",
+       "residual": [
+        -0.03033122420310974,
+        -0.12922637164592743
+       ],
+       "scatter": 0.2460467294049291,
+       "n_inliers": 622
+      },
+      "zones": {
+       "slope": {
+        "magnitude": 0.5724051243721948,
+        "sigma": 1.0478243837915566,
+        "n_valid": 35,
+        "n_total": 63
+       }
+      }
+     },
+     {
+      "t": 25.93103448275862,
+      "usable": false,
+      "reason": "CAMERA_EVENT",
+      "state": "MOVING",
+      "coverage": null,
+      "stabilize": {
+       "verdict": "CAMERA_EVENT",
+       "refine_model": "affine",
+       "residual": [
+        0.4110970199108124,
+        0.026281630620360374
+       ],
+       "scatter": 0.8195597653079197,
+       "n_inliers": 606
+      },
+      "zones": {}
+     }
+    ],
+    "recent_increment_baseline": {
+     "slope": {
+      "median_increment_px": 0.0063407060099763945,
+      "p90_increment_px": 0.07438666024710325,
+      "n": 10
+     }
+    },
+    "mm_per_px": 1.0,
+    "reference_mode": "fixed",
+    "note": "fixed site: magnitudes are displacement since the site reference"
+   },
+   "at": "2026-10-25T22:49:24Z"
+  },
+  {
+   "n": 2,
+   "tool": "inspect_quality",
+   "args": {
+    "t": 25.93103448275862
+   },
+   "result": {
+    "t": 25.93103448275862,
+    "stack": {
+     "status": "OK",
+     "n_frames": 5,
+     "max_shift": 0.33245766162872314,
+     "contrast": 0.0978752002120018
+    },
+    "field": null,
+    "reason": "CAMERA_EVENT"
+   },
+   "at": "2026-10-25T22:49:24Z"
+  },
+  {
+   "n": 3,
+   "tool": "check_stabilization",
+   "args": {
+    "t": 25.93103448275862
+   },
+   "result": {
+    "t": 25.93103448275862,
+    "verdict": "CAMERA_EVENT",
+    "camera_model": "affine",
+    "coarse_method": "orb",
+    "n_inliers": 606,
+    "residual_px": [
+     0.7306304574012756,
+     -0.03017370216548443
+    ],
+    "scatter_px": 1.170624523684693,
+    "translation_px": [
+     0.7890002471831328,
+     -2.6399331488754236
+    ],
+    "rotation_deg": 2.4281490569013875,
+    "scale": 1.00208097110713,
+    "mount_moved": true
+   },
+   "at": "2026-10-25T22:49:24Z"
+  },
+  {
+   "n": 4,
+   "tool": "close_event",
+   "args": {
+    "t": 25.93103448275862,
+    "verdict": "FALSE_ALARM",
+    "reason": "stabilization verdict CAMERA_EVENT, scatter 1.170624523684693"
+   },
+   "result": {
+    "t": 25.93103448275862,
+    "verdict": "FALSE_ALARM",
+    "reason": "stabilization verdict CAMERA_EVENT, scatter 1.170624523684693"
+   },
+   "at": "2026-10-25T22:49:24Z"
+  }
+ ],
+ "summary": "Rule policy: camera motion not explained; false alarm.",
+ "seconds": 0.17
+}
