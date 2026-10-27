@@ -41,11 +41,25 @@ BASE = """<!doctype html><html lang="en"><head><meta charset="utf-8">
   .mark { display: flex; align-items: center; gap: 28px; margin-bottom: 48px; }
   .mark svg { width: 96px; height: 96px; }
   .name { font-size: 64px; font-weight: 700; letter-spacing: -0.02em; }
-  .src { position: absolute; left: 160px; bottom: 64px; font-size: 24px; color: var(--muted); }
+  .src { position: absolute; left: 160px; top: 64px; font-size: 24px; color: var(--muted); }
   .url { font-family: "Geist Mono", ui-monospace, monospace; font-size: 40px; color: var(--hue); margin-top: 40px; }
   ul.lim { list-style: none; padding: 0; margin-top: 48px; display: grid; gap: 26px; }
   ul.lim li { font-size: 44px; line-height: 1.3; padding-left: 44px; position: relative; }
   ul.lim li::before { content: ""; position: absolute; left: 0; top: 22px; width: 18px; height: 3px; background: var(--hue); }
+
+  .flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; margin-top: 64px; }
+  .step { background: #ffffff; border: 2px solid var(--rule); border-radius: 22px; padding: 36px 32px; }
+  .step .n { width: 56px; height: 56px; border-radius: 50%; background: var(--hue); color: #fff; font-weight: 700;
+             font-size: 30px; display: grid; place-items: center; margin-bottom: 26px; }
+  .step h3 { font-size: 40px; line-height: 1.15; font-weight: 700; letter-spacing: -0.01em; }
+  .step p { font-size: 27px; line-height: 1.38; color: var(--muted); margin-top: 14px; }
+  .vs { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 56px; }
+  .vs .box { border-radius: 24px; padding: 44px; background: #ffffff; border: 2px solid var(--rule); }
+  .vs .box.hi { border-color: var(--hue); }
+  .vs .k { font-size: 30px; color: var(--muted); }
+  .vs .v { font-size: 92px; font-weight: 700; letter-spacing: -0.03em; margin-top: 10px; line-height: 1; }
+  .vs .box.hi .v { color: var(--hue); }
+  .vs .d { font-size: 28px; color: var(--muted); margin-top: 16px; line-height: 1.35; }
 </style></head><body class="{cls}">{body}</body></html>"""
 
 MARK = ('<svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#0a0a0a"/>'
@@ -53,6 +67,20 @@ MARK = ('<svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32
         '<path d="M7 25 L26 10" stroke="#5a9bf0" stroke-width="2.4" stroke-linecap="round"/></svg>')
 
 CARDS = {
+    "09_how": ("", """<div class="eyebrow">How TellTale works</div>
+<h2>A slope warns before it fails. TellTale reads it.</h2>
+<div class="flow">
+  <div class="step"><div class="n">1</div><h3>Watch</h3><p>Any fixed camera photographs the slope a few times a day.</p></div>
+  <div class="step"><div class="n">2</div><h3>Measure</h3><p>OpenCV finds how far the ground moved, to a hundredth of a pixel.</p></div>
+  <div class="step"><div class="n">3</div><h3>Forecast</h3><p>When movement speeds up, physics gives a window for when it fails.</p></div>
+  <div class="step"><div class="n">4</div><h3>Check, then ask a person</h3><p>An AI agent measures again. Only a person can warn the public.</p></div>
+</div>"""),
+    "10_impact": ("", """<div class="eyebrow">Why it matters</div>
+<h2>Half of the people hit by landslides got no warning at all.</h2>
+<div class="vs">
+  <div class="box"><div class="k">Today: one borehole sensor</div><div class="v">€5,000+</div><div class="d">before drilling, and it watches one point (Gamperl et al. 2021)</div></div>
+  <div class="box hi"><div class="k">TellTale: a whole slope</div><div class="v">$1.40</div><div class="d">of cloud cost per slope per month, with a camera a village can buy</div></div>
+</div>"""),
     "01_bingham": ("", """<div class="eyebrow">Bingham Canyon copper mine, Utah · 10 April 2013</div>
 <h1>The mine knew when its wall would fall.</h1>
 <p class="lead">The pit was cleared beforehand. About 65 million cubic metres came down. No one was hurt.</p>
@@ -93,6 +121,7 @@ CARDS = {
 def main(argv=None) -> int:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--out", default=".build/video/cards")
+    p.add_argument("--scale", type=int, default=1, help="2 renders 3840x2160")
     a = p.parse_args(argv)
     out = Path(a.out).resolve()
     out.mkdir(parents=True, exist_ok=True)
@@ -102,7 +131,7 @@ def main(argv=None) -> int:
             html.write_text(BASE.replace("{cls}", cls).replace("{body}", body), encoding="utf-8")
             png = out / f"{name}.png"
             subprocess.run([CHROME, "--headless=new", "--disable-gpu", "--hide-scrollbars",
-                            "--window-size=1920,1080", "--virtual-time-budget=5000",
+                            "--window-size=1920,1080", f"--force-device-scale-factor={a.scale}", "--virtual-time-budget=5000",
                             f"--screenshot={png}", html.as_uri()], capture_output=True, timeout=60)
             print(name, png.exists())
     return 0

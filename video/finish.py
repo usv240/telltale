@@ -3,22 +3,24 @@
     python video/finish.py --team team.mp4 --voice voice.m4a [--outro outro.mp4] \
         --draft .build/video/telltale_draft.mp4 --out telltale_final.mp4
 
---team   the two of you on camera, about 12 s, one line each. It replaces 0:28 to 0:40 of the
-         draft, with its own sound.
+--team   the two of you on camera, about 12 s, one line each. It replaces the team slot of the
+         draft (0:26 to 0:38 in the 4K cut, 0:28 to 0:40 in the HD draft), with its own sound.
 --voice  the narration, recorded while watching the draft from 0:00 (read the captions in
-         telltale_draft.srt). Leave 0:28 to 0:40 silent; that is the team clip's own sound.
+         the draft's .srt). Leave the team slot silent; that is the team clip's own sound.
 --outro  optional: the two of you saying thank you, up to 7 s, replacing the end card.
 
-Any phone video works; it is scaled into 1920x1080 without cropping. The result stays under
+Any phone video works; it is scaled into the draft's frame size without cropping. The result stays under
 five minutes.
 """
 
 from __future__ import annotations
 
 import argparse
+import json
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 TEAM_AT, TEAM_LEN, TOTAL, OUTRO_LEN = 28.0, 12.0, 290.0, 7.0
 FIT = ("scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2:color=0xf1f3f4,"
@@ -34,6 +36,17 @@ def main(argv=None) -> int:
     p.add_argument("--out", default="telltale_final.mp4")
     a = p.parse_args(argv)
     ff = shutil.which("ffmpeg") or sys.exit("ffmpeg not found")
+    # timings written by the assembler beside the draft (the 4K cut has its own)
+    global TEAM_AT, TEAM_LEN, TOTAL, OUTRO_LEN, FIT
+    meta = Path(a.draft).with_suffix(".json")
+    if meta.exists():
+        m = json.loads(meta.read_text())
+        TEAM_AT, TEAM_LEN, TOTAL, OUTRO_LEN = m["team_at"], m["team_len"], m["total"], m["outro_len"]
+    probe = subprocess.run([shutil.which("ffprobe") or "ffprobe", "-v", "error", "-select_streams", "v:0",
+                            "-show_entries", "stream=width,height", "-of", "csv=p=0", a.draft],
+                           capture_output=True, text=True).stdout.strip().split(",")
+    if len(probe) == 2 and probe[0].isdigit():
+        FIT = FIT.replace("1920:1080", f"{probe[0]}:{probe[1]}")
 
     inputs = ["-i", a.draft, "-i", a.team]
     if a.voice:
@@ -73,11 +86,11 @@ def main(argv=None) -> int:
               else f"{mix}apad,atrim=0:{TOTAL}[a]")
 
     cmd = [ff, "-y", "-loglevel", "error", *inputs, "-filter_complex", ";".join(v + au),
-           "-map", "[v]", "-map", "[a]", "-c:v", "libx264", "-preset", "medium", "-crf", "20",
+           "-map", "[v]", "-map", "[a]", "-c:v", "libx264", "-preset", "faster", "-crf", "18",
            "-c:a", "aac", "-b:a", "160k", "-t", str(TOTAL), "-movflags", "+faststart", a.out]
     r = subprocess.run(cmd)
     if r.returncode == 0:
-        print(f"wrote {a.out} ({TOTAL:.0f} s). Upload it to YouTube as unlisted, with telltale_draft.srt as captions.")
+        print(f"wrote {a.out} ({TOTAL:.0f} s). Upload it to YouTube as unlisted; the captions are already in the picture.")
     return r.returncode
 
 

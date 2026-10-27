@@ -1,5 +1,37 @@
 # Five-minute video: shot list and script
 
+## The 4K cut (use this one)
+
+`.build/v4k/telltale_4k.mp4` runs 4:28 at 3840x2160, built by `python video/assemble4k.py`. It
+explains itself with the sound off, in eight chapters:
+
+1. The problem
+2. What TellTale does, in four steps
+3. A real landslide
+4. Watch a slope fail
+5. Why you can trust it
+6. The proof
+7. How it runs
+8. Why it matters
+
+On-screen callouts point at the failure window, the Approve button and the moving ground.
+Large captions in plain language are burned in, so a judge watching muted still follows it.
+
+What you record:
+
+- **The team clip,** about 12 s, both of you, for the slot at 0:26 to 0:38. Say: *"We're
+  Ground Truth. We built TellTale, which reads that warning with a camera a village can
+  afford."*
+- **Optional voice-over:** read the captions in `telltale_4k.srt` while the video plays. Leave
+  0:26 to 0:38 silent, because that slot uses the team clip's own sound.
+- **Optional outro,** up to 7 s.
+
+Then finish it:
+
+```bash
+python video/finish.py --draft .build/v4k/telltale_4k.mp4 --team team.mp4 [--voice voice.m4a] [--outro outro.mp4] --out telltale_final.mp4
+```
+
 ## The fast path: the draft is built, record two things
 
 `video/` builds a silent 4:50 draft at 1080p from the live product. It is assembled from:

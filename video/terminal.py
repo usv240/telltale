@@ -46,6 +46,7 @@ def main(argv=None) -> int:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--log", required=True)
     p.add_argument("--out", default=".build/video/terminal")
+    p.add_argument("--scale", type=int, default=1)
     a = p.parse_args(argv)
     lines = [l.rstrip() for l in Path(a.log).read_text(encoding="utf-8", errors="replace").splitlines()]
     # keep each claim's title line and shorten its measured line so a claim fits on two lines
@@ -66,7 +67,7 @@ def main(argv=None) -> int:
             for _ in range(3):              # Chrome occasionally stalls when another instance is busy
                 try:
                     subprocess.run([CHROME, "--headless=new", "--disable-gpu", "--hide-scrollbars",
-                                    "--window-size=1920,1080", "--virtual-time-budget=4000",
+                                    "--window-size=1920,1080", f"--force-device-scale-factor={a.scale}", "--virtual-time-budget=4000",
                                     f"--screenshot={png}", page.as_uri()], capture_output=True, timeout=90)
                     break
                 except subprocess.TimeoutExpired:
