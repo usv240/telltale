@@ -105,6 +105,29 @@ Wherever possible on data we did not make.
 Every number above is checked against the saved results by one command (see Testing). Method
 and limits for each test: [docs/REPORT.md](docs/REPORT.md), section 6.
 
+## Special award evidence
+
+### Best Use of COOL
+
+| Requirement | Evidence |
+|---|---|
+| COOL version and deployment | COOL `Graviton5-COOL-v3` from AWS Marketplace (`ami-033e481a24f94c8cb`), OpenCV **5.1.0-dev**, on an EC2 **c8g.large** (Graviton4, arm64). Passed to the stack as `CoolAmiId` ([infra/cloudformation.yaml](infra/cloudformation.yaml)); [infra/worker/bootstrap.sh](infra/worker/bootstrap.sh) puts COOL's `cv2` on the worker's path |
+| COOL runs the core workload | Every processed photo records which OpenCV ran it. Live, from the production worker: [series.json](https://d30le2uwgaimao.cloudfront.net/sites/demo-slope/series.json) shows `"cv2_file": "/opt/cool/python_3.12/..."`, `"opencv_version": "5.1.0-dev"`, `"cool": true`, `"instance_type": "c8g.large"`. The dashboard's Instrument health panel shows the same. `cool` is true only when `cv2` was imported from `/opt/cool` |
+| Reproducible method, inputs, baselines | [evaluation/e6_cool_benchmark.py](evaluation/e6_cool_benchmark.py): a fixed 1080p workload (7-frame bursts, 3,234 measurement points), 10 warm repetitions. Baselines: stock OpenCV 5.0.0 **on the same instance**, and stock OpenCV on x86 (c7i.large). Per-operation probe: [evaluation/e6_interp_probe.py](evaluation/e6_interp_probe.py) |
+| Results | Raw files in [evaluation/results/](evaluation/results/) (`e6_*.json`). COOL on Graviton is **1.49x faster and 40 % cheaper** than the usual x86 deployment, with identical results. Against stock OpenCV on the same Graviton it is 1.45x faster on ORB and 1.52x on corner response, but **6 % slower overall**, because our time is spent in float32 Lanczos warps. We tried an 8-bit search to use COOL's faster `matchTemplate` (5 % off the measuring step, accuracy unchanged) and report the rest as measured. Full write-up: [REPORT.md](docs/REPORT.md), E6 |
+
+### Agentic Vision
+
+| Requirement | Evidence |
+|---|---|
+| Agent workflow diagram | The agent-loop diagram above, and [docs/agent_workflow.svg](docs/agent_workflow.svg) (perception tools, Claude's decision, actions) |
+| OpenCV output changes the next action | Same agent, same tools, opposite actions, decided by what OpenCV measured. **Real creep** ([trace](evaluation/results/e5_agent/llm/creep+bump/public/sites/creep+bump/agent/47.json)): `motion_coherence` 0.98, `remeasure` against the previous photo and against the reference agree, so Claude calls `request_human_approval`. **Camera artefact** ([trace](evaluation/results/e5_agent/llm/quiet+lens/public/sites/quiet+lens/agent/24.3103.json)): `check_stabilization` returns CAMERA_EVENT (the mount moved 1.6 px), so Claude calls `close_event` as FALSE_ALARM and nobody is woken |
+| Live traces | Every investigation on the production stack: [agentlog.json](https://d30le2uwgaimao.cloudfront.net/sites/demo-slope/agentlog.json); click any row in the dashboard's Agent investigations panel to see the re-measured images and every tool call |
+| Task success | E5 ablation (agent off, rules only, Claude on Bedrock): Claude closed every camera-distortion event as a false alarm, paged a person **41.9 time units before failure** against 3.0 for thresholds alone, with **0 false pages** ([e5_agent.json](evaluation/results/e5_agent.json)) |
+| Failure handling | If Bedrock is unreachable, a rule policy drives the same tools. If the agent errors or is unsure, the worker's own CRITICAL page still fires, because a missed warning is worse than an extra one. Ten-call budget per event |
+| Observability | Each trace stores the tool calls, arguments, results, verdict and duration; pages are logged in `pages.json` and human decisions in `decisions.json`; CloudWatch alarms and an ops dashboard. The traces caught a real bug, written up in [REPORT.md](docs/REPORT.md) section 6b |
+| Human control | The agent cannot send a public alert. It pages once per episode with evidence images and signed Approve and Dismiss links; only a person can approve |
+
 ## Testing
 
 Needs Python 3.11 or newer. No AWS account or network is needed.
